@@ -1,5 +1,6 @@
 package com.tech.hvac_backend.service;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -7,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Profile("prod")
+@ConditionalOnProperty(name = "storage.type", havingValue = "r2")
 public class R2PhotoStorageService implements PhotoStorageService {
 
     @Override
