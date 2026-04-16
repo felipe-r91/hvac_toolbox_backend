@@ -44,6 +44,13 @@ public class MachineSummaryService {
                 .toList();
     }
 
+    public MachineSummaryResponse getMachineSummaryById(String machineId) {
+        MachineEntity machine = machineRepository.findById(machineId)
+                .orElseThrow(() -> new ResourceNotFoundException("Machine not found: " + machineId));
+
+        return buildSummary(machine);
+    }
+
     private MachineSummaryResponse buildSummary(MachineEntity machine) {
         VesselEntity vessel = vesselRepository.findById(machine.getVesselId()).orElse(null);
 
@@ -58,31 +65,26 @@ public class MachineSummaryService {
         String latestKnownStatus = "unknown";
 
         Optional<LatestRecord> latestPreventive = preventiveReports.stream()
+                .findFirst()
                 .map(report -> new LatestRecord(
                         report.getCompletedAt(),
                         "preventive",
-                        report.getOverallStatus()
-                ))
-                .findFirst();
+                        normalizePreventiveStatus(report.getOverallStatus())
+                ));
 
         Optional<LatestRecord> latestCorrective = correctiveDrafts.stream()
+                .findFirst()
                 .map(draft -> new LatestRecord(
                         draft.getCreatedAt(),
                         "corrective",
-                        draft.getMachineReturnedToService() != null &&
-                                draft.getMachineReturnedToService().equalsIgnoreCase("no")
-                                ? "down"
-                                : "online"
-                ))
-                .findFirst();
+                        mapCorrectiveStatus(draft.getMachineReturnedToService())
+                ));
 
-        assert latestPreventive.orElse(null) != null;
-        assert latestCorrective.orElse(null) != null;
         Optional<LatestRecord> latest = Stream.of(
                         latestPreventive.orElse(null),
                         latestCorrective.orElse(null)
                 )
-                .filter(item -> item.date() != null)
+                .filter(item -> item != null && item.date() != null && !item.date().isBlank())
                 .max(Comparator.comparing(LatestRecord::date));
 
         if (latest.isPresent()) {
@@ -109,13 +111,29 @@ public class MachineSummaryService {
         );
     }
 
-    private record LatestRecord(String date, String type, String status) {
+    private String normalizePreventiveStatus(String status) {
+        if (status == null || status.isBlank()) {
+            return "unknown";
+        }
+
+        return switch (status.toLowerCase()) {
+            case "online", "down", "unknown" -> status.toLowerCase();
+            default -> "unknown";
+        };
     }
 
-    public MachineSummaryResponse getMachineSummaryById(String machineId) {
-        MachineEntity machine = machineRepository.findById(machineId)
-                .orElseThrow(() -> new ResourceNotFoundException("Machine not found: " + machineId));
+    private String mapCorrectiveStatus(String machineReturnedToService) {
+        if (machineReturnedToService == null || machineReturnedToService.isBlank()) {
+            return "unknown";
+        }
 
-        return buildSummary(machine);
+        return switch (machineReturnedToService.toLowerCase()) {
+            case "yes" -> "online";
+            case "no" -> "down";
+            default -> "unknown";
+        };
+    }
+
+    private record LatestRecord(String date, String type, String status) {
     }
 }
