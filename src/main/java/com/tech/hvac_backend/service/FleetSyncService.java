@@ -7,6 +7,7 @@ import com.tech.hvac_backend.dto.sync.MachineSyncDto;
 import com.tech.hvac_backend.dto.sync.VesselSyncDto;
 import com.tech.hvac_backend.entity.MachineEntity;
 import com.tech.hvac_backend.entity.VesselEntity;
+import com.tech.hvac_backend.exception.ResourceNotFoundException;
 import com.tech.hvac_backend.repository.MachineRepository;
 import com.tech.hvac_backend.repository.VesselRepository;
 import org.springframework.stereotype.Service;
@@ -79,6 +80,22 @@ public class FleetSyncService {
                                 .toList()
                 ))
                 .toList();
+    }
+
+    public VesselResponse getVesselById(String vesselId) {
+        VesselEntity vessel = vesselRepository.findById(vesselId)
+                .orElseThrow(() -> new ResourceNotFoundException("Vessel not found: " + vesselId));
+
+        return new VesselResponse(
+                vessel.getId(),
+                vessel.getName(),
+                vessel.getImoNumber(),
+                vessel.getDescription(),
+                machineRepository.findByVesselIdOrderByTagAsc(vessel.getId())
+                        .stream()
+                        .map(this::mapMachine)
+                        .toList()
+        );
     }
 
     public List<MachineResponse> getAllMachines() {

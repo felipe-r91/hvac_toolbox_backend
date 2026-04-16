@@ -30,6 +30,11 @@ public class FleetSyncController {
         return ResponseEntity.ok(fleetSyncService.getAllVessels());
     }
 
+    @GetMapping("/vessels/{id}")
+    public ResponseEntity<VesselResponse> getVesselById(@PathVariable String id) {
+        return ResponseEntity.ok(fleetSyncService.getVesselById(id));
+    }
+
     @GetMapping("/machines")
     public ResponseEntity<List<MachineResponse>> getMachines() {
         return ResponseEntity.ok(fleetSyncService.getAllMachines());
