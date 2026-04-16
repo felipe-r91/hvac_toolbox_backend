@@ -21,4 +21,9 @@ public class MachineSummaryController {
     public ResponseEntity<List<MachineSummaryResponse>> getMachineSummaries() {
         return ResponseEntity.ok(machineSummaryService.getAllMachineSummaries());
     }
+
+    @GetMapping("/machines/{id}")
+    public ResponseEntity<MachineSummaryResponse> getMachineSummaryById(@PathVariable String id) {
+        return ResponseEntity.ok(machineSummaryService.getMachineSummaryById(id));
+    }
 }

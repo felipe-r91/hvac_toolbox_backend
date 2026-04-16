@@ -5,6 +5,7 @@ import com.tech.hvac_backend.entity.CorrectiveDraftEntity;
 import com.tech.hvac_backend.entity.MachineEntity;
 import com.tech.hvac_backend.entity.PreventiveReportEntity;
 import com.tech.hvac_backend.entity.VesselEntity;
+import com.tech.hvac_backend.exception.ResourceNotFoundException;
 import com.tech.hvac_backend.repository.CorrectiveDraftRepository;
 import com.tech.hvac_backend.repository.MachineRepository;
 import com.tech.hvac_backend.repository.PreventiveReportRepository;
@@ -109,5 +110,12 @@ public class MachineSummaryService {
     }
 
     private record LatestRecord(String date, String type, String status) {
+    }
+
+    public MachineSummaryResponse getMachineSummaryById(String machineId) {
+        MachineEntity machine = machineRepository.findById(machineId)
+                .orElseThrow(() -> new ResourceNotFoundException("Machine not found: " + machineId));
+
+        return buildSummary(machine);
     }
 }
