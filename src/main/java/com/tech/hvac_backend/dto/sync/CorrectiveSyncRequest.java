@@ -20,6 +20,10 @@ public class CorrectiveSyncRequest {
     private String machineLocation;
     private String createdAt;
 
+    private String failureComponent;
+    private String failureMode;
+    private String failureCode;
+
     private String problemSummary;
     private String conditionFound;
     private String symptomsObserved;

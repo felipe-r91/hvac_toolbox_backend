@@ -12,13 +12,20 @@ public class MachineTimelineItemResponse {
     private final String title;
     private final String summary;
 
+    private final String failureComponent;
+    private final String failureMode;
+    private final String failureCode;
+
     public MachineTimelineItemResponse(
             String id,
             String type,
             String date,
             String status,
             String title,
-            String summary
+            String summary,
+            String failureComponent,
+            String failureMode,
+            String failureCode
     ) {
         this.id = id;
         this.type = type;
@@ -26,6 +33,9 @@ public class MachineTimelineItemResponse {
         this.status = status;
         this.title = title;
         this.summary = summary;
+        this.failureComponent = failureComponent;
+        this.failureMode = failureMode;
+        this.failureCode = failureCode;
     }
 
 }

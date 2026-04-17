@@ -90,6 +90,7 @@ public class PreventiveSyncService {
         entity.setDowntimeReason(request.getDowntimeReason());
         entity.setFailureComponent(request.getFailureComponent());
         entity.setFailureMode(request.getFailureMode());
+        entity.setFailureCode(request.getFailureCode());
         entity.setFailureNotes(request.getFailureNotes());
         entity.setFaultCount(defaultInt(request.getFaultCount()));
         entity.setSkippedCount(defaultInt(request.getSkippedCount()));

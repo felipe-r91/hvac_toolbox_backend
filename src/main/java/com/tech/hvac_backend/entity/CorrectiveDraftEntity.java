@@ -28,20 +28,17 @@ public class CorrectiveDraftEntity {
     @Column(nullable = false)
     private String machineTag;
 
-    @Column(nullable = false)
     private String machineModel;
-
-    @Column(nullable = false)
     private String machineType;
-
-    @Column(nullable = false)
     private String machineStarterType;
-
-    @Column(nullable = false)
     private String machineLocation;
 
     @Column(nullable = false)
     private String createdAt;
+
+    private String failureComponent;
+    private String failureMode;
+    private String failureCode;
 
     @Column(length = 4000)
     private String problemSummary;
@@ -73,12 +70,11 @@ public class CorrectiveDraftEntity {
     @Column(length = 4000)
     private String furtherActionRequired;
 
-    @Column(nullable = false)
     private String machineReturnedToService;
 
+    @Column(nullable = false)
     private Boolean synced;
 
     public CorrectiveDraftEntity() {
     }
-
 }

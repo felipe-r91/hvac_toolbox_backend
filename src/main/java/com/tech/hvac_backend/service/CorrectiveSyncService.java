@@ -49,6 +49,17 @@ public class CorrectiveSyncService {
         if (isBlank(request.getCreatedAt())) {
             throw new IllegalArgumentException("CreatedAt is required.");
         }
+        if (isBlank(request.getFailureComponent())) {
+            throw new IllegalArgumentException("Failure component is required.");
+        }
+
+        if (isBlank(request.getFailureMode())) {
+            throw new IllegalArgumentException("Failure mode is required.");
+        }
+
+        if (isBlank(request.getFailureCode())) {
+            throw new IllegalArgumentException("Failure code is required.");
+        }
     }
 
     private CorrectiveDraftEntity mapDraft(CorrectiveSyncRequest request) {
@@ -63,6 +74,10 @@ public class CorrectiveSyncService {
         entity.setMachineStarterType(request.getMachineStarterType());
         entity.setMachineLocation(request.getMachineLocation());
         entity.setCreatedAt(request.getCreatedAt());
+
+        entity.setFailureComponent(request.getFailureComponent());
+        entity.setFailureMode(request.getFailureMode());
+        entity.setFailureCode(request.getFailureCode());
 
         entity.setProblemSummary(request.getProblemSummary());
         entity.setConditionFound(request.getConditionFound());

@@ -22,6 +22,7 @@ public class PreventiveSyncRequest {
     private String downtimeReason;
     private String failureComponent;
     private String failureMode;
+    private String failureCode;
     private String failureNotes;
     private Integer faultCount;
     private Integer skippedCount;
@@ -101,4 +102,5 @@ public class PreventiveSyncRequest {
     public void setTasks(List<PreventiveTaskDto> tasks) {
         this.tasks = tasks;
     }
+
 }

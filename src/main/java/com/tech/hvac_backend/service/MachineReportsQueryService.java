@@ -49,7 +49,10 @@ public class MachineReportsQueryService {
                 report.getCompletedAt(),
                 report.getOverallStatus(),
                 "Preventive maintenance completed",
-                summary
+                summary,
+                report.getFailureComponent(),
+                report.getFailureMode(),
+                report.getFailureCode()
         );
     }
 
@@ -72,7 +75,10 @@ public class MachineReportsQueryService {
                 draft.getCreatedAt(),
                 status,
                 "Corrective maintenance",
-                summary
+                summary,
+                draft.getFailureComponent(),
+                draft.getFailureMode(),
+                draft.getFailureCode()
         );
     }
 }

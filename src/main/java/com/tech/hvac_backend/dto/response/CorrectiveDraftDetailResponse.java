@@ -7,34 +7,37 @@ import java.util.List;
 @Getter
 public class CorrectiveDraftDetailResponse {
 
-    private String id;
-    private String vesselId;
-    private String vesselName;
-    private String machineId;
-    private String machineTag;
-    private String machineModel;
-    private String machineType;
-    private String machineStarterType;
-    private String machineLocation;
-    private String createdAt;
+    private final String id;
+    private final String vesselId;
+    private final String vesselName;
+    private final String machineId;
+    private final String machineTag;
+    private final String machineModel;
+    private final String machineType;
+    private final String machineStarterType;
+    private final String machineLocation;
+    private final String createdAt;
 
-    private String problemSummary;
-    private String conditionFound;
-    private String symptomsObserved;
-    private String alarmsObserved;
-    private String operationalImpact;
+    private final String failureComponent;
+    private final String failureMode;
+    private final String failureCode;
 
-    private String preliminaryDiagnosis;
-    private String confirmedCause;
+    private final String problemSummary;
+    private final String conditionFound;
+    private final String symptomsObserved;
+    private final String alarmsObserved;
+    private final String operationalImpact;
 
-    private String correctiveAction;
-    private String recommendations;
-    private String furtherActionRequired;
+    private final String preliminaryDiagnosis;
+    private final String confirmedCause;
 
-    private String machineReturnedToService;
-    private Boolean synced;
+    private final String correctiveAction;
+    private final String recommendations;
+    private final String furtherActionRequired;
 
-    private List<CorrectivePhotoDetailResponse> photos;
+    private final String machineReturnedToService;
+    private final Boolean synced;
+    private final List<CorrectivePhotoDetailResponse> photos;
 
     public CorrectiveDraftDetailResponse(
             String id,
@@ -47,6 +50,9 @@ public class CorrectiveDraftDetailResponse {
             String machineStarterType,
             String machineLocation,
             String createdAt,
+            String failureComponent,
+            String failureMode,
+            String failureCode,
             String problemSummary,
             String conditionFound,
             String symptomsObserved,
@@ -71,6 +77,9 @@ public class CorrectiveDraftDetailResponse {
         this.machineStarterType = machineStarterType;
         this.machineLocation = machineLocation;
         this.createdAt = createdAt;
+        this.failureComponent = failureComponent;
+        this.failureMode = failureMode;
+        this.failureCode = failureCode;
         this.problemSummary = problemSummary;
         this.conditionFound = conditionFound;
         this.symptomsObserved = symptomsObserved;

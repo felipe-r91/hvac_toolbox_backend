@@ -5,14 +5,17 @@ import lombok.Getter;
 @Getter
 public class CorrectiveDraftSummaryResponse {
 
-    private String id;
-    private String vesselName;
-    private String machineTag;
-    private String machineModel;
-    private String machineLocation;
-    private String createdAt;
-    private String problemSummary;
-    private String machineReturnedToService;
+    private final String id;
+    private final String vesselName;
+    private final String machineTag;
+    private final String machineModel;
+    private final String machineLocation;
+    private final String createdAt;
+    private final String failureComponent;
+    private final String failureMode;
+    private final String failureCode;
+    private final String problemSummary;
+    private final String machineReturnedToService;
 
     public CorrectiveDraftSummaryResponse(
             String id,
@@ -21,6 +24,9 @@ public class CorrectiveDraftSummaryResponse {
             String machineModel,
             String machineLocation,
             String createdAt,
+            String failureComponent,
+            String failureMode,
+            String failureCode,
             String problemSummary,
             String machineReturnedToService
     ) {
@@ -30,6 +36,9 @@ public class CorrectiveDraftSummaryResponse {
         this.machineModel = machineModel;
         this.machineLocation = machineLocation;
         this.createdAt = createdAt;
+        this.failureComponent = failureComponent;
+        this.failureMode = failureMode;
+        this.failureCode = failureCode;
         this.problemSummary = problemSummary;
         this.machineReturnedToService = machineReturnedToService;
     }

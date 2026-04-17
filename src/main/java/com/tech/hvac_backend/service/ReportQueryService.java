@@ -108,6 +108,9 @@ public class ReportQueryService {
                 draft.getMachineStarterType(),
                 draft.getMachineLocation(),
                 draft.getCreatedAt(),
+                draft.getFailureComponent(),
+                draft.getFailureMode(),
+                draft.getFailureCode(),
                 draft.getProblemSummary(),
                 draft.getConditionFound(),
                 draft.getSymptomsObserved(),
@@ -146,6 +149,9 @@ public class ReportQueryService {
                 entity.getMachineModel(),
                 entity.getMachineLocation(),
                 entity.getCreatedAt(),
+                entity.getFailureComponent(),
+                entity.getFailureMode(),
+                entity.getFailureCode(),
                 entity.getProblemSummary(),
                 entity.getMachineReturnedToService()
         );
