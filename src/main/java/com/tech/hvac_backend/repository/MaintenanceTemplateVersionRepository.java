@@ -10,4 +10,6 @@ public interface MaintenanceTemplateVersionRepository extends JpaRepository<Main
     List<MaintenanceTemplateVersionEntity> findByTemplateIdOrderByVersionNumberDesc(String templateId);
 
     Optional<MaintenanceTemplateVersionEntity> findByTemplateIdAndVersionNumber(String templateId, Integer versionNumber);
+
+    Optional<MaintenanceTemplateVersionEntity> findFirstByTemplateIdAndIsPublishedTrueOrderByVersionNumberDesc(String templateId);
 }
