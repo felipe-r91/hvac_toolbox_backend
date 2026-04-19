@@ -37,6 +37,12 @@ public class MachineEntity {
     @Column(nullable = false)
     private String starterType;
 
+    @Column(length = 36)
+    private String machineTemplateVersionId;
+
+    @Column(length = 36)
+    private String starterTemplateVersionId;
+
     public MachineEntity() {
     }
 }
