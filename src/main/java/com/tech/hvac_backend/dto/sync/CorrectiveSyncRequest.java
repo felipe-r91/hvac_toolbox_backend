@@ -39,6 +39,8 @@ public class CorrectiveSyncRequest {
 
     private String machineReturnedToService;
 
+    private String sourcePreventiveReportId;
+
     private List<CorrectivePhotoDto> photos;
 
     public CorrectiveSyncRequest() {

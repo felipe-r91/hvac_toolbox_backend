@@ -91,6 +91,7 @@ public class CorrectiveSyncService {
         entity.setCorrectiveAction(request.getCorrectiveAction());
         entity.setRecommendations(request.getRecommendations());
         entity.setFurtherActionRequired(request.getFurtherActionRequired());
+        entity.setSourcePreventiveReportId(request.getSourcePreventiveReportId());
 
         entity.setMachineReturnedToService(
                 isBlank(request.getMachineReturnedToService())

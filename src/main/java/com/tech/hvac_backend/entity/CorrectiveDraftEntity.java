@@ -39,6 +39,7 @@ public class CorrectiveDraftEntity {
     private String failureComponent;
     private String failureMode;
     private String failureCode;
+    private String sourcePreventiveReportId;
 
     @Column(length = 4000)
     private String problemSummary;

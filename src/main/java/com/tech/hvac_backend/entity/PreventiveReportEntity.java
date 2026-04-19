@@ -50,6 +50,7 @@ public class PreventiveReportEntity {
     private String failureComponent;
     private String failureMode;
     private String failureCode;
+    private String linkedCorrectiveDraftId;
 
     @Column(length = 4000)
     private String failureNotes;

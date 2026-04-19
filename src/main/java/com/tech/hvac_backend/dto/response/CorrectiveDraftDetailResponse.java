@@ -35,6 +35,8 @@ public class CorrectiveDraftDetailResponse {
     private final String recommendations;
     private final String furtherActionRequired;
 
+    private final String sourcePreventiveReportId;
+
     private final String machineReturnedToService;
     private final Boolean synced;
     private final List<CorrectivePhotoDetailResponse> photos;
@@ -62,7 +64,7 @@ public class CorrectiveDraftDetailResponse {
             String confirmedCause,
             String correctiveAction,
             String recommendations,
-            String furtherActionRequired,
+            String furtherActionRequired, String sourcePreventiveReportId,
             String machineReturnedToService,
             Boolean synced,
             List<CorrectivePhotoDetailResponse> photos
@@ -90,6 +92,7 @@ public class CorrectiveDraftDetailResponse {
         this.correctiveAction = correctiveAction;
         this.recommendations = recommendations;
         this.furtherActionRequired = furtherActionRequired;
+        this.sourcePreventiveReportId = sourcePreventiveReportId;
         this.machineReturnedToService = machineReturnedToService;
         this.synced = synced;
         this.photos = photos;

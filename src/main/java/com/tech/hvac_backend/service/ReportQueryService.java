@@ -79,7 +79,9 @@ public class ReportQueryService {
                 report.getDowntimeReason(),
                 report.getFailureComponent(),
                 report.getFailureMode(),
+                report.getFailureCode(),
                 report.getFailureNotes(),
+                report.getLinkedCorrectiveDraftId(),
                 report.getFaultCount(),
                 report.getSkippedCount(),
                 report.getSynced(),
@@ -122,6 +124,7 @@ public class ReportQueryService {
                 draft.getRecommendations(),
                 draft.getFurtherActionRequired(),
                 draft.getMachineReturnedToService(),
+                draft.getSourcePreventiveReportId(),
                 draft.getSynced(),
                 photos
         );

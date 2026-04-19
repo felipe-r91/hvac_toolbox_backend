@@ -52,7 +52,9 @@ public class MachineReportsQueryService {
                 summary,
                 report.getFailureComponent(),
                 report.getFailureMode(),
-                report.getFailureCode()
+                report.getFailureCode(),
+                report.getLinkedCorrectiveDraftId(),
+                null
         );
     }
 
@@ -78,7 +80,9 @@ public class MachineReportsQueryService {
                 summary,
                 draft.getFailureComponent(),
                 draft.getFailureMode(),
-                draft.getFailureCode()
+                draft.getFailureCode(),
+                null,
+                draft.getSourcePreventiveReportId()
         );
     }
 }
