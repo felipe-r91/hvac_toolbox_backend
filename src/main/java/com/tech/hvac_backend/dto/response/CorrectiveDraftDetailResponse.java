@@ -40,6 +40,7 @@ public class CorrectiveDraftDetailResponse {
     private final String machineReturnedToService;
     private final Boolean synced;
     private final List<CorrectivePhotoDetailResponse> photos;
+    private final String reportCategory;
 
     public CorrectiveDraftDetailResponse(
             String id,
@@ -67,7 +68,8 @@ public class CorrectiveDraftDetailResponse {
             String furtherActionRequired, String sourcePreventiveReportId,
             String machineReturnedToService,
             Boolean synced,
-            List<CorrectivePhotoDetailResponse> photos
+            List<CorrectivePhotoDetailResponse> photos,
+            String reportCategory
     ) {
         this.id = id;
         this.vesselId = vesselId;
@@ -96,6 +98,7 @@ public class CorrectiveDraftDetailResponse {
         this.machineReturnedToService = machineReturnedToService;
         this.synced = synced;
         this.photos = photos;
+        this.reportCategory = reportCategory;
     }
 
 }

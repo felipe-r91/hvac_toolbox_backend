@@ -28,6 +28,7 @@ public class PreventiveReportDetailResponse {
     private Integer skippedCount;
     private Boolean synced;
     private List<PreventiveReportTaskDetailResponse> tasks;
+    private String reportCategory;
 
     public PreventiveReportDetailResponse(
             String id,
@@ -50,7 +51,9 @@ public class PreventiveReportDetailResponse {
             Integer faultCount,
             Integer skippedCount,
             Boolean synced,
-            List<PreventiveReportTaskDetailResponse> tasks
+            List<PreventiveReportTaskDetailResponse> tasks,
+            String reportCategory
+
     ) {
         this.id = id;
         this.vesselId = vesselId;
@@ -73,6 +76,7 @@ public class PreventiveReportDetailResponse {
         this.skippedCount = skippedCount;
         this.synced = synced;
         this.tasks = tasks;
+        this.reportCategory = reportCategory;
     }
 
 }

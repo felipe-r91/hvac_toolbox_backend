@@ -40,15 +40,16 @@ public class MachineReportsQueryService {
     private MachineTimelineItemResponse mapPreventive(PreventiveReportEntity report) {
         String summary = report.getFailureNotes();
         if (summary == null || summary.isBlank()) {
-            summary = "Preventive maintenance completed.";
+            summary = "Health check completed.";
         }
 
         return new MachineTimelineItemResponse(
                 report.getId(),
-                "preventive",
+                "health_check",
+                report.getReportCategory() != null ? report.getReportCategory() : "health_check",
                 report.getCompletedAt(),
                 report.getOverallStatus(),
-                "Preventive maintenance completed",
+                "Health check completed",
                 summary,
                 report.getFailureComponent(),
                 report.getFailureMode(),
@@ -68,15 +69,24 @@ public class MachineReportsQueryService {
 
         String summary = draft.getProblemSummary();
         if (summary == null || summary.isBlank()) {
-            summary = "Corrective maintenance record.";
+            summary = "Corrective report.";
+        }
+
+        String reportCategory =
+                draft.getReportCategory() != null ? draft.getReportCategory() : "corrective";
+
+        String title = "Corrective report";
+        if ("cfr".equalsIgnoreCase(reportCategory)) {
+            title = "Conditions found report";
         }
 
         return new MachineTimelineItemResponse(
                 draft.getId(),
                 "corrective",
+                reportCategory,
                 draft.getCreatedAt(),
                 status,
-                "Corrective maintenance",
+                title,
                 summary,
                 draft.getFailureComponent(),
                 draft.getFailureMode(),

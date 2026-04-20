@@ -99,6 +99,10 @@ public class CorrectiveSyncService {
                         : request.getMachineReturnedToService()
         );
 
+        entity.setReportCategory(
+                request.getReportCategory() != null ? request.getReportCategory() : "corrective"
+        );
+
         entity.setSynced(Boolean.TRUE);
 
         return entity;

@@ -7,6 +7,7 @@ public class MachineTimelineItemResponse {
 
     private final String id;
     private final String type;
+    private final String reportCategory;
     private final String date;
     private final String status;
     private final String title;
@@ -22,6 +23,7 @@ public class MachineTimelineItemResponse {
     public MachineTimelineItemResponse(
             String id,
             String type,
+            String reportCategory,
             String date,
             String status,
             String title,
@@ -34,6 +36,7 @@ public class MachineTimelineItemResponse {
     ) {
         this.id = id;
         this.type = type;
+        this.reportCategory = reportCategory;
         this.date = date;
         this.status = status;
         this.title = title;
@@ -44,5 +47,4 @@ public class MachineTimelineItemResponse {
         this.linkedCorrectiveDraftId = linkedCorrectiveDraftId;
         this.sourcePreventiveReportId = sourcePreventiveReportId;
     }
-
 }

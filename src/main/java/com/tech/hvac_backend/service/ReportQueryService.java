@@ -85,7 +85,8 @@ public class ReportQueryService {
                 report.getFaultCount(),
                 report.getSkippedCount(),
                 report.getSynced(),
-                tasks
+                tasks,
+                report.getReportCategory()
         );
     }
 
@@ -126,7 +127,8 @@ public class ReportQueryService {
                 draft.getMachineReturnedToService(),
                 draft.getSourcePreventiveReportId(),
                 draft.getSynced(),
-                photos
+                photos,
+                draft.getReportCategory()
         );
     }
 

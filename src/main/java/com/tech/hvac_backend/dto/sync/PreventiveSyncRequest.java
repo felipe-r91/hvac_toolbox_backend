@@ -30,6 +30,7 @@ public class PreventiveSyncRequest {
     private Integer faultCount;
     private Integer skippedCount;
     private List<PreventiveTaskDto> tasks;
+    private String reportCategory;
 
     public PreventiveSyncRequest() {
     }

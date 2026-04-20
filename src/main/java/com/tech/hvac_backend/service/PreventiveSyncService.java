@@ -95,6 +95,9 @@ public class PreventiveSyncService {
         entity.setFailureNotes(request.getFailureNotes());
         entity.setFaultCount(defaultInt(request.getFaultCount()));
         entity.setSkippedCount(defaultInt(request.getSkippedCount()));
+        entity.setReportCategory(
+                request.getReportCategory() != null ? request.getReportCategory() : "health_check"
+        );
         entity.setSynced(Boolean.TRUE);
         return entity;
     }

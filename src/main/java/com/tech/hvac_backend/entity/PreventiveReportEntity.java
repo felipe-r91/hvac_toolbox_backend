@@ -52,6 +52,9 @@ public class PreventiveReportEntity {
     private String failureCode;
     private String linkedCorrectiveDraftId;
 
+    @Column(nullable = false, length = 30)
+    private String reportCategory;
+
     @Column(length = 4000)
     private String failureNotes;
 

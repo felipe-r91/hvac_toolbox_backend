@@ -41,6 +41,9 @@ public class CorrectiveDraftEntity {
     private String failureCode;
     private String sourcePreventiveReportId;
 
+    @Column(nullable = false, length = 30)
+    private String reportCategory;
+
     @Column(length = 4000)
     private String problemSummary;
 

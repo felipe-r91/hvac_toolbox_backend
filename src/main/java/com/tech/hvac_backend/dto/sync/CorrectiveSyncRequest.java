@@ -43,6 +43,8 @@ public class CorrectiveSyncRequest {
 
     private List<CorrectivePhotoDto> photos;
 
+    private String reportCategory;
+
     public CorrectiveSyncRequest() {
     }
 
