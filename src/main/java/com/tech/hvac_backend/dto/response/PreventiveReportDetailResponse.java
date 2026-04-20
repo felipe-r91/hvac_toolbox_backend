@@ -7,28 +7,28 @@ import java.util.List;
 @Getter
 public class PreventiveReportDetailResponse {
 
-    private String id;
-    private String vesselId;
-    private String vesselName;
-    private String machineId;
-    private String machineTag;
-    private String machineModel;
-    private String machineType;
-    private String machineLocation;
-    private String machineStarterType;
-    private String completedAt;
-    private String overallStatus;
-    private String downtimeReason;
-    private String failureComponent;
-    private String failureMode;
-    private String failureCode;
-    private String failureNotes;
-    private String linkedCorrectiveDraftId;
-    private Integer faultCount;
-    private Integer skippedCount;
-    private Boolean synced;
-    private List<PreventiveReportTaskDetailResponse> tasks;
-    private String reportCategory;
+    private final String id;
+    private final String vesselId;
+    private final String vesselName;
+    private final String machineId;
+    private final String machineTag;
+    private final String machineModel;
+    private final String machineType;
+    private final String machineLocation;
+    private final String machineStarterType;
+    private final String completedAt;
+    private final String overallStatus;
+    private final String downtimeReason;
+    private final String failureComponent;
+    private final String failureMode;
+    private final String failureCode;
+    private final String failureNotes;
+    private final String linkedCorrectiveDraftId;
+    private final Integer faultCount;
+    private final Integer skippedCount;
+    private final Boolean synced;
+    private final List<PreventiveReportTaskDetailResponse> tasks;
+    private final String reportCategory;
 
     public PreventiveReportDetailResponse(
             String id,
