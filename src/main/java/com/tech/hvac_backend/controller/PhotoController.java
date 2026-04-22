@@ -42,24 +42,45 @@ public class PhotoController {
 
         validatePhotoOwnership(ownerType, ownerId, machineId, taskId);
 
-        String photoId = UUID.randomUUID().toString();
-        String storageKey = storageService.storePhoto(file, ownerType.name(), ownerId);
+        try {
+            System.out.println("=== PHOTO UPLOAD START ===");
+            System.out.println("ownerType = " + ownerType);
+            System.out.println("ownerId = " + ownerId);
+            System.out.println("machineId = " + machineId);
+            System.out.println("taskId = " + taskId);
+            System.out.println("filename = " + file.getOriginalFilename());
 
-        PhotoRecordEntity photo = new PhotoRecordEntity();
-        photo.setId(photoId);
-        photo.setOwnerType(ownerType);
-        photo.setOwnerId(ownerId);
-        photo.setMachineId(machineId);
-        photo.setTaskId(taskId);
-        photo.setFilename(file.getOriginalFilename());
-        photo.setStorageKey(storageKey);
-        photo.setCaption(caption);
-        photo.setCreatedAt(Instant.now().toString());
-        photo.setPreviewUrl(storageService.buildPreviewUrl(photoId));
+            String photoId = UUID.randomUUID().toString();
+            System.out.println("photoId generated = " + photoId);
 
-        photoRepository.save(photo);
+            String storageKey = storageService.storePhoto(file, ownerType.name(), ownerId);
+            System.out.println("storageKey = " + storageKey);
 
-        return ResponseEntity.ok(photo);
+            PhotoRecordEntity photo = new PhotoRecordEntity();
+            photo.setId(photoId);
+            photo.setOwnerType(ownerType);
+            photo.setOwnerId(ownerId);
+            photo.setMachineId(machineId);
+            photo.setTaskId(taskId);
+            photo.setFilename(file.getOriginalFilename());
+            photo.setStorageKey(storageKey);
+            photo.setCaption(caption);
+            photo.setCreatedAt(Instant.now().toString());
+            photo.setPreviewUrl(storageService.buildPreviewUrl(photoId));
+
+            System.out.println("about to save photo record...");
+            photoRepository.save(photo);
+            System.out.println("photo record saved.");
+
+            System.out.println("=== PHOTO UPLOAD END ===");
+
+            return ResponseEntity.ok(photo);
+
+        } catch (Exception e) {
+            System.out.println("=== PHOTO UPLOAD FAILED ===");
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     @GetMapping("/{id}")
