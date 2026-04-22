@@ -28,14 +28,19 @@ public class LocalPhotoStorageService implements PhotoStorageService {
     }
 
     @Override
-    public String storePhoto(MultipartFile file, String draftId) throws IOException {
+    public String storePhoto(MultipartFile file, String ownerType, String ownerId) throws IOException {
         validateFile(file);
 
         String originalFilename = file.getOriginalFilename();
         String extension = getExtension(originalFilename);
         String generatedFilename = UUID.randomUUID() + extension;
 
-        String storageKey = Paths.get("corrective", draftId, generatedFilename)
+        String storageKey = Paths.get(
+                        "photos",
+                        sanitizePathPart(ownerType),
+                        sanitizePathPart(ownerId),
+                        generatedFilename
+                )
                 .toString()
                 .replace("\\", "/");
 
@@ -131,5 +136,13 @@ public class LocalPhotoStorageService implements PhotoStorageService {
         }
 
         return "application/octet-stream";
+    }
+
+    private String sanitizePathPart(String value) {
+        if (value == null || value.isBlank()) {
+            return "unknown";
+        }
+
+        return value.replaceAll("[^a-zA-Z0-9._-]", "_");
     }
 }

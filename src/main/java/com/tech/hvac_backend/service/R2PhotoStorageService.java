@@ -57,10 +57,14 @@ public class R2PhotoStorageService implements PhotoStorageService {
     }
 
     @Override
-    public String storePhoto(MultipartFile file, String ownerId) {
+    public String storePhoto(MultipartFile file, String ownerType, String ownerId) {
         try {
             String extension = extractExtension(file.getOriginalFilename());
-            String key = "photos/" + ownerId + "/" + System.currentTimeMillis() + "-" + UUID.randomUUID() + extension;
+            String key =
+                    "photos/" +
+                            sanitizePathPart(ownerType) + "/" +
+                            sanitizePathPart(ownerId) + "/" +
+                            System.currentTimeMillis() + "-" + UUID.randomUUID() + extension;
 
             PutObjectRequest request = PutObjectRequest.builder()
                     .bucket(bucket)
@@ -108,6 +112,9 @@ public class R2PhotoStorageService implements PhotoStorageService {
         if (lower.endsWith(".webp")) {
             return "image/webp";
         }
+        if (lower.endsWith(".gif")) {
+            return "image/gif";
+        }
 
         return "application/octet-stream";
     }
@@ -123,5 +130,13 @@ public class R2PhotoStorageService implements PhotoStorageService {
         }
 
         return filename.substring(filename.lastIndexOf('.'));
+    }
+
+    private String sanitizePathPart(String value) {
+        if (value == null || value.isBlank()) {
+            return "unknown";
+        }
+
+        return value.replaceAll("[^a-zA-Z0-9._-]", "_");
     }
 }

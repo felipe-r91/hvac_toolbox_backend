@@ -1,8 +1,10 @@
 package com.tech.hvac_backend.service;
 
 import com.tech.hvac_backend.dto.response.MachineTimelineItemResponse;
+import com.tech.hvac_backend.entity.CfrDraftEntity;
 import com.tech.hvac_backend.entity.CorrectiveDraftEntity;
 import com.tech.hvac_backend.entity.PreventiveReportEntity;
+import com.tech.hvac_backend.repository.CfrDraftRepository;
 import com.tech.hvac_backend.repository.CorrectiveDraftRepository;
 import com.tech.hvac_backend.repository.PreventiveReportRepository;
 import org.springframework.stereotype.Service;
@@ -14,13 +16,16 @@ public class MachineReportsQueryService {
 
     private final PreventiveReportRepository preventiveReportRepository;
     private final CorrectiveDraftRepository correctiveDraftRepository;
+    private final CfrDraftRepository cfrDraftRepository;
 
     public MachineReportsQueryService(
             PreventiveReportRepository preventiveReportRepository,
-            CorrectiveDraftRepository correctiveDraftRepository
+            CorrectiveDraftRepository correctiveDraftRepository,
+            CfrDraftRepository cfrDraftRepository
     ) {
         this.preventiveReportRepository = preventiveReportRepository;
         this.correctiveDraftRepository = correctiveDraftRepository;
+        this.cfrDraftRepository = cfrDraftRepository;
     }
 
     public List<MachineTimelineItemResponse> getPreventiveReportsByMachineId(String machineId) {
@@ -37,6 +42,13 @@ public class MachineReportsQueryService {
                 .toList();
     }
 
+    public List<MachineTimelineItemResponse> getCfrReportsByMachineId(String machineId) {
+        return cfrDraftRepository.findByMachineIdOrderByCreatedAtDesc(machineId)
+                .stream()
+                .map(this::mapCfr)
+                .toList();
+    }
+
     private MachineTimelineItemResponse mapPreventive(PreventiveReportEntity report) {
         String summary = report.getFailureNotes();
         if (summary == null || summary.isBlank()) {
@@ -45,11 +57,11 @@ public class MachineReportsQueryService {
 
         return new MachineTimelineItemResponse(
                 report.getId(),
+                "preventive",
                 "health_check",
-                report.getReportCategory() != null ? report.getReportCategory() : "health_check",
                 report.getCompletedAt(),
                 report.getOverallStatus(),
-                "Health check completed",
+                "Health Check",
                 summary,
                 report.getFailureComponent(),
                 report.getFailureMode(),
@@ -69,30 +81,44 @@ public class MachineReportsQueryService {
 
         String summary = draft.getProblemSummary();
         if (summary == null || summary.isBlank()) {
-            summary = "Corrective report.";
-        }
-
-        String reportCategory =
-                draft.getReportCategory() != null ? draft.getReportCategory() : "corrective";
-
-        String title = "Corrective report";
-        if ("cfr".equalsIgnoreCase(reportCategory)) {
-            title = "Conditions found report";
+            summary = "Corrective maintenance record.";
         }
 
         return new MachineTimelineItemResponse(
                 draft.getId(),
                 "corrective",
-                reportCategory,
+                "corrective",
                 draft.getCreatedAt(),
                 status,
-                title,
+                "Corrective Maintenance",
                 summary,
                 draft.getFailureComponent(),
                 draft.getFailureMode(),
                 draft.getFailureCode(),
                 null,
                 draft.getSourcePreventiveReportId()
+        );
+    }
+
+    private MachineTimelineItemResponse mapCfr(CfrDraftEntity draft) {
+        String summary = draft.getConditionFound();
+        if (summary == null || summary.isBlank()) {
+            summary = "Conditions found report.";
+        }
+
+        return new MachineTimelineItemResponse(
+                draft.getId(),
+                "cfr",
+                "cfr",
+                draft.getCreatedAt(),
+                draft.getMachineStatus(),
+                "Conditions Found Report",
+                summary,
+                draft.getFailureComponent(),
+                draft.getFailureMode(),
+                draft.getFailureCode(),
+                null,
+                null
         );
     }
 }

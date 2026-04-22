@@ -5,7 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface PhotoStorageService {
 
-    String storePhoto(MultipartFile file, String draftId) throws Exception;
+    String storePhoto(MultipartFile file, String ownerType, String ownerId) throws Exception;
 
     Resource loadPhotoAsResource(String storageKey) throws Exception;
 

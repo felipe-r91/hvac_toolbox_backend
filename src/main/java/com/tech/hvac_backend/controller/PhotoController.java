@@ -43,7 +43,7 @@ public class PhotoController {
         validatePhotoOwnership(ownerType, ownerId, machineId, taskId);
 
         String photoId = UUID.randomUUID().toString();
-        String storageKey = storageService.storePhoto(file, ownerId);
+        String storageKey = storageService.storePhoto(file, ownerType.name(), ownerId);
 
         PhotoRecordEntity photo = new PhotoRecordEntity();
         photo.setId(photoId);
@@ -98,10 +98,8 @@ public class PhotoController {
             throw new IllegalArgumentException("taskId is required for PREVENTIVE_TASK photos.");
         }
 
-        if (ownerType != PhotoOwnerType.PREVENTIVE_TASK) {
-            if (taskId != null && !taskId.isBlank()) {
-                throw new IllegalArgumentException("taskId must only be sent for PREVENTIVE_TASK photos.");
-            }
+        if (ownerType != PhotoOwnerType.PREVENTIVE_TASK && taskId != null && !taskId.isBlank()) {
+            throw new IllegalArgumentException("taskId must only be sent for PREVENTIVE_TASK photos.");
         }
     }
 }
