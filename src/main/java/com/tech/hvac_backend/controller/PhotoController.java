@@ -43,18 +43,10 @@ public class PhotoController {
         validatePhotoOwnership(ownerType, ownerId, machineId, taskId);
 
         try {
-            System.out.println("=== PHOTO UPLOAD START ===");
-            System.out.println("ownerType = " + ownerType);
-            System.out.println("ownerId = " + ownerId);
-            System.out.println("machineId = " + machineId);
-            System.out.println("taskId = " + taskId);
-            System.out.println("filename = " + file.getOriginalFilename());
 
             String photoId = UUID.randomUUID().toString();
-            System.out.println("photoId generated = " + photoId);
 
             String storageKey = storageService.storePhoto(file, ownerType.name(), ownerId);
-            System.out.println("storageKey = " + storageKey);
 
             PhotoRecordEntity photo = new PhotoRecordEntity();
             photo.setId(photoId);
@@ -68,16 +60,10 @@ public class PhotoController {
             photo.setCreatedAt(Instant.now().toString());
             photo.setPreviewUrl(storageService.buildPreviewUrl(photoId));
 
-            System.out.println("about to save photo record...");
             photoRepository.save(photo);
-            System.out.println("photo record saved.");
-
-            System.out.println("=== PHOTO UPLOAD END ===");
-
             return ResponseEntity.ok(photo);
 
         } catch (Exception e) {
-            System.out.println("=== PHOTO UPLOAD FAILED ===");
             e.printStackTrace();
             throw e;
         }
