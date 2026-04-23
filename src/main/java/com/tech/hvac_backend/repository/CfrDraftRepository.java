@@ -8,4 +8,5 @@ import java.util.List;
 public interface CfrDraftRepository extends JpaRepository<CfrDraftEntity, String> {
     List<CfrDraftEntity> findByMachineIdOrderByCreatedAtDesc(String machineId);
     List<CfrDraftEntity> findAllByOrderByCreatedAtDesc();
+    long countByMachineId(String machineId);
 }

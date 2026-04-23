@@ -9,7 +9,9 @@ import com.tech.hvac_backend.repository.CorrectiveDraftRepository;
 import com.tech.hvac_backend.repository.PreventiveReportRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 public class MachineReportsQueryService {
@@ -49,6 +51,17 @@ public class MachineReportsQueryService {
                 .toList();
     }
 
+    public List<MachineTimelineItemResponse> getTimelineByMachineId(String machineId) {
+        List<MachineTimelineItemResponse> preventive = getPreventiveReportsByMachineId(machineId);
+        List<MachineTimelineItemResponse> corrective = getCorrectiveReportsByMachineId(machineId);
+        List<MachineTimelineItemResponse> cfr = getCfrReportsByMachineId(machineId);
+
+        return Stream.of(preventive, corrective, cfr)
+                .flatMap(List::stream)
+                .sorted(Comparator.comparing(MachineTimelineItemResponse::getDate).reversed())
+                .toList();
+    }
+
     private MachineTimelineItemResponse mapPreventive(PreventiveReportEntity report) {
         String summary = report.getFailureNotes();
         if (summary == null || summary.isBlank()) {
@@ -60,7 +73,7 @@ public class MachineReportsQueryService {
                 "preventive",
                 "health_check",
                 report.getCompletedAt(),
-                report.getOverallStatus(),
+                normalizeMachineStatus(report.getOverallStatus()),
                 "Health Check",
                 summary,
                 report.getFailureComponent(),
@@ -72,13 +85,6 @@ public class MachineReportsQueryService {
     }
 
     private MachineTimelineItemResponse mapCorrective(CorrectiveDraftEntity draft) {
-        String status = "unknown";
-        if ("no".equalsIgnoreCase(draft.getMachineReturnedToService())) {
-            status = "down";
-        } else if ("yes".equalsIgnoreCase(draft.getMachineReturnedToService())) {
-            status = "online";
-        }
-
         String summary = draft.getProblemSummary();
         if (summary == null || summary.isBlank()) {
             summary = "Corrective maintenance record.";
@@ -89,7 +95,7 @@ public class MachineReportsQueryService {
                 "corrective",
                 "corrective",
                 draft.getCreatedAt(),
-                status,
+                mapCorrectiveStatus(draft.getMachineReturnedToService()),
                 "Corrective Maintenance",
                 summary,
                 draft.getFailureComponent(),
@@ -111,7 +117,7 @@ public class MachineReportsQueryService {
                 "cfr",
                 "cfr",
                 draft.getCreatedAt(),
-                draft.getMachineStatus(),
+                normalizeMachineStatus(draft.getMachineStatus()),
                 "Conditions Found Report",
                 summary,
                 draft.getFailureComponent(),
@@ -120,5 +126,28 @@ public class MachineReportsQueryService {
                 null,
                 null
         );
+    }
+
+    private String normalizeMachineStatus(String status) {
+        if (status == null || status.isBlank()) {
+            return "unknown";
+        }
+
+        return switch (status.toLowerCase()) {
+            case "online", "down", "unknown" -> status.toLowerCase();
+            default -> "unknown";
+        };
+    }
+
+    private String mapCorrectiveStatus(String machineReturnedToService) {
+        if (machineReturnedToService == null || machineReturnedToService.isBlank()) {
+            return "unknown";
+        }
+
+        return switch (machineReturnedToService.toLowerCase()) {
+            case "yes" -> "online";
+            case "no" -> "down";
+            default -> "unknown";
+        };
     }
 }

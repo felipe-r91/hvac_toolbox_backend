@@ -34,4 +34,22 @@ public class MachineReportsController {
                 machineReportsQueryService.getCorrectiveReportsByMachineId(machineId)
         );
     }
+
+    @GetMapping("/{machineId}/cfr")
+    public ResponseEntity<List<MachineTimelineItemResponse>> getCfrReports(
+            @PathVariable String machineId
+    ) {
+        return ResponseEntity.ok(
+                machineReportsQueryService.getCfrReportsByMachineId(machineId)
+        );
+    }
+
+    @GetMapping("/{machineId}/timeline")
+    public ResponseEntity<List<MachineTimelineItemResponse>> getFullTimeline(
+            @PathVariable String machineId
+    ) {
+        return ResponseEntity.ok(
+                machineReportsQueryService.getTimelineByMachineId(machineId)
+        );
+    }
 }
