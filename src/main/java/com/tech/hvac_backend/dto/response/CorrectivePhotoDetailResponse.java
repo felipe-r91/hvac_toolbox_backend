@@ -5,11 +5,11 @@ import lombok.Getter;
 @Getter
 public class CorrectivePhotoDetailResponse {
 
-    private String id;
-    private String filename;
-    private String caption;
-    private String createdAt;
-    private String previewUrl;
+    private final String id;
+    private final String filename;
+    private final String caption;
+    private final String createdAt;
+    private final String previewUrl;
 
     public CorrectivePhotoDetailResponse(
             String id,

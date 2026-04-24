@@ -1,21 +1,14 @@
 package com.tech.hvac_backend.service;
 
-import com.tech.hvac_backend.dto.response.CorrectiveDraftDetailResponse;
-import com.tech.hvac_backend.dto.response.CorrectiveDraftSummaryResponse;
-import com.tech.hvac_backend.dto.response.CorrectivePhotoDetailResponse;
-import com.tech.hvac_backend.dto.response.PreventiveReportDetailResponse;
-import com.tech.hvac_backend.dto.response.PreventiveReportSummaryResponse;
-import com.tech.hvac_backend.dto.response.PreventiveReportTaskDetailResponse;
+import com.tech.hvac_backend.dto.response.*;
 import com.tech.hvac_backend.entity.CorrectiveDraftEntity;
 import com.tech.hvac_backend.entity.PhotoOwnerType;
 import com.tech.hvac_backend.entity.PhotoRecordEntity;
 import com.tech.hvac_backend.entity.PreventiveReportEntity;
 import com.tech.hvac_backend.entity.PreventiveReportTaskEntity;
+import com.tech.hvac_backend.entity.CfrDraftEntity;
 import com.tech.hvac_backend.exception.ResourceNotFoundException;
-import com.tech.hvac_backend.repository.CorrectiveDraftRepository;
-import com.tech.hvac_backend.repository.PhotoRecordRepository;
-import com.tech.hvac_backend.repository.PreventiveReportRepository;
-import com.tech.hvac_backend.repository.PreventiveReportTaskRepository;
+import com.tech.hvac_backend.repository.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,17 +20,19 @@ public class ReportQueryService {
     private final PreventiveReportTaskRepository preventiveReportTaskRepository;
     private final CorrectiveDraftRepository correctiveDraftRepository;
     private final PhotoRecordRepository photoRecordRepository;
+    private final CfrDraftRepository cfrDraftRepository;
 
     public ReportQueryService(
             PreventiveReportRepository preventiveReportRepository,
             PreventiveReportTaskRepository preventiveReportTaskRepository,
             CorrectiveDraftRepository correctiveDraftRepository,
-            PhotoRecordRepository photoRecordRepository
+            PhotoRecordRepository photoRecordRepository, CfrDraftRepository cfrDraftRepository
     ) {
         this.preventiveReportRepository = preventiveReportRepository;
         this.preventiveReportTaskRepository = preventiveReportTaskRepository;
         this.correctiveDraftRepository = correctiveDraftRepository;
         this.photoRecordRepository = photoRecordRepository;
+        this.cfrDraftRepository = cfrDraftRepository;
     }
 
     public List<PreventiveReportSummaryResponse> getAllPreventiveReports() {
@@ -51,6 +46,13 @@ public class ReportQueryService {
         return correctiveDraftRepository.findAllByOrderByCreatedAtDesc()
                 .stream()
                 .map(this::mapCorrectiveSummary)
+                .toList();
+    }
+
+    public List<CfrDraftSummaryResponse> getAllCfrDrafts() {
+        return cfrDraftRepository.findAllByOrderByCreatedAtDesc()
+                .stream()
+                .map(this::mapCfrSummary)
                 .toList();
     }
 
@@ -132,6 +134,45 @@ public class ReportQueryService {
         );
     }
 
+    public CfrDraftDetailResponse getCfrDraftById(String id) {
+        CfrDraftEntity draft = cfrDraftRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("CFR draft not found: " + id));
+
+        List<CorrectivePhotoDetailResponse> photos = photoRecordRepository
+                .findByOwnerTypeAndOwnerIdOrderByCreatedAtAsc(PhotoOwnerType.CFR_DRAFT, id)
+                .stream()
+                .map(this::mapCorrectivePhotoDetail)
+                .toList();
+
+        return new CfrDraftDetailResponse(
+                draft.getId(),
+                draft.getVesselId(),
+                draft.getVesselName(),
+                draft.getMachineId(),
+                draft.getMachineTag(),
+                draft.getMachineModel(),
+                draft.getMachineType(),
+                draft.getMachineStarterType(),
+                draft.getMachineLocation(),
+                draft.getCreatedAt(),
+                draft.getMachineStatus(),
+                draft.getReportCategory(),
+                draft.getFailureComponent(),
+                draft.getFailureMode(),
+                draft.getFailureCode(),
+                draft.getConditionFound(),
+                draft.getSymptomsObserved(),
+                draft.getAlarmsObserved(),
+                draft.getOperationalImpact(),
+                draft.getPreliminaryDiagnosis(),
+                draft.getConfirmedCause(),
+                draft.getRecommendations(),
+                draft.getFurtherActionRequired(),
+                draft.isSynced(),
+                photos
+        );
+    }
+
     private PreventiveReportSummaryResponse mapPreventiveSummary(PreventiveReportEntity entity) {
         return new PreventiveReportSummaryResponse(
                 entity.getId(),
@@ -158,8 +199,28 @@ public class ReportQueryService {
                 entity.getFailureMode(),
                 entity.getFailureCode(),
                 entity.getProblemSummary(),
-                entity.getMachineReturnedToService()
+                entity.getMachineReturnedToService(),
+                entity.getReportCategory()
         );
+    }
+
+    private CfrDraftSummaryResponse mapCfrSummary(CfrDraftEntity entity) {
+
+        return new CfrDraftSummaryResponse(
+                entity.getId(),
+                entity.getVesselName(),
+                entity.getMachineTag(),
+                entity.getMachineModel(),
+                entity.getMachineLocation(),
+                entity.getCreatedAt(),
+                entity.getMachineStatus(),
+                entity.getFailureComponent(),
+                entity.getFailureMode(),
+                entity.getFailureCode(),
+                entity.getConditionFound(),
+                entity.getReportCategory()
+        );
+
     }
 
     private PreventiveReportTaskDetailResponse mapPreventiveTaskDetail(PreventiveReportTaskEntity entity) {

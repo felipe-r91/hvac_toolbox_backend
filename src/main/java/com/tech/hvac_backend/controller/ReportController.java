@@ -1,9 +1,6 @@
 package com.tech.hvac_backend.controller;
 
-import com.tech.hvac_backend.dto.response.CorrectiveDraftDetailResponse;
-import com.tech.hvac_backend.dto.response.CorrectiveDraftSummaryResponse;
-import com.tech.hvac_backend.dto.response.PreventiveReportDetailResponse;
-import com.tech.hvac_backend.dto.response.PreventiveReportSummaryResponse;
+import com.tech.hvac_backend.dto.response.*;
 import com.tech.hvac_backend.service.ReportQueryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +27,11 @@ public class ReportController {
         return ResponseEntity.ok(reportQueryService.getAllCorrectiveDrafts());
     }
 
+    @GetMapping("/cfr")
+    public ResponseEntity<List<CfrDraftSummaryResponse>> getCfrDrafts() {
+        return ResponseEntity.ok(reportQueryService.getAllCfrDrafts());
+    }
+
     @GetMapping("/preventive/{id}")
     public ResponseEntity<PreventiveReportDetailResponse> getPreventiveReportById(@PathVariable String id) {
         return ResponseEntity.ok(reportQueryService.getPreventiveReportById(id));
@@ -38,5 +40,10 @@ public class ReportController {
     @GetMapping("/corrective/{id}")
     public ResponseEntity<CorrectiveDraftDetailResponse> getCorrectiveDraftById(@PathVariable String id) {
         return ResponseEntity.ok(reportQueryService.getCorrectiveDraftById(id));
+    }
+
+    @GetMapping("/cfr/{id}")
+    public ResponseEntity<CfrDraftDetailResponse> getCfrDraftById(@PathVariable String id) {
+        return ResponseEntity.ok(reportQueryService.getCfrDraftById(id));
     }
 }
