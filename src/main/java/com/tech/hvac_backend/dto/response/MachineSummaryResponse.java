@@ -15,6 +15,8 @@ public class MachineSummaryResponse {
     private final String starterType;
     private final String location;
 
+    private final String machinePhotoPreviewUrl;
+
     private final String latestReportDate;
     private final String latestReportType;
     private final String latestKnownStatus;
@@ -33,6 +35,7 @@ public class MachineSummaryResponse {
             String type,
             String starterType,
             String location,
+            String machinePhotoPreviewUrl,
             String latestReportDate,
             String latestReportType,
             String latestKnownStatus,
@@ -49,6 +52,7 @@ public class MachineSummaryResponse {
         this.type = type;
         this.starterType = starterType;
         this.location = location;
+        this.machinePhotoPreviewUrl = machinePhotoPreviewUrl;
         this.latestReportDate = latestReportDate;
         this.latestReportType = latestReportType;
         this.latestKnownStatus = latestKnownStatus;

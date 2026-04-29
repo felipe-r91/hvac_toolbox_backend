@@ -1,13 +1,16 @@
 package com.tech.hvac_backend.dto;
 
+import lombok.Getter;
+
 import java.time.Instant;
 
+@Getter
 public class SyncResponse {
 
-    private String status;
-    private String reportId;
-    private String message;
-    private Instant timestamp;
+    private final String status;
+    private final String reportId;
+    private final String message;
+    private final Instant timestamp;
 
     public SyncResponse(String status, String reportId, String message) {
         this.status = status;
@@ -16,19 +19,4 @@ public class SyncResponse {
         this.timestamp = Instant.now();
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public String getReportId() {
-        return reportId;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public Instant getTimestamp() {
-        return timestamp;
-    }
 }

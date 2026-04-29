@@ -14,6 +14,9 @@ public class MachineResponse {
     private final String type;
     private final String starterType;
 
+    private final String machinePhotoId;
+    private final String machinePhotoPreviewUrl;
+
     public MachineResponse(
             String id,
             String vesselId,
@@ -22,7 +25,9 @@ public class MachineResponse {
             String model,
             String serialNumber,
             String type,
-            String starterType
+            String starterType,
+            String machinePhotoId,
+            String machinePhotoPreviewUrl
     ) {
         this.id = id;
         this.vesselId = vesselId;
@@ -32,6 +37,7 @@ public class MachineResponse {
         this.serialNumber = serialNumber;
         this.type = type;
         this.starterType = starterType;
+        this.machinePhotoId = machinePhotoId;
+        this.machinePhotoPreviewUrl = machinePhotoPreviewUrl;
     }
-
 }

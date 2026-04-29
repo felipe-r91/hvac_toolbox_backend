@@ -52,7 +52,9 @@ public class FleetSyncService {
             for (MachineSyncDto machineDto : vesselDto.getMachines()) {
                 validateMachine(machineDto);
 
-                MachineEntity machine = new MachineEntity();
+                MachineEntity machine = machineRepository.findById(machineDto.getId())
+                        .orElseGet(MachineEntity::new);
+
                 machine.setId(machineDto.getId());
                 machine.setVesselId(vesselDto.getId());
                 machine.setLocation(machineDto.getLocation());
@@ -61,6 +63,15 @@ public class FleetSyncService {
                 machine.setSerialNumber(machineDto.getSerialNumber());
                 machine.setType(machineDto.getType());
                 machine.setStarterType(machineDto.getStarterType());
+
+                if (machineDto.getMachinePhotoId() != null) {
+                    machine.setMachinePhotoId(machineDto.getMachinePhotoId());
+                }
+
+                if (machineDto.getMachinePhotoPreviewUrl() != null) {
+                    machine.setMachinePhotoPreviewUrl(machineDto.getMachinePhotoPreviewUrl());
+                }
+
                 machineRepository.save(machine);
             }
         }
@@ -114,7 +125,9 @@ public class FleetSyncService {
                 entity.getModel(),
                 entity.getSerialNumber(),
                 entity.getType(),
-                entity.getStarterType()
+                entity.getStarterType(),
+                entity.getMachinePhotoId(),
+                entity.getMachinePhotoPreviewUrl()
         );
     }
 

@@ -43,6 +43,12 @@ public class MachineEntity {
     @Column(length = 36)
     private String starterTemplateVersionId;
 
+    @Column(length = 36)
+    private String machinePhotoId;
+
+    @Column(length = 4000)
+    private String machinePhotoPreviewUrl;
+
     public MachineEntity() {
     }
 }

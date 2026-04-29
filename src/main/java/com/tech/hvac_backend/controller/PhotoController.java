@@ -1,8 +1,10 @@
 package com.tech.hvac_backend.controller;
 
+import com.tech.hvac_backend.entity.MachineEntity;
 import com.tech.hvac_backend.entity.PhotoOwnerType;
 import com.tech.hvac_backend.entity.PhotoRecordEntity;
 import com.tech.hvac_backend.exception.ResourceNotFoundException;
+import com.tech.hvac_backend.repository.MachineRepository;
 import com.tech.hvac_backend.repository.PhotoRecordRepository;
 import com.tech.hvac_backend.service.PhotoStorageService;
 import org.springframework.core.io.Resource;
@@ -21,13 +23,16 @@ public class PhotoController {
 
     private final PhotoStorageService storageService;
     private final PhotoRecordRepository photoRepository;
+    private final MachineRepository machineRepository;
 
     public PhotoController(
             PhotoStorageService storageService,
-            PhotoRecordRepository photoRepository
+            PhotoRecordRepository photoRepository,
+            MachineRepository machineRepository
     ) {
         this.storageService = storageService;
         this.photoRepository = photoRepository;
+        this.machineRepository = machineRepository;
     }
 
     @PostMapping("/upload")
@@ -42,31 +47,34 @@ public class PhotoController {
 
         validatePhotoOwnership(ownerType, ownerId, machineId, taskId);
 
-        try {
+        String photoId = UUID.randomUUID().toString();
+        String storageKey = storageService.storePhoto(file, ownerType.name(), ownerId);
 
-            String photoId = UUID.randomUUID().toString();
+        PhotoRecordEntity photo = new PhotoRecordEntity();
+        photo.setId(photoId);
+        photo.setOwnerType(ownerType);
+        photo.setOwnerId(ownerId);
+        photo.setMachineId(machineId);
+        photo.setTaskId(taskId);
+        photo.setFilename(file.getOriginalFilename());
+        photo.setStorageKey(storageKey);
+        photo.setCaption(caption);
+        photo.setCreatedAt(Instant.now().toString());
+        photo.setPreviewUrl(storageService.buildPreviewUrl(photoId));
 
-            String storageKey = storageService.storePhoto(file, ownerType.name(), ownerId);
+        photoRepository.save(photo);
 
-            PhotoRecordEntity photo = new PhotoRecordEntity();
-            photo.setId(photoId);
-            photo.setOwnerType(ownerType);
-            photo.setOwnerId(ownerId);
-            photo.setMachineId(machineId);
-            photo.setTaskId(taskId);
-            photo.setFilename(file.getOriginalFilename());
-            photo.setStorageKey(storageKey);
-            photo.setCaption(caption);
-            photo.setCreatedAt(Instant.now().toString());
-            photo.setPreviewUrl(storageService.buildPreviewUrl(photoId));
+        if (ownerType == PhotoOwnerType.MACHINE_PROFILE) {
+            MachineEntity machine = machineRepository.findById(machineId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Machine not found: " + machineId));
 
-            photoRepository.save(photo);
-            return ResponseEntity.ok(photo);
+            machine.setMachinePhotoId(photo.getId());
+            machine.setMachinePhotoPreviewUrl(photo.getPreviewUrl());
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+            machineRepository.save(machine);
         }
+
+        return ResponseEntity.ok(photo);
     }
 
     @GetMapping("/{id}")
@@ -99,6 +107,10 @@ public class PhotoController {
 
         if (machineId == null || machineId.isBlank()) {
             throw new IllegalArgumentException("machineId is required.");
+        }
+
+        if (ownerType == PhotoOwnerType.MACHINE_PROFILE && !ownerId.equals(machineId)) {
+            throw new IllegalArgumentException("For MACHINE_PROFILE photos, ownerId must match machineId.");
         }
 
         if (ownerType == PhotoOwnerType.PREVENTIVE_TASK && (taskId == null || taskId.isBlank())) {

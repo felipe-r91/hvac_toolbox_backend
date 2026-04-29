@@ -1,12 +1,7 @@
 package com.tech.hvac_backend.service;
 
 import com.tech.hvac_backend.dto.response.*;
-import com.tech.hvac_backend.entity.CorrectiveDraftEntity;
-import com.tech.hvac_backend.entity.PhotoOwnerType;
-import com.tech.hvac_backend.entity.PhotoRecordEntity;
-import com.tech.hvac_backend.entity.PreventiveReportEntity;
-import com.tech.hvac_backend.entity.PreventiveReportTaskEntity;
-import com.tech.hvac_backend.entity.CfrDraftEntity;
+import com.tech.hvac_backend.entity.*;
 import com.tech.hvac_backend.exception.ResourceNotFoundException;
 import com.tech.hvac_backend.repository.*;
 import org.springframework.stereotype.Service;
@@ -21,18 +16,20 @@ public class ReportQueryService {
     private final CorrectiveDraftRepository correctiveDraftRepository;
     private final PhotoRecordRepository photoRecordRepository;
     private final CfrDraftRepository cfrDraftRepository;
+    private final MachineRepository machineRepository;
 
     public ReportQueryService(
             PreventiveReportRepository preventiveReportRepository,
             PreventiveReportTaskRepository preventiveReportTaskRepository,
             CorrectiveDraftRepository correctiveDraftRepository,
-            PhotoRecordRepository photoRecordRepository, CfrDraftRepository cfrDraftRepository
+            PhotoRecordRepository photoRecordRepository, CfrDraftRepository cfrDraftRepository, MachineRepository machineRepository
     ) {
         this.preventiveReportRepository = preventiveReportRepository;
         this.preventiveReportTaskRepository = preventiveReportTaskRepository;
         this.correctiveDraftRepository = correctiveDraftRepository;
         this.photoRecordRepository = photoRecordRepository;
         this.cfrDraftRepository = cfrDraftRepository;
+        this.machineRepository = machineRepository;
     }
 
     public List<PreventiveReportSummaryResponse> getAllPreventiveReports() {
@@ -96,6 +93,8 @@ public class ReportQueryService {
         CorrectiveDraftEntity draft = correctiveDraftRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Corrective draft not found: " + id));
 
+        String machinePhotoPreviewUrl = getMachinePhotoPreviewUrl(draft.getMachineId());
+
         List<CorrectivePhotoDetailResponse> photos = photoRecordRepository
                 .findByOwnerTypeAndOwnerIdOrderByCreatedAtAsc(PhotoOwnerType.CORRECTIVE_DRAFT, id)
                 .stream()
@@ -112,6 +111,7 @@ public class ReportQueryService {
                 draft.getMachineType(),
                 draft.getMachineStarterType(),
                 draft.getMachineLocation(),
+                machinePhotoPreviewUrl,
                 draft.getCreatedAt(),
                 draft.getFailureComponent(),
                 draft.getFailureMode(),
@@ -138,6 +138,8 @@ public class ReportQueryService {
         CfrDraftEntity draft = cfrDraftRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("CFR draft not found: " + id));
 
+        String machinePhotoPreviewUrl = getMachinePhotoPreviewUrl(draft.getMachineId());
+
         List<CorrectivePhotoDetailResponse> photos = photoRecordRepository
                 .findByOwnerTypeAndOwnerIdOrderByCreatedAtAsc(PhotoOwnerType.CFR_DRAFT, id)
                 .stream()
@@ -154,6 +156,7 @@ public class ReportQueryService {
                 draft.getMachineType(),
                 draft.getMachineStarterType(),
                 draft.getMachineLocation(),
+                machinePhotoPreviewUrl,
                 draft.getCreatedAt(),
                 draft.getMachineStatus(),
                 draft.getReportCategory(),
@@ -237,6 +240,12 @@ public class ReportQueryService {
                 entity.getUnit(),
                 entity.getCompletedAt()
         );
+    }
+
+    private String getMachinePhotoPreviewUrl(String machineId) {
+        return machineRepository.findById(machineId)
+                .map(MachineEntity::getMachinePhotoPreviewUrl)
+                .orElse(null);
     }
 
     private CorrectivePhotoDetailResponse mapCorrectivePhotoDetail(PhotoRecordEntity entity) {

@@ -120,6 +120,7 @@ public class MachineSummaryService {
                 machine.getType(),
                 machine.getStarterType(),
                 machine.getLocation(),
+                machine.getMachinePhotoPreviewUrl(),
                 latestReportDate,
                 latestReportType,
                 latestKnownStatus,

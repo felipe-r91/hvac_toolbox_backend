@@ -15,6 +15,7 @@ public class CfrDraftDetailResponse {
     private final String machineType;
     private final String machineStarterType;
     private final String machineLocation;
+    private final String machinePhotoPreviewUrl;
     private final String createdAt;
 
     private final String machineStatus;
@@ -47,7 +48,7 @@ public class CfrDraftDetailResponse {
             String machineModel,
             String machineType,
             String machineStarterType,
-            String machineLocation,
+            String machineLocation, String machinePhotoPreviewUrl,
             String createdAt,
             String machineStatus,
             String reportCategory,
@@ -74,6 +75,7 @@ public class CfrDraftDetailResponse {
         this.machineType = machineType;
         this.machineStarterType = machineStarterType;
         this.machineLocation = machineLocation;
+        this.machinePhotoPreviewUrl = machinePhotoPreviewUrl;
         this.createdAt = createdAt;
         this.machineStatus = machineStatus;
         this.reportCategory = reportCategory;

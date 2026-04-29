@@ -15,7 +15,9 @@ public class MachineSyncDto {
     private String type;
     private String starterType;
 
+    private String machinePhotoId;
+    private String machinePhotoPreviewUrl;
+
     public MachineSyncDto() {
     }
-
 }
