@@ -16,6 +16,7 @@ public class CorrectiveDraftDetailResponse {
     private final String machineType;
     private final String machineStarterType;
     private final String machineLocation;
+    private final String machinePhotoId;
     private final String machinePhotoPreviewUrl;
     private final String createdAt;
 
@@ -52,7 +53,7 @@ public class CorrectiveDraftDetailResponse {
             String machineModel,
             String machineType,
             String machineStarterType,
-            String machineLocation, String machinePhotoPreviewUrl,
+            String machineLocation, String machinePhotoId, String machinePhotoPreviewUrl,
             String createdAt,
             String failureComponent,
             String failureMode,
@@ -81,6 +82,7 @@ public class CorrectiveDraftDetailResponse {
         this.machineType = machineType;
         this.machineStarterType = machineStarterType;
         this.machineLocation = machineLocation;
+        this.machinePhotoId = machinePhotoId;
         this.machinePhotoPreviewUrl = machinePhotoPreviewUrl;
         this.createdAt = createdAt;
         this.failureComponent = failureComponent;

@@ -57,6 +57,8 @@ public class ReportQueryService {
         PreventiveReportEntity report = preventiveReportRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Preventive report not found: " + id));
 
+        MachineEntity machine = getMachine(report.getMachineId());
+
         List<PreventiveReportTaskDetailResponse> tasks = preventiveReportTaskRepository
                 .findByReportIdOrderByCategoryAscTaskNameAsc(id)
                 .stream()
@@ -73,6 +75,8 @@ public class ReportQueryService {
                 report.getMachineType(),
                 report.getMachineLocation(),
                 report.getMachineStarterType(),
+                machine != null ? machine.getMachinePhotoId() : null,
+                machine != null ? machine.getMachinePhotoPreviewUrl() : null,
                 report.getCompletedAt(),
                 report.getOverallStatus(),
                 report.getDowntimeReason(),
@@ -93,7 +97,7 @@ public class ReportQueryService {
         CorrectiveDraftEntity draft = correctiveDraftRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Corrective draft not found: " + id));
 
-        String machinePhotoPreviewUrl = getMachinePhotoPreviewUrl(draft.getMachineId());
+        MachineEntity machine = getMachine(draft.getMachineId());
 
         List<CorrectivePhotoDetailResponse> photos = photoRecordRepository
                 .findByOwnerTypeAndOwnerIdOrderByCreatedAtAsc(PhotoOwnerType.CORRECTIVE_DRAFT, id)
@@ -111,7 +115,8 @@ public class ReportQueryService {
                 draft.getMachineType(),
                 draft.getMachineStarterType(),
                 draft.getMachineLocation(),
-                machinePhotoPreviewUrl,
+                machine != null ? machine.getMachinePhotoId() : null,
+                machine != null ? machine.getMachinePhotoPreviewUrl() : null,
                 draft.getCreatedAt(),
                 draft.getFailureComponent(),
                 draft.getFailureMode(),
@@ -126,8 +131,8 @@ public class ReportQueryService {
                 draft.getCorrectiveAction(),
                 draft.getRecommendations(),
                 draft.getFurtherActionRequired(),
-                draft.getMachineReturnedToService(),
                 draft.getSourcePreventiveReportId(),
+                draft.getMachineReturnedToService(),
                 draft.getSynced(),
                 photos,
                 draft.getReportCategory()
@@ -138,7 +143,7 @@ public class ReportQueryService {
         CfrDraftEntity draft = cfrDraftRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("CFR draft not found: " + id));
 
-        String machinePhotoPreviewUrl = getMachinePhotoPreviewUrl(draft.getMachineId());
+        MachineEntity machine = getMachine(draft.getMachineId());
 
         List<CorrectivePhotoDetailResponse> photos = photoRecordRepository
                 .findByOwnerTypeAndOwnerIdOrderByCreatedAtAsc(PhotoOwnerType.CFR_DRAFT, id)
@@ -156,7 +161,8 @@ public class ReportQueryService {
                 draft.getMachineType(),
                 draft.getMachineStarterType(),
                 draft.getMachineLocation(),
-                machinePhotoPreviewUrl,
+                machine != null ? machine.getMachinePhotoId() : null,
+                machine != null ? machine.getMachinePhotoPreviewUrl() : null,
                 draft.getCreatedAt(),
                 draft.getMachineStatus(),
                 draft.getReportCategory(),
@@ -242,10 +248,8 @@ public class ReportQueryService {
         );
     }
 
-    private String getMachinePhotoPreviewUrl(String machineId) {
-        return machineRepository.findById(machineId)
-                .map(MachineEntity::getMachinePhotoPreviewUrl)
-                .orElse(null);
+    private MachineEntity getMachine(String machineId) {
+        return machineRepository.findById(machineId).orElse(null);
     }
 
     private CorrectivePhotoDetailResponse mapCorrectivePhotoDetail(PhotoRecordEntity entity) {

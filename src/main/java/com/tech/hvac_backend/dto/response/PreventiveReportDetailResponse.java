@@ -16,6 +16,8 @@ public class PreventiveReportDetailResponse {
     private final String machineType;
     private final String machineLocation;
     private final String machineStarterType;
+    private final String machinePhotoId;
+    private final String machinePhotoPreviewUrl;
     private final String completedAt;
     private final String overallStatus;
     private final String downtimeReason;
@@ -39,7 +41,7 @@ public class PreventiveReportDetailResponse {
             String machineModel,
             String machineType,
             String machineLocation,
-            String machineStarterType,
+            String machineStarterType, String machinePhotoId, String machinePhotoPreviewUrl,
             String completedAt,
             String overallStatus,
             String downtimeReason,
@@ -64,6 +66,8 @@ public class PreventiveReportDetailResponse {
         this.machineType = machineType;
         this.machineLocation = machineLocation;
         this.machineStarterType = machineStarterType;
+        this.machinePhotoId = machinePhotoId;
+        this.machinePhotoPreviewUrl = machinePhotoPreviewUrl;
         this.completedAt = completedAt;
         this.overallStatus = overallStatus;
         this.downtimeReason = downtimeReason;
