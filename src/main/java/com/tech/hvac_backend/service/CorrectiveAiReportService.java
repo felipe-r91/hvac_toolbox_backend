@@ -1,6 +1,6 @@
 package com.tech.hvac_backend.service;
 
-import com.tech.hvac_backend.dto.ai.CorrectiveAiDraftResponse;
+import com.tech.hvac_backend.dto.ai.AiCustomerReportResponse;
 import com.tech.hvac_backend.entity.CorrectiveDraftEntity;
 import com.tech.hvac_backend.entity.PhotoOwnerType;
 import com.tech.hvac_backend.entity.PhotoRecordEntity;
@@ -12,14 +12,14 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class CorrectiveAiDraftService {
+public class CorrectiveAiReportService {
 
     private final CorrectiveDraftRepository correctiveDraftRepository;
     private final PhotoRecordRepository photoRecordRepository;
     private final CorrectivePromptBuilderService promptBuilderService;
     private final OpenAiReportGenerationService openAiReportGenerationService;
 
-    public CorrectiveAiDraftService(
+    public CorrectiveAiReportService(
             CorrectiveDraftRepository correctiveDraftRepository,
             PhotoRecordRepository photoRecordRepository,
             CorrectivePromptBuilderService promptBuilderService,
@@ -31,7 +31,7 @@ public class CorrectiveAiDraftService {
         this.openAiReportGenerationService = openAiReportGenerationService;
     }
 
-    public CorrectiveAiDraftResponse generate(String draftId) {
+    public AiCustomerReportResponse generate(String draftId) {
         CorrectiveDraftEntity draft = correctiveDraftRepository.findById(draftId)
                 .orElseThrow(() -> new ResourceNotFoundException("Corrective draft not found: " + draftId));
 
@@ -40,6 +40,6 @@ public class CorrectiveAiDraftService {
 
         String prompt = promptBuilderService.buildPrompt(draft, photos);
 
-        return openAiReportGenerationService.generateCorrectiveDraft(prompt);
+        return openAiReportGenerationService.generateCustomerReport(prompt);
     }
 }

@@ -4,7 +4,7 @@ import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.models.responses.ResponseCreateParams;
 import com.openai.models.responses.ResponseOutputText;
-import com.tech.hvac_backend.dto.ai.CorrectiveAiDraftResponse;
+import com.tech.hvac_backend.dto.ai.AiCustomerReportResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
@@ -25,10 +25,46 @@ public class OpenAiReportGenerationService {
         this.objectMapper = objectMapper;
     }
 
-    public CorrectiveAiDraftResponse generateCorrectiveDraft(String prompt) {
+    public AiCustomerReportResponse generateCustomerReport(String prompt) {
+        String finalPrompt = """
+                You must return ONLY valid JSON.
+                Do not use markdown.
+                Do not wrap the response in ```json.
+                Do not add explanations before or after the JSON.
+
+                The JSON must match this structure exactly:
+
+                {
+                  "reportNo": "",
+                  "title": "",
+                  "subtitle": "",
+                  "company": "Johnson Controls",
+                  "branch": "",
+                  "date": "",
+                  "serviceOrder": "",
+                  "engineer": "",
+                  "projectManager": "",
+                  "location": "",
+                  "machineStatus": "",
+                  "severity": "",
+                  "finalCondition": "",
+                  "executiveSummary": "",
+                  "conditionFound": "",
+                  "alarms": [],
+                  "operationalImpact": "",
+                  "probableRootCause": "",
+                  "recommendations": [],
+                  "furtherActionRequired": "",
+                  "ehsStatement": ""
+                }
+
+                User report data:
+                %s
+                """.formatted(prompt);
+
         ResponseCreateParams params = ResponseCreateParams.builder()
                 .model(model)
-                .input(prompt)
+                .input(finalPrompt)
                 .build();
 
         var response = client.responses().create(params);
@@ -42,9 +78,16 @@ public class OpenAiReportGenerationService {
                 .orElseThrow(() -> new IllegalStateException("OpenAI returned no text output"));
 
         try {
-            return objectMapper.readValue(text, CorrectiveAiDraftResponse.class);
+            return objectMapper.readValue(cleanJson(text), AiCustomerReportResponse.class);
         } catch (Exception e) {
             throw new IllegalStateException("Failed to parse OpenAI JSON response: " + text, e);
         }
+    }
+
+    private String cleanJson(String text) {
+        return text
+                .replace("```json", "")
+                .replace("```", "")
+                .trim();
     }
 }
