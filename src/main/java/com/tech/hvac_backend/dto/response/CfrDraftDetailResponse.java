@@ -12,6 +12,7 @@ public class CfrDraftDetailResponse {
     private final String machineId;
     private final String machineTag;
     private final String machineModel;
+    private final String machineSerialNumber;
     private final String machineType;
     private final String machineStarterType;
     private final String machineLocation;
@@ -46,7 +47,7 @@ public class CfrDraftDetailResponse {
             String vesselName,
             String machineId,
             String machineTag,
-            String machineModel,
+            String machineModel, String machineSerialNumber,
             String machineType,
             String machineStarterType,
             String machineLocation, String machinePhotoId, String machinePhotoPreviewUrl,
@@ -73,6 +74,7 @@ public class CfrDraftDetailResponse {
         this.machineId = machineId;
         this.machineTag = machineTag;
         this.machineModel = machineModel;
+        this.machineSerialNumber = machineSerialNumber;
         this.machineType = machineType;
         this.machineStarterType = machineStarterType;
         this.machineLocation = machineLocation;

@@ -1,6 +1,7 @@
 package com.tech.hvac_backend.service;
 
 import com.tech.hvac_backend.entity.CfrDraftEntity;
+import com.tech.hvac_backend.entity.MachineEntity;
 import com.tech.hvac_backend.entity.PhotoRecordEntity;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +11,7 @@ import java.util.stream.Collectors;
 @Service
 public class CfrPromptBuilderService {
 
-    public String buildPrompt(CfrDraftEntity draft, List<PhotoRecordEntity> photos) {
+    public String buildPrompt(CfrDraftEntity draft, MachineEntity machine, List<PhotoRecordEntity> photos) {
         String photoList = photos.stream()
                 .map(photo -> "- Caption: " + nullSafe(photo.getCaption())
                         + " | Filename: " + nullSafe(photo.getFilename()))
@@ -89,6 +90,7 @@ public class CfrPromptBuilderService {
                 Model: %s
                 Type: %s
                 Starter Type: %s
+                Serial Number: %s
                 Location: %s
 
                 Machine Status:
@@ -132,6 +134,7 @@ public class CfrPromptBuilderService {
                 nullSafe(draft.getMachineModel()),
                 nullSafe(draft.getMachineType()),
                 nullSafe(draft.getMachineStarterType()),
+                nullSafe(machine != null ? machine.getSerialNumber() : null),
                 nullSafe(draft.getMachineLocation()),
                 nullSafe(draft.getMachineStatus()),
                 nullSafe(draft.getFailureComponent()),

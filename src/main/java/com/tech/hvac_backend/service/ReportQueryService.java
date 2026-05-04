@@ -158,6 +158,7 @@ public class ReportQueryService {
                 draft.getMachineId(),
                 draft.getMachineTag(),
                 draft.getMachineModel(),
+                machine != null ? machine.getSerialNumber() : null,
                 draft.getMachineType(),
                 draft.getMachineStarterType(),
                 draft.getMachineLocation(),
