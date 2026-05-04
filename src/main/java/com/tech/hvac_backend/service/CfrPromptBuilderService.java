@@ -63,16 +63,22 @@ public class CfrPromptBuilderService {
                 - subtitle should summarize the machine, for example: "AC#1 – Liquid Chiller".
                 - date should be based on the report created date.
                 - location should use the machine location or vessel/location information available.
-                - severity should be "Low", "Medium", or "High" based only on the provided condition and impact.
+                - severity should be "Low", "Medium", or "High" based only on the provided condition, machine status, alarms, and operational impact.
                 - finalCondition should describe the machine final condition based on machine status and report data.
-                - probableRootCause should be determined from the condition found, symptoms, alarms, operational impact, preliminary diagnosis, confirmed cause, failure classification, and recommendations.
+                - executiveSummary should be a concise customer-ready summary of the condition, machine status, risk, and required follow-up.
+                - conditionFound should professionally rewrite the technician's condition found notes without changing the technical meaning.
+                - operationalImpact should be professionally expanded from the provided condition, symptoms, alarms, machine status, and operational impact notes.
+                - The AI may elaborate operationalImpact to make it customer-ready, but must not invent specific downtime, production loss, safety risk, measurements, or operating restrictions not supported by the source data.
+                - probableRootCause should be professionally developed from the condition found, symptoms, alarms, preliminary diagnosis, confirmed cause, failure classification, and recommendations.
                 - If confirmed cause is provided, use it as the primary basis for probableRootCause.
-                - If confirmed cause is not provided, infer the most probable technical cause using only the source report data.
-                - Do not invent specific failed parts, measurements, or events that are not supported by the source report.
+                - If confirmed cause is not provided, infer the most probable technical cause using only the available source report data.
+                - The AI may explain the technical reasoning in a clear field-service tone.
+                - Do not invent specific failed parts, measurements, events, inspections, or test results that are not supported by the source report.
                 - If there is not enough information to determine a probable root cause, return a general statement explaining that the root cause could not be conclusively determined from the available information.
                 - alarms must be an array of strings. If no alarms are provided, return an empty array.
-                - recommendations must be an array of strings. If no recommendations are provided, return an empty array.
-                
+                - recommendations must be an array of strings. The AI may improve wording and split recommendations into clear actionable items, but must not add unrelated repair scope.
+                - If no recommendations are provided, return an empty array.
+                - furtherActionRequired should summarize required follow-up, parts, monitoring, or return visit based only on the source data.
 
                 Source report data:
 
