@@ -3,6 +3,7 @@ package com.tech.hvac_backend.service;
 import com.tech.hvac_backend.entity.CfrDraftEntity;
 import com.tech.hvac_backend.entity.MachineEntity;
 import com.tech.hvac_backend.entity.PhotoRecordEntity;
+import com.tech.hvac_backend.entity.ManualKnowledgeChunkEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,19 +12,43 @@ import java.util.stream.Collectors;
 @Service
 public class CfrPromptBuilderService {
 
+    private final ManualKnowledgeService manualKnowledgeService;
+
+    public CfrPromptBuilderService(ManualKnowledgeService manualKnowledgeService) {
+        this.manualKnowledgeService = manualKnowledgeService;
+    }
+
     public String buildPrompt(CfrDraftEntity draft, MachineEntity machine, List<PhotoRecordEntity> photos) {
+
         String photoList = photos.stream()
                 .map(photo -> "- Caption: " + nullSafe(photo.getCaption())
                         + " | Filename: " + nullSafe(photo.getFilename()))
                 .collect(Collectors.joining("\n"));
 
+        // 🔹 Get manual knowledge
+        List<ManualKnowledgeChunkEntity> relevantChunks =
+                manualKnowledgeService.findRelevantChunks(draft);
+
+        String manualContext =
+                manualKnowledgeService.buildManualContext(relevantChunks);
+
         return """
                 You are generating a customer-ready Johnson Controls Marine & Navy Conditions Found Report.
 
-                Write in a professional technical field-service tone.
-                Do not invent facts.
-                If information is missing, keep the statement general or return an empty string for layout-only fields.
-                Use clear wording suitable for vessel customer review.
+                You are acting as an experienced HVAC/refrigeration engineer reviewing technician notes and OEM manual references.
+
+                Use the technician notes as the primary field evidence.
+                Use the manual reference context to support engineering reasoning, interpret the condition, explain risks, and guide conclusions.
+
+                You may form an engineering judgment when supported by the available data.
+                You may connect symptoms to refrigeration cycle behavior, oil system behavior, control logic, sensors, valves, compressor operation, or electrical systems.
+
+                Write in a professional technical field-service tone suitable for a vessel customer.
+
+                Do not fabricate measurements, alarms, inspections, or completed work.
+                Do not state that a component definitively failed unless supported by technician evidence or confirmed cause.
+                When uncertain, use engineering language such as "likely", "possible", or "consistent with".
+                Do not copy manual text directly; synthesize it into clear engineering explanations.
 
                 You must return ONLY valid JSON.
                 Do not use markdown.
@@ -60,30 +85,39 @@ public class CfrPromptBuilderService {
                 - reportNo, branch, serviceOrder, engineer, projectManager and ehsStatement are layout fields. Return empty string unless explicitly provided.
                 - title must be "Conditions Found Report".
                 - company must be "Johnson Controls".
-                - subtitle should summarize the machine, for example: "AC#1 – Liquid Chiller".
+                - subtitle should summarize the machine (e.g. "AC#1 – Liquid Chiller").
                 - date should be based on the report created date.
-                - location should use the machine location or vessel/location information available.
-                - severity should be "Low", "Medium", or "High" based only on the provided condition, machine status, alarms, and operational impact.
-                - finalCondition should describe the machine final condition based on machine status and report data.
-                - executiveSummary should be a concise customer-ready summary of the condition, machine status, risk, and required follow-up.
-                - conditionFound should professionally rewrite the technician's condition found notes without changing the technical meaning.
-                - operationalImpact should be professionally expanded from the provided condition, symptoms, alarms, machine status, and operational impact notes.
-                - The AI may elaborate operationalImpact to make it customer-ready, but must not invent specific downtime, production loss, safety risk, measurements, or operating restrictions not supported by the source data.
-                - probableRootCause should be professionally developed from the condition found, symptoms, alarms, preliminary diagnosis, confirmed cause, failure classification, and recommendations.
-                - If confirmed cause is provided, use it as the primary basis for probableRootCause.
-                - If confirmed cause is not provided, infer the most probable technical cause using only the available source report data.
-                - The AI may explain the technical reasoning in a clear field-service tone.
-                - Do not invent specific failed parts, measurements, events, inspections, or test results that are not supported by the source report.
-                - If there is not enough information to determine a probable root cause, return a general statement explaining that the root cause could not be conclusively determined from the available information.
-                - alarms must be an array of strings. If no alarms are provided, return an empty array.
-                - recommendations must be an array of strings. The AI may improve wording and split recommendations into clear actionable items, but must not add unrelated repair scope.
-                - If no recommendations are provided, return an empty array.
-                - furtherActionRequired should summarize required follow-up, parts, monitoring, or return visit based only on the source data.
+                - location should use the machine location or vessel information.
+
+                - severity should be "Low", "Medium", or "High" based on condition, machine status, alarms, operational impact, and engineering judgment.
+
+                - finalCondition should describe the actual state of the machine (operational, degraded, unsafe, offline, etc).
+
+                - executiveSummary should clearly explain:
+                  condition + risk + current status + required action.
+
+                - conditionFound must rewrite technician notes clearly without changing meaning.
+
+                - operationalImpact should explain real system impact (capacity loss, instability, safety concern, efficiency loss, etc).
+
+                - probableRootCause should:
+                  use confirmed cause if available,
+                  otherwise infer the most likely technical cause using symptoms + engineering reasoning + manual context.
+
+                - If root cause is uncertain, clearly state that and suggest what should be verified.
+
+                - alarms must be an array of strings.
+
+                - recommendations must:
+                  be clear, actionable, and technically relevant,
+                  may include inspection, adjustment, monitoring, repair, or further diagnostics.
+
+                - furtherActionRequired should summarize next steps, parts, or follow-up visit.
+
+                Manual reference context:
+                %s
 
                 Source report data:
-
-                Report Type:
-                Conditions Found Report
 
                 Created At:
                 %s
@@ -134,6 +168,7 @@ public class CfrPromptBuilderService {
                 Attached Photos:
                 %s
                 """.formatted(
+                manualContext,
                 nullSafe(draft.getCreatedAt()),
                 nullSafe(draft.getVesselName()),
                 nullSafe(draft.getMachineTag()),
