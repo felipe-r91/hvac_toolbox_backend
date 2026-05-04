@@ -59,7 +59,8 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<optional>true</optional>
+			<version>1.18.36</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- Main test starter -->
@@ -78,12 +79,6 @@
 			<artifactId>s3</artifactId>
 			<version>2.31.67</version>
 		</dependency>
-
-		<dependency>
-			<groupId>com.vladmihalcea</groupId>
-			<artifactId>hibernate-types-60</artifactId>
-			<version>2.21.1</version>
-		</dependency>
 	</dependencies>
 
 	<build>
@@ -92,10 +87,13 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
+					<source>21</source>
+					<target>21</target>
 					<annotationProcessorPaths>
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
+							<version>1.18.36</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
