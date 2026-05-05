@@ -1,5 +1,6 @@
 package com.tech.hvac_backend.service;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import java.time.Duration;
 public class R2DocumentStorageService {
 
     private final S3Client s3Client;
+    @Getter
     private final String bucket;
     private final S3Presigner presigner;
 
@@ -98,4 +100,5 @@ public class R2DocumentStorageService {
 
         return presigner.presignGetObject(presignRequest).url().toString();
     }
+
 }

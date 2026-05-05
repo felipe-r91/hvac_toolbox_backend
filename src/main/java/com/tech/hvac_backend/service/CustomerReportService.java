@@ -76,6 +76,8 @@ public class CustomerReportService {
         entity.setCreatedBy(request.getCreatedBy());
         entity.setCreatedAt(LocalDateTime.now());
 
+        entity.setPdfBucket(documentStorageService.getBucket());
+
         return toResponse(customerReportRepository.save(entity));
     }
 
