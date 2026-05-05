@@ -43,7 +43,15 @@ public class CustomerReportService {
         String pdfFilename = buildPdfFilename(request);
         String objectKey = buildObjectKey(request, pdfFilename);
 
+        System.out.println("Creating customer report...");
+
+        System.out.println("sourceReportId=" + request.getSourceReportId());
+
+        System.out.println("file=" + pdfFile.getOriginalFilename() + " size=" + pdfFile.getSize());
+
         documentStorageService.uploadPdf(objectKey, pdfFile);
+
+        System.out.println("PDF uploaded to R2: " + objectKey);
 
         CustomerReportEntity entity = new CustomerReportEntity();
 

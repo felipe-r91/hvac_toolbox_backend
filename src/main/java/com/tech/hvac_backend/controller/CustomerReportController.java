@@ -25,7 +25,12 @@ public class CustomerReportController {
             @RequestPart("metadata") CreateCustomerReportRequest request,
             @RequestPart("file") MultipartFile file
     ) {
-        return customerReportService.createCustomerReport(request, file);
+        try {
+            return customerReportService.createCustomerReport(request, file);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     @GetMapping
