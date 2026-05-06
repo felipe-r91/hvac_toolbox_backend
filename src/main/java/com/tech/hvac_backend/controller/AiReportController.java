@@ -1,6 +1,7 @@
 package com.tech.hvac_backend.controller;
 
 import com.tech.hvac_backend.dto.ai.AiCustomerReportResponse;
+import com.tech.hvac_backend.dto.ai.AiServiceReportResponse;
 import com.tech.hvac_backend.service.CfrAiReportService;
 import com.tech.hvac_backend.service.CorrectiveAiReportService;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public class AiReportController {
     }
 
     @PostMapping("/corrective/{draftId}/generate")
-    public ResponseEntity<AiCustomerReportResponse> generateCorrectiveReport(
+    public ResponseEntity<AiServiceReportResponse> generateCorrectiveReport(
             @PathVariable String draftId
     ) {
         return ResponseEntity.ok(correctiveAiReportService.generate(draftId));
