@@ -22,6 +22,7 @@ public class AiServiceReportResponse {
 
     private String machineStatus;
     private String serviceResult;
+    private String machineReturnedToService;
 
     private String executiveSummary;
     private String conditionFound;
