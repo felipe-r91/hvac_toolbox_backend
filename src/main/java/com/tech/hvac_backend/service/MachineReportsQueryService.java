@@ -3,9 +3,11 @@ package com.tech.hvac_backend.service;
 import com.tech.hvac_backend.dto.response.MachineTimelineItemResponse;
 import com.tech.hvac_backend.entity.CfrDraftEntity;
 import com.tech.hvac_backend.entity.CorrectiveDraftEntity;
+import com.tech.hvac_backend.entity.DailyDraftEntity;
 import com.tech.hvac_backend.entity.PreventiveReportEntity;
 import com.tech.hvac_backend.repository.CfrDraftRepository;
 import com.tech.hvac_backend.repository.CorrectiveDraftRepository;
+import com.tech.hvac_backend.repository.DailyDraftRepository;
 import com.tech.hvac_backend.repository.PreventiveReportRepository;
 import org.springframework.stereotype.Service;
 
@@ -19,15 +21,18 @@ public class MachineReportsQueryService {
     private final PreventiveReportRepository preventiveReportRepository;
     private final CorrectiveDraftRepository correctiveDraftRepository;
     private final CfrDraftRepository cfrDraftRepository;
+    private final DailyDraftRepository dailyDraftRepository;
 
     public MachineReportsQueryService(
             PreventiveReportRepository preventiveReportRepository,
             CorrectiveDraftRepository correctiveDraftRepository,
-            CfrDraftRepository cfrDraftRepository
+            CfrDraftRepository cfrDraftRepository,
+            DailyDraftRepository dailyDraftRepository
     ) {
         this.preventiveReportRepository = preventiveReportRepository;
         this.correctiveDraftRepository = correctiveDraftRepository;
         this.cfrDraftRepository = cfrDraftRepository;
+        this.dailyDraftRepository = dailyDraftRepository;
     }
 
     public List<MachineTimelineItemResponse> getPreventiveReportsByMachineId(String machineId) {
@@ -51,12 +56,20 @@ public class MachineReportsQueryService {
                 .toList();
     }
 
+    public List<MachineTimelineItemResponse> getDailyReportsByMachineId(String machineId) {
+        return dailyDraftRepository.findByMachineIdOrderByCreatedAtDesc(machineId)
+                .stream()
+                .map(this::mapDaily)
+                .toList();
+    }
+
     public List<MachineTimelineItemResponse> getTimelineByMachineId(String machineId) {
         List<MachineTimelineItemResponse> preventive = getPreventiveReportsByMachineId(machineId);
         List<MachineTimelineItemResponse> corrective = getCorrectiveReportsByMachineId(machineId);
         List<MachineTimelineItemResponse> cfr = getCfrReportsByMachineId(machineId);
+        List<MachineTimelineItemResponse> daily = getDailyReportsByMachineId(machineId);
 
-        return Stream.of(preventive, corrective, cfr)
+        return Stream.of(preventive, corrective, cfr, daily)
                 .flatMap(List::stream)
                 .sorted(Comparator.comparing(MachineTimelineItemResponse::getDate).reversed())
                 .toList();
@@ -80,6 +93,31 @@ public class MachineReportsQueryService {
                 report.getFailureMode(),
                 report.getFailureCode(),
                 report.getLinkedCorrectiveDraftId(),
+                null
+        );
+    }
+
+    private MachineTimelineItemResponse mapDaily(DailyDraftEntity draft) {
+        String summary = draft.getWorkConductedToday();
+        if (summary == null || summary.isBlank()) {
+            summary = draft.getFailureNotes();
+        }
+        if (summary == null || summary.isBlank()) {
+            summary = "Daily report completed.";
+        }
+
+        return new MachineTimelineItemResponse(
+                draft.getId(),
+                "daily",
+                "daily",
+                draft.getCreatedAt(),
+                mapDailyStatus(draft.isAlarmPresent()),
+                "Daily Report",
+                summary,
+                draft.getFailureComponent(),
+                draft.getFailureMode(),
+                draft.getFailureCode(),
+                null,
                 null
         );
     }
@@ -149,5 +187,9 @@ public class MachineReportsQueryService {
             case "no" -> "down";
             default -> "unknown";
         };
+    }
+
+    private String mapDailyStatus(boolean alarmPresent) {
+        return alarmPresent ? "unknown" : "online";
     }
 }

@@ -16,19 +16,24 @@ public class ReportQueryService {
     private final CorrectiveDraftRepository correctiveDraftRepository;
     private final PhotoRecordRepository photoRecordRepository;
     private final CfrDraftRepository cfrDraftRepository;
+    private final DailyDraftRepository dailyDraftRepository;
     private final MachineRepository machineRepository;
 
     public ReportQueryService(
             PreventiveReportRepository preventiveReportRepository,
             PreventiveReportTaskRepository preventiveReportTaskRepository,
             CorrectiveDraftRepository correctiveDraftRepository,
-            PhotoRecordRepository photoRecordRepository, CfrDraftRepository cfrDraftRepository, MachineRepository machineRepository
+            PhotoRecordRepository photoRecordRepository,
+            CfrDraftRepository cfrDraftRepository,
+            DailyDraftRepository dailyDraftRepository,
+            MachineRepository machineRepository
     ) {
         this.preventiveReportRepository = preventiveReportRepository;
         this.preventiveReportTaskRepository = preventiveReportTaskRepository;
         this.correctiveDraftRepository = correctiveDraftRepository;
         this.photoRecordRepository = photoRecordRepository;
         this.cfrDraftRepository = cfrDraftRepository;
+        this.dailyDraftRepository = dailyDraftRepository;
         this.machineRepository = machineRepository;
     }
 
@@ -50,6 +55,13 @@ public class ReportQueryService {
         return cfrDraftRepository.findAllByOrderByCreatedAtDesc()
                 .stream()
                 .map(this::mapCfrSummary)
+                .toList();
+    }
+
+    public List<DailyDraftSummaryResponse> getAllDailyDrafts() {
+        return dailyDraftRepository.findAllByOrderByCreatedAtDesc()
+                .stream()
+                .map(this::mapDailySummary)
                 .toList();
     }
 
@@ -183,6 +195,45 @@ public class ReportQueryService {
         );
     }
 
+    public DailyDraftDetailResponse getDailyDraftById(String id) {
+        DailyDraftEntity draft = dailyDraftRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Daily draft not found: " + id));
+
+        MachineEntity machine = getMachine(draft.getMachineId());
+
+        List<CorrectivePhotoDetailResponse> photos = photoRecordRepository
+                .findByOwnerTypeAndOwnerIdOrderByCreatedAtAsc(PhotoOwnerType.DAILY_DRAFT, id)
+                .stream()
+                .map(this::mapCorrectivePhotoDetail)
+                .toList();
+
+        return new DailyDraftDetailResponse(
+                draft.getId(),
+                draft.getVesselId(),
+                draft.getVesselName(),
+                draft.getMachineId(),
+                draft.getMachineTag(),
+                draft.getMachineModel(),
+                machine != null ? machine.getSerialNumber() : null,
+                draft.getMachineType(),
+                draft.getMachineStarterType(),
+                draft.getMachineLocation(),
+                machine != null ? machine.getMachinePhotoId() : null,
+                machine != null ? machine.getMachinePhotoPreviewUrl() : null,
+                draft.getCreatedAt(),
+                draft.isAlarmPresent(),
+                draft.getReportCategory(),
+                draft.getFailureComponent(),
+                draft.getFailureMode(),
+                draft.getFailureCode(),
+                draft.getFailureNotes(),
+                draft.getWorkConductedToday(),
+                draft.getFurtherActions(),
+                draft.getSynced(),
+                photos
+        );
+    }
+
     private PreventiveReportSummaryResponse mapPreventiveSummary(PreventiveReportEntity entity) {
         return new PreventiveReportSummaryResponse(
                 entity.getId(),
@@ -228,6 +279,26 @@ public class ReportQueryService {
                 entity.getFailureMode(),
                 entity.getFailureCode(),
                 entity.getConditionFound(),
+                entity.getReportCategory()
+        );
+
+    }
+
+    private DailyDraftSummaryResponse mapDailySummary(DailyDraftEntity entity) {
+
+        return new DailyDraftSummaryResponse(
+                entity.getId(),
+                entity.getVesselName(),
+                entity.getMachineTag(),
+                entity.getMachineModel(),
+                entity.getMachineLocation(),
+                entity.getCreatedAt(),
+                entity.isAlarmPresent(),
+                entity.getFailureComponent(),
+                entity.getFailureMode(),
+                entity.getFailureCode(),
+                entity.getFailureNotes(),
+                entity.getWorkConductedToday(),
                 entity.getReportCategory()
         );
 

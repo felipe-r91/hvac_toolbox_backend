@@ -44,6 +44,15 @@ public class MachineReportsController {
         );
     }
 
+    @GetMapping("/{machineId}/daily")
+    public ResponseEntity<List<MachineTimelineItemResponse>> getDailyReports(
+            @PathVariable String machineId
+    ) {
+        return ResponseEntity.ok(
+                machineReportsQueryService.getDailyReportsByMachineId(machineId)
+        );
+    }
+
     @GetMapping("/{machineId}/timeline")
     public ResponseEntity<List<MachineTimelineItemResponse>> getFullTimeline(
             @PathVariable String machineId

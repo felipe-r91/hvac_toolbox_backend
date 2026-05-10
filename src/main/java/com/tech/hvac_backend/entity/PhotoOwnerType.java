@@ -5,5 +5,6 @@ public enum PhotoOwnerType {
     CORRECTIVE_DRAFT,
     PREVENTIVE_MACHINE,
     PREVENTIVE_TASK,
-    CFR_DRAFT
+    CFR_DRAFT,
+    DAILY_DRAFT
 }

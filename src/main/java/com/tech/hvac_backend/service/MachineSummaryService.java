@@ -3,12 +3,14 @@ package com.tech.hvac_backend.service;
 import com.tech.hvac_backend.dto.response.MachineSummaryResponse;
 import com.tech.hvac_backend.entity.CfrDraftEntity;
 import com.tech.hvac_backend.entity.CorrectiveDraftEntity;
+import com.tech.hvac_backend.entity.DailyDraftEntity;
 import com.tech.hvac_backend.entity.MachineEntity;
 import com.tech.hvac_backend.entity.PreventiveReportEntity;
 import com.tech.hvac_backend.entity.VesselEntity;
 import com.tech.hvac_backend.exception.ResourceNotFoundException;
 import com.tech.hvac_backend.repository.CfrDraftRepository;
 import com.tech.hvac_backend.repository.CorrectiveDraftRepository;
+import com.tech.hvac_backend.repository.DailyDraftRepository;
 import com.tech.hvac_backend.repository.MachineRepository;
 import com.tech.hvac_backend.repository.PreventiveReportRepository;
 import com.tech.hvac_backend.repository.VesselRepository;
@@ -27,19 +29,22 @@ public class MachineSummaryService {
     private final PreventiveReportRepository preventiveReportRepository;
     private final CorrectiveDraftRepository correctiveDraftRepository;
     private final CfrDraftRepository cfrDraftRepository;
+    private final DailyDraftRepository dailyDraftRepository;
 
     public MachineSummaryService(
             MachineRepository machineRepository,
             VesselRepository vesselRepository,
             PreventiveReportRepository preventiveReportRepository,
             CorrectiveDraftRepository correctiveDraftRepository,
-            CfrDraftRepository cfrDraftRepository
+            CfrDraftRepository cfrDraftRepository,
+            DailyDraftRepository dailyDraftRepository
     ) {
         this.machineRepository = machineRepository;
         this.vesselRepository = vesselRepository;
         this.preventiveReportRepository = preventiveReportRepository;
         this.correctiveDraftRepository = correctiveDraftRepository;
         this.cfrDraftRepository = cfrDraftRepository;
+        this.dailyDraftRepository = dailyDraftRepository;
     }
 
     public List<MachineSummaryResponse> getAllMachineSummaries() {
@@ -67,6 +72,9 @@ public class MachineSummaryService {
 
         List<CfrDraftEntity> cfrDrafts =
                 cfrDraftRepository.findByMachineIdOrderByCreatedAtDesc(machine.getId());
+
+        List<DailyDraftEntity> dailyDrafts =
+                dailyDraftRepository.findByMachineIdOrderByCreatedAtDesc(machine.getId());
 
         String latestReportDate = null;
         String latestReportType = null;
@@ -96,10 +104,19 @@ public class MachineSummaryService {
                         normalizeMachineStatus(draft.getMachineStatus())
                 ));
 
+        Optional<LatestRecord> latestDaily = dailyDrafts.stream()
+                .findFirst()
+                .map(draft -> new LatestRecord(
+                        draft.getCreatedAt(),
+                        "daily",
+                        mapDailyStatus(draft.isAlarmPresent())
+                ));
+
         Optional<LatestRecord> latest = Stream.of(
                         latestPreventive.orElse(null),
                         latestCorrective.orElse(null),
-                        latestCfr.orElse(null)
+                        latestCfr.orElse(null),
+                        latestDaily.orElse(null)
                 )
                 .filter(item -> item != null && item.date() != null && !item.date().isBlank())
                 .max(Comparator.comparing(LatestRecord::date));
@@ -126,7 +143,8 @@ public class MachineSummaryService {
                 latestKnownStatus,
                 preventiveReportRepository.countByMachineId(machine.getId()),
                 correctiveDraftRepository.countByMachineId(machine.getId()),
-                cfrDraftRepository.countByMachineId(machine.getId())
+                cfrDraftRepository.countByMachineId(machine.getId()),
+                dailyDraftRepository.countByMachineId(machine.getId())
         );
     }
 
@@ -162,6 +180,10 @@ public class MachineSummaryService {
             case "online", "down", "unknown" -> status.toLowerCase();
             default -> "unknown";
         };
+    }
+
+    private String mapDailyStatus(boolean alarmPresent) {
+        return alarmPresent ? "unknown" : "online";
     }
 
     private record LatestRecord(String date, String type, String status) {

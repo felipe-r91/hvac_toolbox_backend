@@ -32,6 +32,11 @@ public class ReportController {
         return ResponseEntity.ok(reportQueryService.getAllCfrDrafts());
     }
 
+    @GetMapping("/daily")
+    public ResponseEntity<List<DailyDraftSummaryResponse>> getDailyDrafts() {
+        return ResponseEntity.ok(reportQueryService.getAllDailyDrafts());
+    }
+
     @GetMapping("/preventive/{id}")
     public ResponseEntity<PreventiveReportDetailResponse> getPreventiveReportById(@PathVariable String id) {
         return ResponseEntity.ok(reportQueryService.getPreventiveReportById(id));
@@ -45,5 +50,10 @@ public class ReportController {
     @GetMapping("/cfr/{id}")
     public ResponseEntity<CfrDraftDetailResponse> getCfrDraftById(@PathVariable String id) {
         return ResponseEntity.ok(reportQueryService.getCfrDraftById(id));
+    }
+
+    @GetMapping("/daily/{id}")
+    public ResponseEntity<DailyDraftDetailResponse> getDailyDraftById(@PathVariable String id) {
+        return ResponseEntity.ok(reportQueryService.getDailyDraftById(id));
     }
 }

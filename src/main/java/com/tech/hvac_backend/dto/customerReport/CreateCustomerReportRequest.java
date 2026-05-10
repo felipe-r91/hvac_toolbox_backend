@@ -8,7 +8,7 @@ import java.util.UUID;
 public class CreateCustomerReportRequest {
 
     private UUID sourceReportId;
-    private String sourceReportType; // cfr, corrective, health_check
+    private String sourceReportType; // cfr, corrective, health_check, daily
 
     private String vesselId;
     private String vesselName;

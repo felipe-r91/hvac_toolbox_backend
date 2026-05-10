@@ -5,15 +5,15 @@ import lombok.Getter;
 @Getter
 public class PreventiveReportSummaryResponse {
 
-    private String id;
-    private String vesselName;
-    private String machineTag;
-    private String machineModel;
-    private String machineLocation;
-    private String completedAt;
-    private String overallStatus;
-    private Integer faultCount;
-    private Integer skippedCount;
+    private final String id;
+    private final String vesselName;
+    private final String machineTag;
+    private final String machineModel;
+    private final String machineLocation;
+    private final String completedAt;
+    private final String overallStatus;
+    private final Integer faultCount;
+    private final Integer skippedCount;
 
     public PreventiveReportSummaryResponse(
             String id,

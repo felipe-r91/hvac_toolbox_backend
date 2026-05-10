@@ -24,6 +24,7 @@ public class MachineSummaryResponse {
     private final long preventiveReportCount;
     private final long correctiveDraftCount;
     private final long cfrDraftCount;
+    private final long dailyDraftCount;
 
     public MachineSummaryResponse(
             String machineId,
@@ -41,7 +42,8 @@ public class MachineSummaryResponse {
             String latestKnownStatus,
             long preventiveReportCount,
             long correctiveDraftCount,
-            long cfrDraftCount
+            long cfrDraftCount,
+            long dailyDraftCount
     ) {
         this.machineId = machineId;
         this.vesselId = vesselId;
@@ -59,5 +61,6 @@ public class MachineSummaryResponse {
         this.preventiveReportCount = preventiveReportCount;
         this.correctiveDraftCount = correctiveDraftCount;
         this.cfrDraftCount = cfrDraftCount;
+        this.dailyDraftCount = dailyDraftCount;
     }
 }

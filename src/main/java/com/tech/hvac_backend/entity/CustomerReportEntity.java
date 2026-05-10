@@ -16,14 +16,14 @@ public class CustomerReportEntity {
     @GeneratedValue
     private UUID id;
 
-    // Link to original report (CFR, corrective, etc)
+    // Link to original report (CFR, corrective, daily, etc)
     @Setter
     @Column(name = "source_report_id")
     private UUID sourceReportId;
 
     @Setter
     @Column(name = "source_report_type", nullable = false)
-    private String sourceReportType; // cfr, corrective, health_check
+    private String sourceReportType; // cfr, corrective, health_check, daily
 
     // Vessel info
     @Setter
