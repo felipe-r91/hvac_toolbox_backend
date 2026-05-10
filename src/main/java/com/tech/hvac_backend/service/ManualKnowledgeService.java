@@ -2,6 +2,7 @@ package com.tech.hvac_backend.service;
 
 import com.tech.hvac_backend.entity.CfrDraftEntity;
 import com.tech.hvac_backend.entity.CorrectiveDraftEntity;
+import com.tech.hvac_backend.entity.DailyDraftEntity;
 import com.tech.hvac_backend.entity.ManualKnowledgeChunkEntity;
 import com.tech.hvac_backend.repository.ManualKnowledgeChunkRepository;
 import org.springframework.stereotype.Service;
@@ -58,6 +59,26 @@ public class ManualKnowledgeService {
                 draft.getCorrectiveAction(),
                 draft.getRecommendations(),
                 draft.getFurtherActionRequired()
+        ));
+    }
+
+    public List<ManualKnowledgeChunkEntity> findRelevantChunks(DailyDraftEntity draft) {
+        return findRelevantChunks(new ManualSearchInput(
+                draft.getMachineModel(),
+                draft.getMachineType(),
+                draft.getMachineStarterType(),
+                draft.getFailureComponent(),
+                draft.getFailureMode(),
+                draft.getFailureCode(),
+                draft.getFailureNotes(),
+                null,
+                draft.isAlarmPresent() ? draft.getFailureNotes() : null,
+                null,
+                null,
+                null,
+                draft.getWorkConductedToday(),
+                null,
+                draft.getFurtherActions()
         ));
     }
 

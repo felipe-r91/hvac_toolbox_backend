@@ -5,6 +5,7 @@ import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.models.responses.ResponseCreateParams;
 import com.openai.models.responses.ResponseOutputText;
 import com.tech.hvac_backend.dto.ai.AiCustomerReportResponse;
+import com.tech.hvac_backend.dto.ai.AiDailyReportResponse;
 import com.tech.hvac_backend.dto.ai.AiServiceReportResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,10 @@ public class OpenAiReportGenerationService {
 
     public AiServiceReportResponse generateServiceReport(String prompt) {
         return generateReport(prompt, AiServiceReportResponse.class);
+    }
+
+    public AiDailyReportResponse generateDailyReport(String prompt) {
+        return generateReport(prompt, AiDailyReportResponse.class);
     }
 
     private <T> T generateReport(String prompt, Class<T> responseType) {
