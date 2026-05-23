@@ -42,7 +42,7 @@ public class DailySyncRequest {
     private String workConductedToday;
     private String furtherActions;
 
-    private List<CorrectivePhotoDto> photos;
+    private List<PhotoSyncDto> photos;
 
     private Boolean synced;
 }

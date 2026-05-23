@@ -38,7 +38,6 @@ public class PreventiveSyncRequest {
     private String failureCode;
     private String failureNotes;
     private String linkedServiceReportDraftId;
-    private String linkedCorrectiveDraftId;
     private Integer faultCount;
     private Integer skippedCount;
     private List<PreventiveTaskDto> tasks;

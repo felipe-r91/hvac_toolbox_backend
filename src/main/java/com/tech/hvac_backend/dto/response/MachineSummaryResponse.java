@@ -29,7 +29,7 @@ public class MachineSummaryResponse {
     private final String latestKnownStatus;
 
     private final long preventiveReportCount;
-    private final long correctiveDraftCount;
+    private final long serviceReportDraftCount;
     private final long cfrDraftCount;
     private final long dailyDraftCount;
 
@@ -55,7 +55,7 @@ public class MachineSummaryResponse {
             String latestReportType,
             String latestKnownStatus,
             long preventiveReportCount,
-            long correctiveDraftCount,
+            long serviceReportDraftCount,
             long cfrDraftCount,
             long dailyDraftCount
     ) {
@@ -80,7 +80,7 @@ public class MachineSummaryResponse {
         this.latestReportType = latestReportType;
         this.latestKnownStatus = latestKnownStatus;
         this.preventiveReportCount = preventiveReportCount;
-        this.correctiveDraftCount = correctiveDraftCount;
+        this.serviceReportDraftCount = serviceReportDraftCount;
         this.cfrDraftCount = cfrDraftCount;
         this.dailyDraftCount = dailyDraftCount;
     }

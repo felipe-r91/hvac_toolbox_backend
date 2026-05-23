@@ -1,13 +1,13 @@
 package com.tech.hvac_backend.service;
 
 import com.tech.hvac_backend.dto.ai.AiServiceReportResponse;
-import com.tech.hvac_backend.entity.CorrectiveDraftEntity;
+import com.tech.hvac_backend.entity.ServiceReportDraftEntity;
 import com.tech.hvac_backend.entity.MachineEntity;
 import com.tech.hvac_backend.entity.PhotoOwnerType;
 import com.tech.hvac_backend.entity.PhotoRecordEntity;
 import com.tech.hvac_backend.entity.VesselEntity;
 import com.tech.hvac_backend.exception.ResourceNotFoundException;
-import com.tech.hvac_backend.repository.CorrectiveDraftRepository;
+import com.tech.hvac_backend.repository.ServiceReportDraftRepository;
 import com.tech.hvac_backend.repository.MachineRepository;
 import com.tech.hvac_backend.repository.PhotoRecordRepository;
 import com.tech.hvac_backend.repository.VesselRepository;
@@ -16,24 +16,24 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class CorrectiveAiReportService {
+public class ServiceReportAiReportService {
 
-    private final CorrectiveDraftRepository correctiveDraftRepository;
+    private final ServiceReportDraftRepository serviceReportDraftRepository;
     private final PhotoRecordRepository photoRecordRepository;
-    private final CorrectiveServiceReportPromptBuilderService promptBuilderService;
+    private final ServiceReportPromptBuilderService promptBuilderService;
     private final MachineRepository machineRepository;
     private final VesselRepository vesselRepository;
     private final OpenAiReportGenerationService openAiReportGenerationService;
 
-    public CorrectiveAiReportService(
-            CorrectiveDraftRepository correctiveDraftRepository,
+    public ServiceReportAiReportService(
+            ServiceReportDraftRepository serviceReportDraftRepository,
             PhotoRecordRepository photoRecordRepository,
-            CorrectiveServiceReportPromptBuilderService promptBuilderService,
+            ServiceReportPromptBuilderService promptBuilderService,
             MachineRepository machineRepository,
             VesselRepository vesselRepository,
             OpenAiReportGenerationService openAiReportGenerationService
     ) {
-        this.correctiveDraftRepository = correctiveDraftRepository;
+        this.serviceReportDraftRepository = serviceReportDraftRepository;
         this.photoRecordRepository = photoRecordRepository;
         this.promptBuilderService = promptBuilderService;
         this.machineRepository = machineRepository;
@@ -41,16 +41,16 @@ public class CorrectiveAiReportService {
         this.openAiReportGenerationService = openAiReportGenerationService;
     }
 
-    public AiServiceReportResponse generate(String correctiveId) {
-        CorrectiveDraftEntity draft = correctiveDraftRepository.findById(correctiveId)
+    public AiServiceReportResponse generate(String serviceReportId) {
+        ServiceReportDraftEntity draft = serviceReportDraftRepository.findById(serviceReportId)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Corrective draft not found: " + correctiveId
+                        "Service report draft not found: " + serviceReportId
                 ));
 
         List<PhotoRecordEntity> photos = photoRecordRepository
                 .findByOwnerTypeAndOwnerIdOrderByCreatedAtAsc(
                         PhotoOwnerType.SERVICE_REPORT_DRAFT,
-                        correctiveId
+                        serviceReportId
                 );
 
         MachineEntity machine = machineRepository.findById(draft.getMachineId())

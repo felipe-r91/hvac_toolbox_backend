@@ -3,7 +3,7 @@ package com.tech.hvac_backend.dto.response;
 import lombok.Getter;
 
 @Getter
-public class CorrectivePhotoDetailResponse {
+public class PhotoDetailResponse {
 
     private final String id;
     private final String filename;
@@ -11,7 +11,7 @@ public class CorrectivePhotoDetailResponse {
     private final String createdAt;
     private final String previewUrl;
 
-    public CorrectivePhotoDetailResponse(
+    public PhotoDetailResponse(
             String id,
             String filename,
             String caption,

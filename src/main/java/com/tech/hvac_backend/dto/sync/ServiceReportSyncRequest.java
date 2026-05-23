@@ -37,7 +37,7 @@ public class ServiceReportSyncRequest {
     private String machineReturnedToService;
     private String reportCategory;
 
-    private List<CorrectivePhotoDto> photos;
+    private List<PhotoSyncDto> photos;
     private Boolean synced;
     private String sourcePreventiveReportId;
 }

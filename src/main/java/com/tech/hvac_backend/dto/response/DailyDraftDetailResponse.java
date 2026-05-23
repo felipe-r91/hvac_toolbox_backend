@@ -43,7 +43,7 @@ public class DailyDraftDetailResponse {
     private final String furtherActions;
 
     private final Boolean synced;
-    private final List<CorrectivePhotoDetailResponse> photos;
+    private final List<PhotoDetailResponse> photos;
 
     public DailyDraftDetailResponse(
             String id,
@@ -78,7 +78,7 @@ public class DailyDraftDetailResponse {
             String workConductedToday,
             String furtherActions,
             Boolean synced,
-            List<CorrectivePhotoDetailResponse> photos
+            List<PhotoDetailResponse> photos
     ) {
         this.id = id;
         this.vesselId = vesselId;

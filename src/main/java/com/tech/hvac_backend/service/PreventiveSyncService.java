@@ -102,10 +102,7 @@ public class PreventiveSyncService {
         entity.setFailureComponent(request.getFailureComponent());
         entity.setFailureMode(request.getFailureMode());
         entity.setFailureCode(request.getFailureCode());
-        entity.setLinkedCorrectiveDraftId(firstPresent(
-                request.getLinkedServiceReportDraftId(),
-                request.getLinkedCorrectiveDraftId()
-        ));
+        entity.setLinkedServiceReportDraftId(request.getLinkedServiceReportDraftId());
         entity.setFailureNotes(request.getFailureNotes());
         entity.setFaultCount(defaultInt(request.getFaultCount()));
         entity.setSkippedCount(defaultInt(request.getSkippedCount()));
@@ -135,10 +132,6 @@ public class PreventiveSyncService {
 
     private Integer defaultInt(Integer value) {
         return value == null ? 0 : value;
-    }
-
-    private String firstPresent(String preferred, String fallback) {
-        return isBlank(preferred) ? fallback : preferred;
     }
 
     private boolean isBlank(String value) {

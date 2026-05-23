@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class CorrectiveDraftDetailResponse {
+public class ServiceReportDraftDetailResponse {
 
     private final String id;
     private final String vesselId;
@@ -31,31 +31,16 @@ public class CorrectiveDraftDetailResponse {
     private final String machinePhotoPreviewUrl;
     private final String createdAt;
 
-    private final String failureComponent;
-    private final String failureMode;
-    private final String failureCode;
-
-    private final String problemSummary;
-    private final String conditionFound;
-    private final String symptomsObserved;
-    private final String alarmsObserved;
-    private final String operationalImpact;
-
-    private final String preliminaryDiagnosis;
-    private final String confirmedCause;
-
-    private final String correctiveAction;
+    private final String workPerformed;
     private final String recommendations;
     private final String furtherActionRequired;
-
     private final String sourcePreventiveReportId;
-
     private final String machineReturnedToService;
     private final Boolean synced;
-    private final List<CorrectivePhotoDetailResponse> photos;
+    private final List<PhotoDetailResponse> photos;
     private final String reportCategory;
 
-    public CorrectiveDraftDetailResponse(
+    public ServiceReportDraftDetailResponse(
             String id,
             String vesselId,
             String vesselName,
@@ -79,22 +64,13 @@ public class CorrectiveDraftDetailResponse {
             String machinePhotoId,
             String machinePhotoPreviewUrl,
             String createdAt,
-            String failureComponent,
-            String failureMode,
-            String failureCode,
-            String problemSummary,
-            String conditionFound,
-            String symptomsObserved,
-            String alarmsObserved,
-            String operationalImpact,
-            String preliminaryDiagnosis,
-            String confirmedCause,
-            String correctiveAction,
+            String workPerformed,
             String recommendations,
-            String furtherActionRequired, String sourcePreventiveReportId,
+            String furtherActionRequired,
+            String sourcePreventiveReportId,
             String machineReturnedToService,
             Boolean synced,
-            List<CorrectivePhotoDetailResponse> photos,
+            List<PhotoDetailResponse> photos,
             String reportCategory
     ) {
         this.id = id;
@@ -120,17 +96,7 @@ public class CorrectiveDraftDetailResponse {
         this.machinePhotoId = machinePhotoId;
         this.machinePhotoPreviewUrl = machinePhotoPreviewUrl;
         this.createdAt = createdAt;
-        this.failureComponent = failureComponent;
-        this.failureMode = failureMode;
-        this.failureCode = failureCode;
-        this.problemSummary = problemSummary;
-        this.conditionFound = conditionFound;
-        this.symptomsObserved = symptomsObserved;
-        this.alarmsObserved = alarmsObserved;
-        this.operationalImpact = operationalImpact;
-        this.preliminaryDiagnosis = preliminaryDiagnosis;
-        this.confirmedCause = confirmedCause;
-        this.correctiveAction = correctiveAction;
+        this.workPerformed = workPerformed;
         this.recommendations = recommendations;
         this.furtherActionRequired = furtherActionRequired;
         this.sourcePreventiveReportId = sourcePreventiveReportId;

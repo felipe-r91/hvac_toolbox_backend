@@ -1,9 +1,9 @@
 package com.tech.hvac_backend.service;
 
-import com.tech.hvac_backend.entity.CorrectiveDraftEntity;
 import com.tech.hvac_backend.entity.MachineEntity;
 import com.tech.hvac_backend.entity.ManualKnowledgeChunkEntity;
 import com.tech.hvac_backend.entity.PhotoRecordEntity;
+import com.tech.hvac_backend.entity.ServiceReportDraftEntity;
 import com.tech.hvac_backend.entity.VesselEntity;
 import org.springframework.stereotype.Service;
 
@@ -11,16 +11,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class CorrectiveServiceReportPromptBuilderService {
+public class ServiceReportPromptBuilderService {
 
     private final ManualKnowledgeService manualKnowledgeService;
 
-    public CorrectiveServiceReportPromptBuilderService(ManualKnowledgeService manualKnowledgeService) {
+    public ServiceReportPromptBuilderService(ManualKnowledgeService manualKnowledgeService) {
         this.manualKnowledgeService = manualKnowledgeService;
     }
 
     public String buildPrompt(
-            CorrectiveDraftEntity draft,
+            ServiceReportDraftEntity draft,
             MachineEntity machine,
             VesselEntity vessel,
             List<PhotoRecordEntity> photos
@@ -41,18 +41,18 @@ public class CorrectiveServiceReportPromptBuilderService {
         return """
                 You are generating a customer-ready Johnson Controls Marine & Navy Service Report.
 
-                You are acting as an experienced HVAC/refrigeration field service engineer reviewing technician notes, corrective actions, machine information, alarms, photos, and OEM manual references.
+                You are acting as an experienced HVAC/refrigeration field service engineer reviewing service work notes, machine information, photos, and OEM manual references.
 
                 Use the technician notes as the primary field evidence.
-                Use the manual reference context to support engineering reasoning, explain why the corrective work was technically appropriate, interpret alarms, and describe any remaining risk or follow-up.
+                Use the manual reference context only to support the service work performed, maintenance recommendations, and any required follow-up.
 
                 You may form an engineering judgment when supported by the available data.
-                You may connect symptoms, alarms, diagnosis, confirmed cause, and corrective work to refrigeration cycle behavior, oil system behavior, control logic, sensors, valves, compressor operation, electrical systems, or mechanical condition.
+                You may connect the service work performed to refrigeration cycle behavior, oil system behavior, control logic, sensors, valves, compressor operation, electrical systems, or mechanical condition when the technician notes support it.
 
                 Write in a professional technical field-service tone suitable for a vessel customer.
 
                 Do not fabricate measurements, parts, inspections, test results, or events that are not supported by the provided source data.
-                Do not state that a component definitively failed unless supported by technician evidence or confirmed cause.
+                Do not introduce failure analysis, root cause, fault classification, symptoms, alarms, or diagnosis unless those facts are explicitly present in the service work notes.
                 When uncertain, use engineering language such as "likely", "possible", or "consistent with".
                 Do not copy manual text directly; synthesize it into clear engineering explanations.
 
@@ -107,18 +107,16 @@ public class CorrectiveServiceReportPromptBuilderService {
                 - serviceResult may include a short explanation of remaining restrictions or follow-up when supported by the source data.
 
                 - executiveSummary should summarize:
-                  original problem + confirmed/likely cause + corrective work performed + final service result + remaining follow-up.
+                  service work performed + final service result + remaining follow-up.
 
-                - conditionFound should professionally rewrite the observed condition and fault description without changing the technical meaning.
+                - conditionFound should remain empty unless the service work notes explicitly describe a condition found during the service.
 
-                - alarms must be an array of objects with description and status.
-                - For each alarm or abnormal reading, use status "Solved" only if the source data supports that the alarm was cleared, the cause was corrected, or the machine was returned to service after corrective action.
-                - If it is not clear that an alarm was cleared, leave status as an empty string.
-                - Do not invent alarm codes or abnormal readings.
+                - alarms must be an empty array unless alarms or abnormal readings are explicitly mentioned in the service work notes.
+                - Do not invent alarm codes, abnormal readings, failure causes, or diagnostic classifications.
 
                 - workConducted must be an array of concise action items.
-                - workConducted should be based mainly on correctiveAction, diagnosis, confirmedCause, and machineReturnedToService.
-                - You may split the technician's correctiveAction text into clear bullet-style actions.
+                - workConducted should be based mainly on workPerformed and machineReturnedToService.
+                - You may split the technician's workPerformed text into clear bullet-style actions.
                 - Do not add unrelated repair scope or work that was not performed.
 
                 - recommendations must be an array of clear actionable items.
@@ -133,7 +131,7 @@ public class CorrectiveServiceReportPromptBuilderService {
                 Source report data:
 
                 Report Type:
-                Corrective / Service Report
+                Service Report
 
                 Created At:
                 %s
@@ -159,33 +157,7 @@ public class CorrectiveServiceReportPromptBuilderService {
                 Control System: %s
                 Software Version: %s
 
-                Failure Classification:
-                Component: %s
-                Mode: %s
-                Code: %s
-
-                Problem Summary:
-                %s
-
-                Condition Found:
-                %s
-
-                Symptoms Observed:
-                %s
-
-                Alarms / Abnormal Readings:
-                %s
-
-                Operational Impact:
-                %s
-
-                Preliminary Diagnosis:
-                %s
-
-                Confirmed Cause:
-                %s
-
-                Corrective Action Performed:
+                Work Performed:
                 %s
 
                 Recommendations:
@@ -219,17 +191,7 @@ public class CorrectiveServiceReportPromptBuilderService {
                 nullSafe(prefer(draft.getMachineOilType(), machine != null ? machine.getOilType() : null)),
                 nullSafe(prefer(draft.getMachineControlSystem(), machine != null ? machine.getControlSystem() : null)),
                 nullSafe(prefer(draft.getMachineSoftwareVersion(), machine != null ? machine.getSoftwareVersion() : null)),
-                nullSafe(draft.getFailureComponent()),
-                nullSafe(draft.getFailureMode()),
-                nullSafe(draft.getFailureCode()),
-                nullSafe(draft.getProblemSummary()),
-                nullSafe(draft.getConditionFound()),
-                nullSafe(draft.getSymptomsObserved()),
-                nullSafe(draft.getAlarmsObserved()),
-                nullSafe(draft.getOperationalImpact()),
-                nullSafe(draft.getPreliminaryDiagnosis()),
-                nullSafe(draft.getConfirmedCause()),
-                nullSafe(draft.getCorrectiveAction()),
+                nullSafe(draft.getWorkPerformed()),
                 nullSafe(draft.getRecommendations()),
                 nullSafe(draft.getFurtherActionRequired()),
                 nullSafe(draft.getMachineReturnedToService()),

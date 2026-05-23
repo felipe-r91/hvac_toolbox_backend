@@ -26,12 +26,12 @@ public class MachineReportsController {
         );
     }
 
-    @GetMapping("/{machineId}/corrective")
-    public ResponseEntity<List<MachineTimelineItemResponse>> getCorrectiveReports(
+    @GetMapping("/{machineId}/service-report")
+    public ResponseEntity<List<MachineTimelineItemResponse>> getServiceReports(
             @PathVariable String machineId
     ) {
         return ResponseEntity.ok(
-                machineReportsQueryService.getCorrectiveReportsByMachineId(machineId)
+                machineReportsQueryService.getServiceReportsByMachineId(machineId)
         );
     }
 

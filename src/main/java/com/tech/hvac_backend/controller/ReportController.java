@@ -22,9 +22,9 @@ public class ReportController {
         return ResponseEntity.ok(reportQueryService.getAllPreventiveReports());
     }
 
-    @GetMapping("/corrective")
-    public ResponseEntity<List<CorrectiveDraftSummaryResponse>> getCorrectiveDrafts() {
-        return ResponseEntity.ok(reportQueryService.getAllCorrectiveDrafts());
+    @GetMapping("/service-report")
+    public ResponseEntity<List<ServiceReportDraftSummaryResponse>> getServiceReportDrafts() {
+        return ResponseEntity.ok(reportQueryService.getAllServiceReportDrafts());
     }
 
     @GetMapping("/cfr")
@@ -42,9 +42,9 @@ public class ReportController {
         return ResponseEntity.ok(reportQueryService.getPreventiveReportById(id));
     }
 
-    @GetMapping("/corrective/{id}")
-    public ResponseEntity<CorrectiveDraftDetailResponse> getCorrectiveDraftById(@PathVariable String id) {
-        return ResponseEntity.ok(reportQueryService.getCorrectiveDraftById(id));
+    @GetMapping("/service-report/{id}")
+    public ResponseEntity<ServiceReportDraftDetailResponse> getServiceReportDraftById(@PathVariable String id) {
+        return ResponseEntity.ok(reportQueryService.getServiceReportDraftById(id));
     }
 
     @GetMapping("/cfr/{id}")

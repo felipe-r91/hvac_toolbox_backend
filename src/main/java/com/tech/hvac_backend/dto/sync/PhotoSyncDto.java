@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class CorrectivePhotoDto {
+public class PhotoSyncDto {
 
     private String id;
     private String filename;
@@ -13,7 +13,7 @@ public class CorrectivePhotoDto {
     private String createdAt;
     private String previewUrl;
 
-    public CorrectivePhotoDto() {
+    public PhotoSyncDto() {
     }
 
 }

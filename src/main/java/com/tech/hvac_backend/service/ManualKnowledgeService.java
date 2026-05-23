@@ -1,7 +1,7 @@
 package com.tech.hvac_backend.service;
 
 import com.tech.hvac_backend.entity.CfrDraftEntity;
-import com.tech.hvac_backend.entity.CorrectiveDraftEntity;
+import com.tech.hvac_backend.entity.ServiceReportDraftEntity;
 import com.tech.hvac_backend.entity.DailyDraftEntity;
 import com.tech.hvac_backend.entity.ManualKnowledgeChunkEntity;
 import com.tech.hvac_backend.repository.ManualKnowledgeChunkRepository;
@@ -48,7 +48,7 @@ public class ManualKnowledgeService {
         ));
     }
 
-    public List<ManualKnowledgeChunkEntity> findRelevantChunks(CorrectiveDraftEntity draft) {
+    public List<ManualKnowledgeChunkEntity> findRelevantChunks(ServiceReportDraftEntity draft) {
         return findRelevantChunks(new ManualSearchInput(
                 draft.getMachineModel(),
                 draft.getMachineType(),
@@ -59,16 +59,16 @@ public class ManualKnowledgeService {
                 draft.getMachineSoftwareVersion(),
                 draft.getMachineCompressorType(),
                 draft.getMachineMfg(),
-                draft.getFailureComponent(),
-                draft.getFailureMode(),
-                draft.getFailureCode(),
-                draft.getConditionFound(),
-                draft.getSymptomsObserved(),
-                draft.getAlarmsObserved(),
-                draft.getOperationalImpact(),
-                draft.getPreliminaryDiagnosis(),
-                draft.getConfirmedCause(),
-                draft.getCorrectiveAction(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                draft.getWorkPerformed(),
                 draft.getRecommendations(),
                 draft.getFurtherActionRequired()
         ));
@@ -170,7 +170,7 @@ public class ManualKnowledgeService {
                 clean(input.operationalImpact()),
                 clean(input.preliminaryDiagnosis()),
                 clean(input.confirmedCause()),
-                clean(input.correctiveAction()),
+                clean(input.workPerformed()),
                 clean(input.recommendations()),
                 clean(input.furtherActionRequired())
         ).trim();
@@ -182,10 +182,10 @@ public class ManualKnowledgeService {
         Set<String> topics = new LinkedHashSet<>();
 
         addIf(text, topics, "fault_finding",
-                "fault", "alarm", "trip", "failure", "symptom", "diagnosis", "corrective");
+                "fault", "alarm", "trip", "failure", "symptom", "diagnosis");
 
         addIf(text, topics, "maintenance",
-                "maintenance", "service", "repair", "replace", "inspect", "clean", "adjust", "calibrate", "corrective action");
+                "maintenance", "service", "repair", "replace", "inspect", "clean", "adjust", "calibrate", "work performed");
 
         addIf(text, topics, "compressor",
                 "compressor", "slide valve", "capacity", "rotor", "bearing", "shaft", "seal");
@@ -262,7 +262,7 @@ public class ManualKnowledgeService {
             String operationalImpact,
             String preliminaryDiagnosis,
             String confirmedCause,
-            String correctiveAction,
+            String workPerformed,
             String recommendations,
             String furtherActionRequired
     ) {

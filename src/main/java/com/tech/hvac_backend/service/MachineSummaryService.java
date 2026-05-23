@@ -2,17 +2,17 @@ package com.tech.hvac_backend.service;
 
 import com.tech.hvac_backend.dto.response.MachineSummaryResponse;
 import com.tech.hvac_backend.entity.CfrDraftEntity;
-import com.tech.hvac_backend.entity.CorrectiveDraftEntity;
 import com.tech.hvac_backend.entity.DailyDraftEntity;
 import com.tech.hvac_backend.entity.MachineEntity;
 import com.tech.hvac_backend.entity.PreventiveReportEntity;
+import com.tech.hvac_backend.entity.ServiceReportDraftEntity;
 import com.tech.hvac_backend.entity.VesselEntity;
 import com.tech.hvac_backend.exception.ResourceNotFoundException;
 import com.tech.hvac_backend.repository.CfrDraftRepository;
-import com.tech.hvac_backend.repository.CorrectiveDraftRepository;
 import com.tech.hvac_backend.repository.DailyDraftRepository;
 import com.tech.hvac_backend.repository.MachineRepository;
 import com.tech.hvac_backend.repository.PreventiveReportRepository;
+import com.tech.hvac_backend.repository.ServiceReportDraftRepository;
 import com.tech.hvac_backend.repository.VesselRepository;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +27,7 @@ public class MachineSummaryService {
     private final MachineRepository machineRepository;
     private final VesselRepository vesselRepository;
     private final PreventiveReportRepository preventiveReportRepository;
-    private final CorrectiveDraftRepository correctiveDraftRepository;
+    private final ServiceReportDraftRepository serviceReportDraftRepository;
     private final CfrDraftRepository cfrDraftRepository;
     private final DailyDraftRepository dailyDraftRepository;
 
@@ -35,14 +35,14 @@ public class MachineSummaryService {
             MachineRepository machineRepository,
             VesselRepository vesselRepository,
             PreventiveReportRepository preventiveReportRepository,
-            CorrectiveDraftRepository correctiveDraftRepository,
+            ServiceReportDraftRepository serviceReportDraftRepository,
             CfrDraftRepository cfrDraftRepository,
             DailyDraftRepository dailyDraftRepository
     ) {
         this.machineRepository = machineRepository;
         this.vesselRepository = vesselRepository;
         this.preventiveReportRepository = preventiveReportRepository;
-        this.correctiveDraftRepository = correctiveDraftRepository;
+        this.serviceReportDraftRepository = serviceReportDraftRepository;
         this.cfrDraftRepository = cfrDraftRepository;
         this.dailyDraftRepository = dailyDraftRepository;
     }
@@ -67,8 +67,8 @@ public class MachineSummaryService {
         List<PreventiveReportEntity> preventiveReports =
                 preventiveReportRepository.findByMachineIdOrderByCompletedAtDesc(machine.getId());
 
-        List<CorrectiveDraftEntity> correctiveDrafts =
-                correctiveDraftRepository.findByMachineIdOrderByCreatedAtDesc(machine.getId());
+        List<ServiceReportDraftEntity> serviceReportDrafts =
+                serviceReportDraftRepository.findByMachineIdOrderByCreatedAtDesc(machine.getId());
 
         List<CfrDraftEntity> cfrDrafts =
                 cfrDraftRepository.findByMachineIdOrderByCreatedAtDesc(machine.getId());
@@ -88,12 +88,12 @@ public class MachineSummaryService {
                         normalizePreventiveStatus(report.getOverallStatus())
                 ));
 
-        Optional<LatestRecord> latestCorrective = correctiveDrafts.stream()
+        Optional<LatestRecord> latestServiceReport = serviceReportDrafts.stream()
                 .findFirst()
                 .map(draft -> new LatestRecord(
                         draft.getCreatedAt(),
-                        "corrective",
-                        mapCorrectiveStatus(draft.getMachineReturnedToService())
+                        "service_report",
+                        mapServiceReportStatus(draft.getMachineReturnedToService())
                 ));
 
         Optional<LatestRecord> latestCfr = cfrDrafts.stream()
@@ -114,7 +114,7 @@ public class MachineSummaryService {
 
         Optional<LatestRecord> latest = Stream.of(
                         latestPreventive.orElse(null),
-                        latestCorrective.orElse(null),
+                        latestServiceReport.orElse(null),
                         latestCfr.orElse(null),
                         latestDaily.orElse(null)
                 )
@@ -149,7 +149,7 @@ public class MachineSummaryService {
                 latestReportType,
                 latestKnownStatus,
                 preventiveReportRepository.countByMachineId(machine.getId()),
-                correctiveDraftRepository.countByMachineId(machine.getId()),
+                serviceReportDraftRepository.countByMachineId(machine.getId()),
                 cfrDraftRepository.countByMachineId(machine.getId()),
                 dailyDraftRepository.countByMachineId(machine.getId())
         );
@@ -166,7 +166,7 @@ public class MachineSummaryService {
         };
     }
 
-    private String mapCorrectiveStatus(String machineReturnedToService) {
+    private String mapServiceReportStatus(String machineReturnedToService) {
         if (machineReturnedToService == null || machineReturnedToService.isBlank()) {
             return "unknown";
         }

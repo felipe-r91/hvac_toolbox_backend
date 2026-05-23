@@ -2,13 +2,13 @@ package com.tech.hvac_backend.service;
 
 import com.tech.hvac_backend.dto.response.MachineTimelineItemResponse;
 import com.tech.hvac_backend.entity.CfrDraftEntity;
-import com.tech.hvac_backend.entity.CorrectiveDraftEntity;
 import com.tech.hvac_backend.entity.DailyDraftEntity;
 import com.tech.hvac_backend.entity.PreventiveReportEntity;
+import com.tech.hvac_backend.entity.ServiceReportDraftEntity;
 import com.tech.hvac_backend.repository.CfrDraftRepository;
-import com.tech.hvac_backend.repository.CorrectiveDraftRepository;
 import com.tech.hvac_backend.repository.DailyDraftRepository;
 import com.tech.hvac_backend.repository.PreventiveReportRepository;
+import com.tech.hvac_backend.repository.ServiceReportDraftRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -19,18 +19,18 @@ import java.util.stream.Stream;
 public class MachineReportsQueryService {
 
     private final PreventiveReportRepository preventiveReportRepository;
-    private final CorrectiveDraftRepository correctiveDraftRepository;
+    private final ServiceReportDraftRepository serviceReportDraftRepository;
     private final CfrDraftRepository cfrDraftRepository;
     private final DailyDraftRepository dailyDraftRepository;
 
     public MachineReportsQueryService(
             PreventiveReportRepository preventiveReportRepository,
-            CorrectiveDraftRepository correctiveDraftRepository,
+            ServiceReportDraftRepository serviceReportDraftRepository,
             CfrDraftRepository cfrDraftRepository,
             DailyDraftRepository dailyDraftRepository
     ) {
         this.preventiveReportRepository = preventiveReportRepository;
-        this.correctiveDraftRepository = correctiveDraftRepository;
+        this.serviceReportDraftRepository = serviceReportDraftRepository;
         this.cfrDraftRepository = cfrDraftRepository;
         this.dailyDraftRepository = dailyDraftRepository;
     }
@@ -42,10 +42,10 @@ public class MachineReportsQueryService {
                 .toList();
     }
 
-    public List<MachineTimelineItemResponse> getCorrectiveReportsByMachineId(String machineId) {
-        return correctiveDraftRepository.findByMachineIdOrderByCreatedAtDesc(machineId)
+    public List<MachineTimelineItemResponse> getServiceReportsByMachineId(String machineId) {
+        return serviceReportDraftRepository.findByMachineIdOrderByCreatedAtDesc(machineId)
                 .stream()
-                .map(this::mapCorrective)
+                .map(this::mapServiceReport)
                 .toList();
     }
 
@@ -65,11 +65,11 @@ public class MachineReportsQueryService {
 
     public List<MachineTimelineItemResponse> getTimelineByMachineId(String machineId) {
         List<MachineTimelineItemResponse> preventive = getPreventiveReportsByMachineId(machineId);
-        List<MachineTimelineItemResponse> corrective = getCorrectiveReportsByMachineId(machineId);
+        List<MachineTimelineItemResponse> serviceReports = getServiceReportsByMachineId(machineId);
         List<MachineTimelineItemResponse> cfr = getCfrReportsByMachineId(machineId);
         List<MachineTimelineItemResponse> daily = getDailyReportsByMachineId(machineId);
 
-        return Stream.of(preventive, corrective, cfr, daily)
+        return Stream.of(preventive, serviceReports, cfr, daily)
                 .flatMap(List::stream)
                 .sorted(Comparator.comparing(MachineTimelineItemResponse::getDate).reversed())
                 .toList();
@@ -92,7 +92,7 @@ public class MachineReportsQueryService {
                 report.getFailureComponent(),
                 report.getFailureMode(),
                 report.getFailureCode(),
-                report.getLinkedCorrectiveDraftId(),
+                report.getLinkedServiceReportDraftId(),
                 null
         );
     }
@@ -122,23 +122,23 @@ public class MachineReportsQueryService {
         );
     }
 
-    private MachineTimelineItemResponse mapCorrective(CorrectiveDraftEntity draft) {
-        String summary = draft.getProblemSummary();
+    private MachineTimelineItemResponse mapServiceReport(ServiceReportDraftEntity draft) {
+        String summary = draft.getWorkPerformed();
         if (summary == null || summary.isBlank()) {
-            summary = "Corrective maintenance record.";
+            summary = "Service report completed.";
         }
 
         return new MachineTimelineItemResponse(
                 draft.getId(),
-                "corrective",
-                "corrective",
+                "service_report",
+                "service_report",
                 draft.getCreatedAt(),
-                mapCorrectiveStatus(draft.getMachineReturnedToService()),
-                "Corrective Maintenance",
+                mapServiceReportStatus(draft.getMachineReturnedToService()),
+                "Service Report",
                 summary,
-                draft.getFailureComponent(),
-                draft.getFailureMode(),
-                draft.getFailureCode(),
+                null,
+                null,
+                null,
                 null,
                 draft.getSourcePreventiveReportId()
         );
@@ -177,7 +177,7 @@ public class MachineReportsQueryService {
         };
     }
 
-    private String mapCorrectiveStatus(String machineReturnedToService) {
+    private String mapServiceReportStatus(String machineReturnedToService) {
         if (machineReturnedToService == null || machineReturnedToService.isBlank()) {
             return "unknown";
         }

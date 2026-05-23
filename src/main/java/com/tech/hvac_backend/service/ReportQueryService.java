@@ -13,7 +13,7 @@ public class ReportQueryService {
 
     private final PreventiveReportRepository preventiveReportRepository;
     private final PreventiveReportTaskRepository preventiveReportTaskRepository;
-    private final CorrectiveDraftRepository correctiveDraftRepository;
+    private final ServiceReportDraftRepository serviceReportDraftRepository;
     private final PhotoRecordRepository photoRecordRepository;
     private final CfrDraftRepository cfrDraftRepository;
     private final DailyDraftRepository dailyDraftRepository;
@@ -23,7 +23,7 @@ public class ReportQueryService {
     public ReportQueryService(
             PreventiveReportRepository preventiveReportRepository,
             PreventiveReportTaskRepository preventiveReportTaskRepository,
-            CorrectiveDraftRepository correctiveDraftRepository,
+            ServiceReportDraftRepository serviceReportDraftRepository,
             PhotoRecordRepository photoRecordRepository,
             CfrDraftRepository cfrDraftRepository,
             DailyDraftRepository dailyDraftRepository,
@@ -32,7 +32,7 @@ public class ReportQueryService {
     ) {
         this.preventiveReportRepository = preventiveReportRepository;
         this.preventiveReportTaskRepository = preventiveReportTaskRepository;
-        this.correctiveDraftRepository = correctiveDraftRepository;
+        this.serviceReportDraftRepository = serviceReportDraftRepository;
         this.photoRecordRepository = photoRecordRepository;
         this.cfrDraftRepository = cfrDraftRepository;
         this.dailyDraftRepository = dailyDraftRepository;
@@ -47,10 +47,10 @@ public class ReportQueryService {
                 .toList();
     }
 
-    public List<CorrectiveDraftSummaryResponse> getAllCorrectiveDrafts() {
-        return correctiveDraftRepository.findAllByOrderByCreatedAtDesc()
+    public List<ServiceReportDraftSummaryResponse> getAllServiceReportDrafts() {
+        return serviceReportDraftRepository.findAllByOrderByCreatedAtDesc()
                 .stream()
-                .map(this::mapCorrectiveSummary)
+                .map(this::mapServiceReportSummary)
                 .toList();
     }
 
@@ -111,7 +111,7 @@ public class ReportQueryService {
                 report.getFailureMode(),
                 report.getFailureCode(),
                 report.getFailureNotes(),
-                report.getLinkedCorrectiveDraftId(),
+                report.getLinkedServiceReportDraftId(),
                 report.getFaultCount(),
                 report.getSkippedCount(),
                 report.getSynced(),
@@ -120,20 +120,20 @@ public class ReportQueryService {
         );
     }
 
-    public CorrectiveDraftDetailResponse getCorrectiveDraftById(String id) {
-        CorrectiveDraftEntity draft = correctiveDraftRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Corrective draft not found: " + id));
+    public ServiceReportDraftDetailResponse getServiceReportDraftById(String id) {
+        ServiceReportDraftEntity draft = serviceReportDraftRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Service report draft not found: " + id));
 
         MachineEntity machine = getMachine(draft.getMachineId());
         VesselEntity vessel = getVessel(draft.getVesselId());
 
-        List<CorrectivePhotoDetailResponse> photos = photoRecordRepository
+        List<PhotoDetailResponse> photos = photoRecordRepository
                 .findByOwnerTypeAndOwnerIdOrderByCreatedAtAsc(PhotoOwnerType.SERVICE_REPORT_DRAFT, id)
                 .stream()
-                .map(this::mapCorrectivePhotoDetail)
+                .map(this::mapPhotoDetail)
                 .toList();
 
-        return new CorrectiveDraftDetailResponse(
+        return new ServiceReportDraftDetailResponse(
                 draft.getId(),
                 draft.getVesselId(),
                 draft.getVesselName(),
@@ -157,17 +157,7 @@ public class ReportQueryService {
                 machine != null ? machine.getMachinePhotoId() : null,
                 machine != null ? machine.getMachinePhotoPreviewUrl() : null,
                 draft.getCreatedAt(),
-                draft.getFailureComponent(),
-                draft.getFailureMode(),
-                draft.getFailureCode(),
-                draft.getProblemSummary(),
-                draft.getConditionFound(),
-                draft.getSymptomsObserved(),
-                draft.getAlarmsObserved(),
-                draft.getOperationalImpact(),
-                draft.getPreliminaryDiagnosis(),
-                draft.getConfirmedCause(),
-                draft.getCorrectiveAction(),
+                draft.getWorkPerformed(),
                 draft.getRecommendations(),
                 draft.getFurtherActionRequired(),
                 draft.getSourcePreventiveReportId(),
@@ -185,10 +175,10 @@ public class ReportQueryService {
         MachineEntity machine = getMachine(draft.getMachineId());
         VesselEntity vessel = getVessel(draft.getVesselId());
 
-        List<CorrectivePhotoDetailResponse> photos = photoRecordRepository
+        List<PhotoDetailResponse> photos = photoRecordRepository
                 .findByOwnerTypeAndOwnerIdOrderByCreatedAtAsc(PhotoOwnerType.CFR_DRAFT, id)
                 .stream()
-                .map(this::mapCorrectivePhotoDetail)
+                .map(this::mapPhotoDetail)
                 .toList();
 
         return new CfrDraftDetailResponse(
@@ -241,10 +231,10 @@ public class ReportQueryService {
         MachineEntity machine = getMachine(draft.getMachineId());
         VesselEntity vessel = getVessel(draft.getVesselId());
 
-        List<CorrectivePhotoDetailResponse> photos = photoRecordRepository
+        List<PhotoDetailResponse> photos = photoRecordRepository
                 .findByOwnerTypeAndOwnerIdOrderByCreatedAtAsc(PhotoOwnerType.DAILY_DRAFT, id)
                 .stream()
-                .map(this::mapCorrectivePhotoDetail)
+                .map(this::mapPhotoDetail)
                 .toList();
 
         return new DailyDraftDetailResponse(
@@ -301,10 +291,10 @@ public class ReportQueryService {
         );
     }
 
-    private CorrectiveDraftSummaryResponse mapCorrectiveSummary(CorrectiveDraftEntity entity) {
+    private ServiceReportDraftSummaryResponse mapServiceReportSummary(ServiceReportDraftEntity entity) {
         VesselEntity vessel = getVessel(entity.getVesselId());
 
-        return new CorrectiveDraftSummaryResponse(
+        return new ServiceReportDraftSummaryResponse(
                 entity.getId(),
                 entity.getVesselName(),
                 resolveVesselImo(entity.getVesselImo(), vessel),
@@ -312,10 +302,7 @@ public class ReportQueryService {
                 entity.getMachineModel(),
                 entity.getMachineLocation(),
                 entity.getCreatedAt(),
-                entity.getFailureComponent(),
-                entity.getFailureMode(),
-                entity.getFailureCode(),
-                entity.getProblemSummary(),
+                entity.getWorkPerformed(),
                 entity.getMachineReturnedToService(),
                 entity.getReportCategory()
         );
@@ -402,8 +389,8 @@ public class ReportQueryService {
         return prefer(vesselImo, vessel != null ? vessel.getImoNumber() : null);
     }
 
-    private CorrectivePhotoDetailResponse mapCorrectivePhotoDetail(PhotoRecordEntity entity) {
-        return new CorrectivePhotoDetailResponse(
+    private PhotoDetailResponse mapPhotoDetail(PhotoRecordEntity entity) {
+        return new PhotoDetailResponse(
                 entity.getId(),
                 entity.getFilename(),
                 entity.getCaption(),

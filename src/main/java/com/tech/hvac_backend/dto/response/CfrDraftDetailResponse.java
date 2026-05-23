@@ -50,7 +50,7 @@ public class CfrDraftDetailResponse {
     private final String furtherActionRequired;
 
     private final Boolean synced;
-    private final List<CorrectivePhotoDetailResponse> photos;
+    private final List<PhotoDetailResponse> photos;
 
     public CfrDraftDetailResponse(
             String id,
@@ -90,7 +90,7 @@ public class CfrDraftDetailResponse {
             String recommendations,
             String furtherActionRequired,
             Boolean synced,
-            List<CorrectivePhotoDetailResponse> photos
+            List<PhotoDetailResponse> photos
     ) {
         this.id = id;
         this.vesselId = vesselId;

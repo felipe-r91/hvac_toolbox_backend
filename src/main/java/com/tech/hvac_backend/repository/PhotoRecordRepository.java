@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface PhotoRecordRepository extends JpaRepository<PhotoRecordEntity, String> {
 
-    // Used for corrective drafts and preventive reports
+    // Used for service report drafts and preventive reports
     List<PhotoRecordEntity> findByOwnerTypeAndOwnerIdOrderByCreatedAtAsc(
             PhotoOwnerType ownerType,
             String ownerId
