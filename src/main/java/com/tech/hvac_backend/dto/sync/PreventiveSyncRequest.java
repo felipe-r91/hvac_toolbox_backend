@@ -37,10 +37,13 @@ public class PreventiveSyncRequest {
     private String failureMode;
     private String failureCode;
     private String failureNotes;
+    private String linkedServiceReportDraftId;
     private String linkedCorrectiveDraftId;
     private Integer faultCount;
     private Integer skippedCount;
     private List<PreventiveTaskDto> tasks;
+    private List<String> machinePhotoIds;
+    private Boolean synced;
     private String reportCategory;
 
     public PreventiveSyncRequest() {

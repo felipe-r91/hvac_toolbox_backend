@@ -8,6 +8,8 @@ import com.tech.hvac_backend.dto.sync.CorrectiveSyncRequest;
 import com.tech.hvac_backend.dto.sync.CorrectiveBatchSyncRequest;
 import com.tech.hvac_backend.dto.sync.DailyBatchSyncRequest;
 import com.tech.hvac_backend.dto.sync.DailySyncRequest;
+import com.tech.hvac_backend.dto.sync.ServiceReportBatchSyncRequest;
+import com.tech.hvac_backend.dto.sync.ServiceReportSyncRequest;
 import com.tech.hvac_backend.dto.SyncResponse;
 import com.tech.hvac_backend.service.PreventiveSyncService;
 import com.tech.hvac_backend.service.CorrectiveSyncService;
@@ -153,6 +155,97 @@ public class SyncController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
+    }
+
+    @PostMapping("/service-report")
+    public ResponseEntity<SyncResponse> syncServiceReport(
+            @RequestBody ServiceReportSyncRequest request
+    ) {
+        boolean created = correctiveSyncService.syncServiceReportDraft(request);
+
+        if (!created) {
+            SyncResponse response = new SyncResponse(
+                    "already_synced",
+                    request.getId(),
+                    "Service report draft was already synced previously."
+            );
+
+            return ResponseEntity.ok(response);
+        }
+
+        SyncResponse response = new SyncResponse(
+                "success",
+                request.getId(),
+                "Service report draft synced successfully."
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+    @PostMapping("/service-report/batch")
+    public ResponseEntity<BatchSyncResponse> syncServiceReportBatch(
+            @RequestBody ServiceReportBatchSyncRequest request
+    ) {
+        if (request == null || request.getDrafts() == null || request.getDrafts().isEmpty()) {
+            BatchSyncResponse response = new BatchSyncResponse(
+                    "invalid_request",
+                    0,
+                    0,
+                    0,
+                    0,
+                    List.of()
+            );
+
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        List<BatchSyncItemResponse> items = new ArrayList<>();
+
+        int created = 0;
+        int alreadySynced = 0;
+        int failed = 0;
+
+        for (ServiceReportSyncRequest draft : request.getDrafts()) {
+            try {
+                boolean inserted = correctiveSyncService.syncServiceReportDraft(draft);
+
+                if (inserted) {
+                    created++;
+                    items.add(new BatchSyncItemResponse(
+                            draft.getId(),
+                            "success",
+                            "Service report draft synced successfully."
+                    ));
+                } else {
+                    alreadySynced++;
+                    items.add(new BatchSyncItemResponse(
+                            draft.getId(),
+                            "already_synced",
+                            "Service report draft was already synced previously."
+                    ));
+                }
+            } catch (Exception ex) {
+                failed++;
+                items.add(new BatchSyncItemResponse(
+                        draft != null ? draft.getId() : null,
+                        "failed",
+                        ex.getMessage()
+                ));
+            }
+        }
+
+        BatchSyncResponse response = new BatchSyncResponse(
+                "completed",
+                request.getDrafts().size(),
+                created,
+                alreadySynced,
+                failed,
+                items
+        );
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/corrective/batch")

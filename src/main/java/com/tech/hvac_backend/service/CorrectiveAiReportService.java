@@ -49,7 +49,7 @@ public class CorrectiveAiReportService {
 
         List<PhotoRecordEntity> photos = photoRecordRepository
                 .findByOwnerTypeAndOwnerIdOrderByCreatedAtAsc(
-                        PhotoOwnerType.CORRECTIVE_DRAFT,
+                        PhotoOwnerType.SERVICE_REPORT_DRAFT,
                         correctiveId
                 );
 

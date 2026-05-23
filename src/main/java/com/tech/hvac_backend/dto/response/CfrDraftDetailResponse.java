@@ -31,6 +31,7 @@ public class CfrDraftDetailResponse {
     private final String createdAt;
 
     private final String machineStatus;
+    private final String downtimeReason;
     private final String reportCategory;
 
     private final String failureComponent;
@@ -75,6 +76,7 @@ public class CfrDraftDetailResponse {
             String machinePhotoPreviewUrl,
             String createdAt,
             String machineStatus,
+            String downtimeReason,
             String reportCategory,
             String failureComponent,
             String failureMode,
@@ -114,6 +116,7 @@ public class CfrDraftDetailResponse {
         this.machinePhotoPreviewUrl = machinePhotoPreviewUrl;
         this.createdAt = createdAt;
         this.machineStatus = machineStatus;
+        this.downtimeReason = downtimeReason;
         this.reportCategory = reportCategory;
         this.failureComponent = failureComponent;
         this.failureMode = failureMode;

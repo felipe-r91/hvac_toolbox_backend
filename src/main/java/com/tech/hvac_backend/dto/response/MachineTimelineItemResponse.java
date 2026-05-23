@@ -17,7 +17,7 @@ public class MachineTimelineItemResponse {
     private final String failureMode;
     private final String failureCode;
 
-    private final String linkedCorrectiveDraftId;
+    private final String linkedServiceReportDraftId;
     private final String sourcePreventiveReportId;
 
     public MachineTimelineItemResponse(
@@ -31,7 +31,7 @@ public class MachineTimelineItemResponse {
             String failureComponent,
             String failureMode,
             String failureCode,
-            String linkedCorrectiveDraftId,
+            String linkedServiceReportDraftId,
             String sourcePreventiveReportId
     ) {
         this.id = id;
@@ -44,7 +44,7 @@ public class MachineTimelineItemResponse {
         this.failureComponent = failureComponent;
         this.failureMode = failureMode;
         this.failureCode = failureCode;
-        this.linkedCorrectiveDraftId = linkedCorrectiveDraftId;
+        this.linkedServiceReportDraftId = linkedServiceReportDraftId;
         this.sourcePreventiveReportId = sourcePreventiveReportId;
     }
 }

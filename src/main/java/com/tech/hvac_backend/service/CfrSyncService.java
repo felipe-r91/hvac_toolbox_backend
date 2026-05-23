@@ -42,6 +42,7 @@ public class CfrSyncService {
         entity.setMachineMfg(request.getMachineMfg());
         entity.setCreatedAt(request.getCreatedAt());
         entity.setMachineStatus(request.getMachineStatus());
+        entity.setDowntimeReason(request.getDowntimeReason());
         entity.setReportCategory(
                 request.getReportCategory() == null || request.getReportCategory().isBlank()
                         ? "cfr"

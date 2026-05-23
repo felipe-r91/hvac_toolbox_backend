@@ -32,6 +32,7 @@ public class CfrSyncRequest {
     private String createdAt;
 
     private String machineStatus;
+    private String downtimeReason;
     private String reportCategory;
 
     private String failureComponent;
@@ -48,6 +49,8 @@ public class CfrSyncRequest {
     private String furtherActionRequired;
 
     private List<CfrPhotoRequest> photos;
+
+    private Boolean synced;
 
     @Getter
     @Setter

@@ -60,6 +60,9 @@ public class CfrDraftEntity {
     @Column(nullable = false)
     private String machineStatus; // online | down
 
+    @Column(columnDefinition = "TEXT")
+    private String downtimeReason;
+
     @Column(nullable = false)
     private String reportCategory; // cfr
 

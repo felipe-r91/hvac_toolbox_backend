@@ -128,7 +128,7 @@ public class ReportQueryService {
         VesselEntity vessel = getVessel(draft.getVesselId());
 
         List<CorrectivePhotoDetailResponse> photos = photoRecordRepository
-                .findByOwnerTypeAndOwnerIdOrderByCreatedAtAsc(PhotoOwnerType.CORRECTIVE_DRAFT, id)
+                .findByOwnerTypeAndOwnerIdOrderByCreatedAtAsc(PhotoOwnerType.SERVICE_REPORT_DRAFT, id)
                 .stream()
                 .map(this::mapCorrectivePhotoDetail)
                 .toList();
@@ -216,6 +216,7 @@ public class ReportQueryService {
                 machine != null ? machine.getMachinePhotoPreviewUrl() : null,
                 draft.getCreatedAt(),
                 draft.getMachineStatus(),
+                draft.getDowntimeReason(),
                 draft.getReportCategory(),
                 draft.getFailureComponent(),
                 draft.getFailureMode(),

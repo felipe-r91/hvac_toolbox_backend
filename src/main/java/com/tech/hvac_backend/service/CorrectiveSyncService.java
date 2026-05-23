@@ -1,6 +1,7 @@
 package com.tech.hvac_backend.service;
 
 import com.tech.hvac_backend.dto.sync.CorrectiveSyncRequest;
+import com.tech.hvac_backend.dto.sync.ServiceReportSyncRequest;
 import com.tech.hvac_backend.entity.CorrectiveDraftEntity;
 import com.tech.hvac_backend.repository.CorrectiveDraftRepository;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,20 @@ public class CorrectiveSyncService {
         }
 
         CorrectiveDraftEntity draftEntity = mapDraft(request);
+        correctiveDraftRepository.save(draftEntity);
+
+        return true;
+    }
+
+    @Transactional
+    public boolean syncServiceReportDraft(ServiceReportSyncRequest request) {
+        validateServiceReportRequest(request);
+
+        if (correctiveDraftRepository.existsById(request.getId())) {
+            return false;
+        }
+
+        CorrectiveDraftEntity draftEntity = mapServiceReportDraft(request);
         correctiveDraftRepository.save(draftEntity);
 
         return true;
@@ -112,6 +127,72 @@ public class CorrectiveSyncService {
 
         entity.setReportCategory(
                 request.getReportCategory() != null ? request.getReportCategory() : "corrective"
+        );
+
+        entity.setSynced(Boolean.TRUE);
+
+        return entity;
+    }
+
+    private void validateServiceReportRequest(ServiceReportSyncRequest request) {
+        if (request == null) {
+            throw new IllegalArgumentException("Request body cannot be null.");
+        }
+
+        if (isBlank(request.getId())) {
+            throw new IllegalArgumentException("Service report id is required.");
+        }
+
+        if (isBlank(request.getVesselId())) {
+            throw new IllegalArgumentException("Vessel id is required.");
+        }
+
+        if (isBlank(request.getMachineId())) {
+            throw new IllegalArgumentException("Machine id is required.");
+        }
+
+        if (isBlank(request.getCreatedAt())) {
+            throw new IllegalArgumentException("CreatedAt is required.");
+        }
+    }
+
+    private CorrectiveDraftEntity mapServiceReportDraft(ServiceReportSyncRequest request) {
+        CorrectiveDraftEntity entity = new CorrectiveDraftEntity();
+        entity.setId(request.getId());
+        entity.setVesselId(request.getVesselId());
+        entity.setVesselName(request.getVesselName());
+        entity.setVesselImo(request.getVesselImo());
+        entity.setVesselType(request.getVesselType());
+        entity.setOwnerCustomer(request.getOwnerCustomer());
+        entity.setVesselContact(request.getVesselContact());
+        entity.setMachineId(request.getMachineId());
+        entity.setMachineTag(request.getMachineTag());
+        entity.setMachineModel(request.getMachineModel());
+        entity.setMachineSerialNumber(request.getMachineSerialNumber());
+        entity.setMachineType(request.getMachineType());
+        entity.setMachineStarterType(request.getMachineStarterType());
+        entity.setMachineLocation(request.getMachineLocation());
+        entity.setMachineRefrigerant(request.getMachineRefrigerant());
+        entity.setMachineOilType(request.getMachineOilType());
+        entity.setMachineControlSystem(request.getMachineControlSystem());
+        entity.setMachineSoftwareVersion(request.getMachineSoftwareVersion());
+        entity.setMachineCompressorType(request.getMachineCompressorType());
+        entity.setMachineMfg(request.getMachineMfg());
+        entity.setCreatedAt(request.getCreatedAt());
+
+        entity.setCorrectiveAction(request.getWorkPerformed());
+        entity.setRecommendations(request.getRecommendations());
+        entity.setFurtherActionRequired(request.getFurtherActionRequired());
+        entity.setSourcePreventiveReportId(request.getSourcePreventiveReportId());
+
+        entity.setMachineReturnedToService(
+                isBlank(request.getMachineReturnedToService())
+                        ? "unknown"
+                        : request.getMachineReturnedToService()
+        );
+
+        entity.setReportCategory(
+                isBlank(request.getReportCategory()) ? "service_report" : request.getReportCategory()
         );
 
         entity.setSynced(Boolean.TRUE);

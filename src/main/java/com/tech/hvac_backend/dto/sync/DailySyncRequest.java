@@ -43,4 +43,6 @@ public class DailySyncRequest {
     private String furtherActions;
 
     private List<CorrectivePhotoDto> photos;
+
+    private Boolean synced;
 }

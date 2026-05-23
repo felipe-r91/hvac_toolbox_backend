@@ -36,7 +36,7 @@ public class PreventiveReportDetailResponse {
     private final String failureMode;
     private final String failureCode;
     private final String failureNotes;
-    private final String linkedCorrectiveDraftId;
+    private final String linkedServiceReportDraftId;
     private final Integer faultCount;
     private final Integer skippedCount;
     private final Boolean synced;
@@ -73,7 +73,7 @@ public class PreventiveReportDetailResponse {
             String failureMode,
             String failureCode,
             String failureNotes,
-            String linkedCorrectiveDraftId,
+            String linkedServiceReportDraftId,
             Integer faultCount,
             Integer skippedCount,
             Boolean synced,
@@ -110,7 +110,7 @@ public class PreventiveReportDetailResponse {
         this.failureMode = failureMode;
         this.failureCode = failureCode;
         this.failureNotes = failureNotes;
-        this.linkedCorrectiveDraftId = linkedCorrectiveDraftId;
+        this.linkedServiceReportDraftId = linkedServiceReportDraftId;
         this.faultCount = faultCount;
         this.skippedCount = skippedCount;
         this.synced = synced;
