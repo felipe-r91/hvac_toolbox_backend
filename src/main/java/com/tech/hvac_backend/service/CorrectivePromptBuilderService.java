@@ -39,6 +39,7 @@ public class CorrectivePromptBuilderService {
 
                 FIELD DATA
                 Vessel: %s
+                Vessel IMO: %s
                 Vessel type: %s
                 Owner / customer: %s
                 Vessel contact: %s
@@ -73,6 +74,7 @@ public class CorrectivePromptBuilderService {
                 %s
                 """.formatted(
                 safe(draft.getVesselName()),
+                safe(draft.getVesselImo()),
                 safe(draft.getVesselType()),
                 safe(draft.getOwnerCustomer()),
                 safe(draft.getVesselContact()),

@@ -10,6 +10,7 @@ public class VesselResponse {
     private final String id;
     private final String name;
     private final String imoNumber;
+    private final String vesselImo;
     private final String vesselType;
     private final String ownerCustomer;
     private final String vesselContact;
@@ -29,6 +30,7 @@ public class VesselResponse {
         this.id = id;
         this.name = name;
         this.imoNumber = imoNumber;
+        this.vesselImo = imoNumber;
         this.vesselType = vesselType;
         this.ownerCustomer = ownerCustomer;
         this.vesselContact = vesselContact;

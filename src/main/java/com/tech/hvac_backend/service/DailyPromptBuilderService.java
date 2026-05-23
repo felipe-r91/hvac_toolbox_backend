@@ -173,7 +173,7 @@ public class DailyPromptBuilderService {
                 manualContext,
                 nullSafe(draft.getCreatedAt()),
                 nullSafe(draft.getVesselName()),
-                nullSafe(vessel != null ? vessel.getImoNumber() : null),
+                nullSafe(resolveVesselImo(draft.getVesselImo(), vessel)),
                 nullSafe(prefer(draft.getVesselType(), vessel != null ? vessel.getVesselType() : null)),
                 nullSafe(prefer(draft.getOwnerCustomer(), vessel != null ? vessel.getOwnerCustomer() : null)),
                 nullSafe(prefer(draft.getVesselContact(), vessel != null ? vessel.getVesselContact() : null)),
@@ -206,5 +206,9 @@ public class DailyPromptBuilderService {
 
     private String prefer(String primary, String fallback) {
         return primary == null || primary.isBlank() ? fallback : primary;
+    }
+
+    private String resolveVesselImo(String vesselImo, VesselEntity vessel) {
+        return prefer(vesselImo, vessel != null ? vessel.getImoNumber() : null);
     }
 }

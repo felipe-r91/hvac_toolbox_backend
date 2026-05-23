@@ -12,6 +12,7 @@ public class VesselSyncDto {
     private String id;
     private String name;
     private String imoNumber;
+    private String vesselImo;
     private String vesselType;
     private String ownerCustomer;
     private String vesselContact;

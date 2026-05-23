@@ -35,6 +35,10 @@ public class CustomerReportEntity {
     private String vesselName;
 
     @Setter
+    @Column(name = "vessel_imo")
+    private String vesselImo;
+
+    @Setter
     @Column(name = "vessel_type")
     private String vesselType;
 

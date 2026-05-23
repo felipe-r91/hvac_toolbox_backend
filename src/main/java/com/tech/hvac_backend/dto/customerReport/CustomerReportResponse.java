@@ -14,6 +14,7 @@ public class CustomerReportResponse {
     private String sourceReportType;
     private String vesselId;
     private String vesselName;
+    private String vesselImo;
     private String vesselType;
     private String ownerCustomer;
     private String vesselContact;

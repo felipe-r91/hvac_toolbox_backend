@@ -7,6 +7,7 @@ public class CfrDraftSummaryResponse {
 
     private final String id;
     private final String vesselName;
+    private final String vesselImo;
     private final String machineTag;
     private final String machineModel;
     private final String machineLocation;
@@ -23,6 +24,7 @@ public class CfrDraftSummaryResponse {
     public CfrDraftSummaryResponse(
             String id,
             String vesselName,
+            String vesselImo,
             String machineTag,
             String machineModel,
             String machineLocation,
@@ -36,6 +38,7 @@ public class CfrDraftSummaryResponse {
     ) {
         this.id = id;
         this.vesselName = vesselName;
+        this.vesselImo = vesselImo;
         this.machineTag = machineTag;
         this.machineModel = machineModel;
         this.machineLocation = machineLocation;

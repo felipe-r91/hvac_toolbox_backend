@@ -9,6 +9,7 @@ public class CfrDraftDetailResponse {
     private final String id;
     private final String vesselId;
     private final String vesselName;
+    private final String vesselImo;
     private final String vesselType;
     private final String ownerCustomer;
     private final String vesselContact;
@@ -54,6 +55,7 @@ public class CfrDraftDetailResponse {
             String id,
             String vesselId,
             String vesselName,
+            String vesselImo,
             String vesselType,
             String ownerCustomer,
             String vesselContact,
@@ -91,6 +93,7 @@ public class CfrDraftDetailResponse {
         this.id = id;
         this.vesselId = vesselId;
         this.vesselName = vesselName;
+        this.vesselImo = vesselImo;
         this.vesselType = vesselType;
         this.ownerCustomer = ownerCustomer;
         this.vesselContact = vesselContact;

@@ -85,6 +85,7 @@ public class ReportQueryService {
                 report.getId(),
                 report.getVesselId(),
                 report.getVesselName(),
+                resolveVesselImo(report.getVesselImo(), vessel),
                 prefer(report.getVesselType(), vessel != null ? vessel.getVesselType() : null),
                 prefer(report.getOwnerCustomer(), vessel != null ? vessel.getOwnerCustomer() : null),
                 prefer(report.getVesselContact(), vessel != null ? vessel.getVesselContact() : null),
@@ -136,6 +137,7 @@ public class ReportQueryService {
                 draft.getId(),
                 draft.getVesselId(),
                 draft.getVesselName(),
+                resolveVesselImo(draft.getVesselImo(), vessel),
                 prefer(draft.getVesselType(), vessel != null ? vessel.getVesselType() : null),
                 prefer(draft.getOwnerCustomer(), vessel != null ? vessel.getOwnerCustomer() : null),
                 prefer(draft.getVesselContact(), vessel != null ? vessel.getVesselContact() : null),
@@ -193,6 +195,7 @@ public class ReportQueryService {
                 draft.getId(),
                 draft.getVesselId(),
                 draft.getVesselName(),
+                resolveVesselImo(draft.getVesselImo(), vessel),
                 prefer(draft.getVesselType(), vessel != null ? vessel.getVesselType() : null),
                 prefer(draft.getOwnerCustomer(), vessel != null ? vessel.getOwnerCustomer() : null),
                 prefer(draft.getVesselContact(), vessel != null ? vessel.getVesselContact() : null),
@@ -247,6 +250,7 @@ public class ReportQueryService {
                 draft.getId(),
                 draft.getVesselId(),
                 draft.getVesselName(),
+                resolveVesselImo(draft.getVesselImo(), vessel),
                 prefer(draft.getVesselType(), vessel != null ? vessel.getVesselType() : null),
                 prefer(draft.getOwnerCustomer(), vessel != null ? vessel.getOwnerCustomer() : null),
                 prefer(draft.getVesselContact(), vessel != null ? vessel.getVesselContact() : null),
@@ -280,9 +284,12 @@ public class ReportQueryService {
     }
 
     private PreventiveReportSummaryResponse mapPreventiveSummary(PreventiveReportEntity entity) {
+        VesselEntity vessel = getVessel(entity.getVesselId());
+
         return new PreventiveReportSummaryResponse(
                 entity.getId(),
                 entity.getVesselName(),
+                resolveVesselImo(entity.getVesselImo(), vessel),
                 entity.getMachineTag(),
                 entity.getMachineModel(),
                 entity.getMachineLocation(),
@@ -294,9 +301,12 @@ public class ReportQueryService {
     }
 
     private CorrectiveDraftSummaryResponse mapCorrectiveSummary(CorrectiveDraftEntity entity) {
+        VesselEntity vessel = getVessel(entity.getVesselId());
+
         return new CorrectiveDraftSummaryResponse(
                 entity.getId(),
                 entity.getVesselName(),
+                resolveVesselImo(entity.getVesselImo(), vessel),
                 entity.getMachineTag(),
                 entity.getMachineModel(),
                 entity.getMachineLocation(),
@@ -311,10 +321,12 @@ public class ReportQueryService {
     }
 
     private CfrDraftSummaryResponse mapCfrSummary(CfrDraftEntity entity) {
+        VesselEntity vessel = getVessel(entity.getVesselId());
 
         return new CfrDraftSummaryResponse(
                 entity.getId(),
                 entity.getVesselName(),
+                resolveVesselImo(entity.getVesselImo(), vessel),
                 entity.getMachineTag(),
                 entity.getMachineModel(),
                 entity.getMachineLocation(),
@@ -330,10 +342,12 @@ public class ReportQueryService {
     }
 
     private DailyDraftSummaryResponse mapDailySummary(DailyDraftEntity entity) {
+        VesselEntity vessel = getVessel(entity.getVesselId());
 
         return new DailyDraftSummaryResponse(
                 entity.getId(),
                 entity.getVesselName(),
+                resolveVesselImo(entity.getVesselImo(), vessel),
                 entity.getMachineTag(),
                 entity.getMachineModel(),
                 entity.getMachineLocation(),
@@ -381,6 +395,10 @@ public class ReportQueryService {
 
     private String prefer(String primary, String fallback) {
         return primary == null || primary.isBlank() ? fallback : primary;
+    }
+
+    private String resolveVesselImo(String vesselImo, VesselEntity vessel) {
+        return prefer(vesselImo, vessel != null ? vessel.getImoNumber() : null);
     }
 
     private CorrectivePhotoDetailResponse mapCorrectivePhotoDetail(PhotoRecordEntity entity) {

@@ -7,6 +7,7 @@ public class PreventiveReportSummaryResponse {
 
     private final String id;
     private final String vesselName;
+    private final String vesselImo;
     private final String machineTag;
     private final String machineModel;
     private final String machineLocation;
@@ -18,6 +19,7 @@ public class PreventiveReportSummaryResponse {
     public PreventiveReportSummaryResponse(
             String id,
             String vesselName,
+            String vesselImo,
             String machineTag,
             String machineModel,
             String machineLocation,
@@ -28,6 +30,7 @@ public class PreventiveReportSummaryResponse {
     ) {
         this.id = id;
         this.vesselName = vesselName;
+        this.vesselImo = vesselImo;
         this.machineTag = machineTag;
         this.machineModel = machineModel;
         this.machineLocation = machineLocation;

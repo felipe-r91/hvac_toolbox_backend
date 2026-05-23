@@ -8,6 +8,7 @@ public class MachineSummaryResponse {
     private final String machineId;
     private final String vesselId;
     private final String vesselName;
+    private final String vesselImo;
     private final String machineTag;
     private final String model;
     private final String serialNumber;
@@ -36,6 +37,7 @@ public class MachineSummaryResponse {
             String machineId,
             String vesselId,
             String vesselName,
+            String vesselImo,
             String machineTag,
             String model,
             String serialNumber,
@@ -60,6 +62,7 @@ public class MachineSummaryResponse {
         this.machineId = machineId;
         this.vesselId = vesselId;
         this.vesselName = vesselName;
+        this.vesselImo = vesselImo;
         this.machineTag = machineTag;
         this.model = model;
         this.serialNumber = serialNumber;

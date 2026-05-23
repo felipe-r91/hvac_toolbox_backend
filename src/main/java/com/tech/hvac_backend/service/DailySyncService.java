@@ -56,6 +56,7 @@ public class DailySyncService {
         entity.setId(request.getId());
         entity.setVesselId(request.getVesselId());
         entity.setVesselName(request.getVesselName());
+        entity.setVesselImo(request.getVesselImo());
         entity.setVesselType(request.getVesselType());
         entity.setOwnerCustomer(request.getOwnerCustomer());
         entity.setVesselContact(request.getVesselContact());

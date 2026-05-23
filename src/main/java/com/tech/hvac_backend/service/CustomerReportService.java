@@ -52,6 +52,7 @@ public class CustomerReportService {
 
         entity.setVesselId(request.getVesselId());
         entity.setVesselName(request.getVesselName());
+        entity.setVesselImo(request.getVesselImo());
         entity.setVesselType(request.getVesselType());
         entity.setOwnerCustomer(request.getOwnerCustomer());
         entity.setVesselContact(request.getVesselContact());
@@ -172,6 +173,7 @@ public class CustomerReportService {
                 .sourceReportType(entity.getSourceReportType())
                 .vesselId(entity.getVesselId())
                 .vesselName(entity.getVesselName())
+                .vesselImo(entity.getVesselImo())
                 .vesselType(entity.getVesselType())
                 .ownerCustomer(entity.getOwnerCustomer())
                 .vesselContact(entity.getVesselContact())

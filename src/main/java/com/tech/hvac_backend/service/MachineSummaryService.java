@@ -131,6 +131,7 @@ public class MachineSummaryService {
                 machine.getId(),
                 machine.getVesselId(),
                 vessel != null ? vessel.getName() : "Unknown Vessel",
+                vessel != null ? vessel.getImoNumber() : null,
                 machine.getTag(),
                 machine.getModel(),
                 machine.getSerialNumber(),

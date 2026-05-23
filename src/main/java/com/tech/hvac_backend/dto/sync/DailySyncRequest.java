@@ -12,6 +12,7 @@ public class DailySyncRequest {
     private String id;
     private String vesselId;
     private String vesselName;
+    private String vesselImo;
     private String vesselType;
     private String ownerCustomer;
     private String vesselContact;

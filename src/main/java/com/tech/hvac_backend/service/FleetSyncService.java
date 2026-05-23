@@ -41,7 +41,7 @@ public class FleetSyncService {
             VesselEntity vessel = new VesselEntity();
             vessel.setId(vesselDto.getId());
             vessel.setName(vesselDto.getName());
-            vessel.setImoNumber(vesselDto.getImoNumber());
+            vessel.setImoNumber(resolveVesselImo(vesselDto));
             vessel.setVesselType(vesselDto.getVesselType());
             vessel.setOwnerCustomer(vesselDto.getOwnerCustomer());
             vessel.setVesselContact(vesselDto.getVesselContact());
@@ -159,7 +159,7 @@ public class FleetSyncService {
         if (isBlank(vessel.getName())) {
             throw new IllegalArgumentException("Vessel name is required.");
         }
-        if (isBlank(vessel.getImoNumber())) {
+        if (isBlank(resolveVesselImo(vessel))) {
             throw new IllegalArgumentException("Vessel IMO number is required.");
         }
         if (isBlank(vessel.getVesselType())) {
@@ -223,6 +223,10 @@ public class FleetSyncService {
             throw new IllegalArgumentException("Machine vesselId must match parent vessel id.");
         }
         return machine.getVesselId();
+    }
+
+    private String resolveVesselImo(VesselSyncDto vessel) {
+        return isBlank(vessel.getImoNumber()) ? vessel.getVesselImo() : vessel.getImoNumber();
     }
 
     private boolean isBlank(String value) {

@@ -22,6 +22,7 @@ public class CfrDraftEntity {
     @Column(nullable = false)
     private String vesselName;
 
+    private String vesselImo;
     private String vesselType;
     private String ownerCustomer;
     private String vesselContact;
