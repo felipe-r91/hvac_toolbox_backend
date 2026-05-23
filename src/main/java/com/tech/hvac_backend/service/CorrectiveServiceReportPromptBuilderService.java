@@ -4,6 +4,7 @@ import com.tech.hvac_backend.entity.CorrectiveDraftEntity;
 import com.tech.hvac_backend.entity.MachineEntity;
 import com.tech.hvac_backend.entity.ManualKnowledgeChunkEntity;
 import com.tech.hvac_backend.entity.PhotoRecordEntity;
+import com.tech.hvac_backend.entity.VesselEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class CorrectiveServiceReportPromptBuilderService {
     public String buildPrompt(
             CorrectiveDraftEntity draft,
             MachineEntity machine,
+            VesselEntity vessel,
             List<PhotoRecordEntity> photos
     ) {
         String photoList = photos == null || photos.isEmpty()
@@ -138,14 +140,24 @@ public class CorrectiveServiceReportPromptBuilderService {
 
                 Vessel:
                 Name: %s
+                IMO Number: %s
+                Type: %s
+                Owner / Customer: %s
+                Contact: %s
 
                 Machine:
                 Tag: %s
                 Model: %s
+                Manufacturer: %s
                 Type: %s
+                Compressor Type: %s
                 Starter Type: %s
                 Serial Number: %s
                 Location: %s
+                Refrigerant: %s
+                Oil Type: %s
+                Control System: %s
+                Software Version: %s
 
                 Failure Classification:
                 Component: %s
@@ -191,12 +203,22 @@ public class CorrectiveServiceReportPromptBuilderService {
                 manualContext,
                 nullSafe(draft.getCreatedAt()),
                 nullSafe(draft.getVesselName()),
+                nullSafe(vessel != null ? vessel.getImoNumber() : null),
+                nullSafe(prefer(draft.getVesselType(), vessel != null ? vessel.getVesselType() : null)),
+                nullSafe(prefer(draft.getOwnerCustomer(), vessel != null ? vessel.getOwnerCustomer() : null)),
+                nullSafe(prefer(draft.getVesselContact(), vessel != null ? vessel.getVesselContact() : null)),
                 nullSafe(draft.getMachineTag()),
                 nullSafe(draft.getMachineModel()),
+                nullSafe(prefer(draft.getMachineMfg(), machine != null ? machine.getMfg() : null)),
                 nullSafe(draft.getMachineType()),
+                nullSafe(prefer(draft.getMachineCompressorType(), machine != null ? machine.getCompressorType() : null)),
                 nullSafe(draft.getMachineStarterType()),
-                nullSafe(machine != null ? machine.getSerialNumber() : null),
+                nullSafe(prefer(draft.getMachineSerialNumber(), machine != null ? machine.getSerialNumber() : null)),
                 nullSafe(draft.getMachineLocation()),
+                nullSafe(prefer(draft.getMachineRefrigerant(), machine != null ? machine.getRefrigerant() : null)),
+                nullSafe(prefer(draft.getMachineOilType(), machine != null ? machine.getOilType() : null)),
+                nullSafe(prefer(draft.getMachineControlSystem(), machine != null ? machine.getControlSystem() : null)),
+                nullSafe(prefer(draft.getMachineSoftwareVersion(), machine != null ? machine.getSoftwareVersion() : null)),
                 nullSafe(draft.getFailureComponent()),
                 nullSafe(draft.getFailureMode()),
                 nullSafe(draft.getFailureCode()),
@@ -217,5 +239,9 @@ public class CorrectiveServiceReportPromptBuilderService {
 
     private String nullSafe(String value) {
         return value == null || value.isBlank() ? "Not provided" : value;
+    }
+
+    private String prefer(String primary, String fallback) {
+        return primary == null || primary.isBlank() ? fallback : primary;
     }
 }

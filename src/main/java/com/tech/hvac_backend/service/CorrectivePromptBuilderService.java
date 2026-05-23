@@ -39,11 +39,21 @@ public class CorrectivePromptBuilderService {
 
                 FIELD DATA
                 Vessel: %s
+                Vessel type: %s
+                Owner / customer: %s
+                Vessel contact: %s
                 Machine tag: %s
                 Machine model: %s
+                Machine manufacturer: %s
                 Machine type: %s
+                Compressor type: %s
                 Starter type: %s
+                Serial number: %s
                 Machine location: %s
+                Refrigerant: %s
+                Oil type: %s
+                Control system: %s
+                Software version: %s
 
                 Problem summary: %s
                 Condition found: %s
@@ -63,11 +73,21 @@ public class CorrectivePromptBuilderService {
                 %s
                 """.formatted(
                 safe(draft.getVesselName()),
+                safe(draft.getVesselType()),
+                safe(draft.getOwnerCustomer()),
+                safe(draft.getVesselContact()),
                 safe(draft.getMachineTag()),
                 safe(draft.getMachineModel()),
+                safe(draft.getMachineMfg()),
                 safe(draft.getMachineType()),
+                safe(draft.getMachineCompressorType()),
                 safe(draft.getMachineStarterType()),
+                safe(draft.getMachineSerialNumber()),
                 safe(draft.getMachineLocation()),
+                safe(draft.getMachineRefrigerant()),
+                safe(draft.getMachineOilType()),
+                safe(draft.getMachineControlSystem()),
+                safe(draft.getMachineSoftwareVersion()),
                 safe(draft.getProblemSummary()),
                 safe(draft.getConditionFound()),
                 safe(draft.getSymptomsObserved()),

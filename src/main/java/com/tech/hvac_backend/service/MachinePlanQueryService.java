@@ -62,6 +62,12 @@ public class MachinePlanQueryService {
                 machine.getSerialNumber(),
                 machine.getType(),
                 machine.getStarterType(),
+                machine.getRefrigerant(),
+                machine.getOilType(),
+                machine.getControlSystem(),
+                machine.getSoftwareVersion(),
+                machine.getCompressorType(),
+                machine.getMfg(),
                 machine.getMachineTemplateVersionId(),
                 machine.getStarterTemplateVersionId()
         );

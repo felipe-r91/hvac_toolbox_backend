@@ -37,6 +37,13 @@ public class MachineEntity {
     @Column(nullable = false)
     private String starterType;
 
+    private String refrigerant;
+    private String oilType;
+    private String controlSystem;
+    private String softwareVersion;
+    private String compressorType;
+    private String mfg;
+
     @Column(length = 36)
     private String machineTemplateVersionId;
 

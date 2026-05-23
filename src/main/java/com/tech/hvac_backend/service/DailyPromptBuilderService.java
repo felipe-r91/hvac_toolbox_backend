@@ -4,6 +4,7 @@ import com.tech.hvac_backend.entity.DailyDraftEntity;
 import com.tech.hvac_backend.entity.MachineEntity;
 import com.tech.hvac_backend.entity.ManualKnowledgeChunkEntity;
 import com.tech.hvac_backend.entity.PhotoRecordEntity;
+import com.tech.hvac_backend.entity.VesselEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class DailyPromptBuilderService {
     public String buildPrompt(
             DailyDraftEntity draft,
             MachineEntity machine,
+            VesselEntity vessel,
             List<PhotoRecordEntity> photos
     ) {
         String photoList = photos == null || photos.isEmpty()
@@ -94,7 +96,11 @@ public class DailyPromptBuilderService {
                 - date should be based on the report created date.
                 - location should use the machine location or vessel/location information available.
 
-                - machineStatus should describe the daily operating state based on alarmPresent, failure notes, and work conducted. Do not claim a final repair status unless the source data supports it.
+                - machineStatus must be evaluated from the source data and must be exactly one of these two strings:
+                  "Work Finished" or "Work In Progress".
+                - Use "Work Finished" only when the daily notes clearly indicate today's work is complete and no pending follow-up, monitoring, unresolved alarm, return visit, parts, or further action remains.
+                - Use "Work In Progress" when alarmPresent is true, furtherActions contains any pending item, the notes mention follow-up/monitoring/parts/return visit, or the source data does not clearly confirm the work is finished.
+                - Do not return any other machineStatus value. Do not add extra words, punctuation, or explanation inside machineStatus.
                 - alarmStatus should be "Alarm reported" when alarmPresent is true, otherwise "No alarm reported", unless source notes require a more specific neutral wording.
 
                 - executiveSummary should summarize:
@@ -125,14 +131,24 @@ public class DailyPromptBuilderService {
 
                 Vessel:
                 Name: %s
+                IMO Number: %s
+                Type: %s
+                Owner / Customer: %s
+                Contact: %s
 
                 Machine:
                 Tag: %s
                 Model: %s
+                Manufacturer: %s
                 Type: %s
+                Compressor Type: %s
                 Starter Type: %s
                 Serial Number: %s
                 Location: %s
+                Refrigerant: %s
+                Oil Type: %s
+                Control System: %s
+                Software Version: %s
 
                 Alarm Present:
                 %s
@@ -157,12 +173,22 @@ public class DailyPromptBuilderService {
                 manualContext,
                 nullSafe(draft.getCreatedAt()),
                 nullSafe(draft.getVesselName()),
+                nullSafe(vessel != null ? vessel.getImoNumber() : null),
+                nullSafe(prefer(draft.getVesselType(), vessel != null ? vessel.getVesselType() : null)),
+                nullSafe(prefer(draft.getOwnerCustomer(), vessel != null ? vessel.getOwnerCustomer() : null)),
+                nullSafe(prefer(draft.getVesselContact(), vessel != null ? vessel.getVesselContact() : null)),
                 nullSafe(draft.getMachineTag()),
                 nullSafe(draft.getMachineModel()),
+                nullSafe(prefer(draft.getMachineMfg(), machine != null ? machine.getMfg() : null)),
                 nullSafe(draft.getMachineType()),
+                nullSafe(prefer(draft.getMachineCompressorType(), machine != null ? machine.getCompressorType() : null)),
                 nullSafe(draft.getMachineStarterType()),
-                nullSafe(machine != null ? machine.getSerialNumber() : null),
+                nullSafe(prefer(draft.getMachineSerialNumber(), machine != null ? machine.getSerialNumber() : null)),
                 nullSafe(draft.getMachineLocation()),
+                nullSafe(prefer(draft.getMachineRefrigerant(), machine != null ? machine.getRefrigerant() : null)),
+                nullSafe(prefer(draft.getMachineOilType(), machine != null ? machine.getOilType() : null)),
+                nullSafe(prefer(draft.getMachineControlSystem(), machine != null ? machine.getControlSystem() : null)),
+                nullSafe(prefer(draft.getMachineSoftwareVersion(), machine != null ? machine.getSoftwareVersion() : null)),
                 draft.isAlarmPresent() ? "Yes" : "No",
                 nullSafe(draft.getFailureComponent()),
                 nullSafe(draft.getFailureMode()),
@@ -176,5 +202,9 @@ public class DailyPromptBuilderService {
 
     private String nullSafe(String value) {
         return value == null || value.isBlank() ? "Not provided" : value;
+    }
+
+    private String prefer(String primary, String fallback) {
+        return primary == null || primary.isBlank() ? fallback : primary;
     }
 }

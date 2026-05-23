@@ -22,6 +22,10 @@ public class VesselEntity {
     @Column(nullable = false)
     private String imoNumber;
 
+    private String vesselType;
+    private String ownerCustomer;
+    private String vesselContact;
+
     @Column(length = 4000)
     private String description;
 

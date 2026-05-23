@@ -13,6 +13,12 @@ public class MachineSummaryResponse {
     private final String serialNumber;
     private final String type;
     private final String starterType;
+    private final String refrigerant;
+    private final String oilType;
+    private final String controlSystem;
+    private final String softwareVersion;
+    private final String compressorType;
+    private final String mfg;
     private final String location;
 
     private final String machinePhotoPreviewUrl;
@@ -35,6 +41,12 @@ public class MachineSummaryResponse {
             String serialNumber,
             String type,
             String starterType,
+            String refrigerant,
+            String oilType,
+            String controlSystem,
+            String softwareVersion,
+            String compressorType,
+            String mfg,
             String location,
             String machinePhotoPreviewUrl,
             String latestReportDate,
@@ -53,6 +65,12 @@ public class MachineSummaryResponse {
         this.serialNumber = serialNumber;
         this.type = type;
         this.starterType = starterType;
+        this.refrigerant = refrigerant;
+        this.oilType = oilType;
+        this.controlSystem = controlSystem;
+        this.softwareVersion = softwareVersion;
+        this.compressorType = compressorType;
+        this.mfg = mfg;
         this.location = location;
         this.machinePhotoPreviewUrl = machinePhotoPreviewUrl;
         this.latestReportDate = latestReportDate;

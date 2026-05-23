@@ -5,10 +5,12 @@ import com.tech.hvac_backend.entity.CorrectiveDraftEntity;
 import com.tech.hvac_backend.entity.MachineEntity;
 import com.tech.hvac_backend.entity.PhotoOwnerType;
 import com.tech.hvac_backend.entity.PhotoRecordEntity;
+import com.tech.hvac_backend.entity.VesselEntity;
 import com.tech.hvac_backend.exception.ResourceNotFoundException;
 import com.tech.hvac_backend.repository.CorrectiveDraftRepository;
 import com.tech.hvac_backend.repository.MachineRepository;
 import com.tech.hvac_backend.repository.PhotoRecordRepository;
+import com.tech.hvac_backend.repository.VesselRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +22,7 @@ public class CorrectiveAiReportService {
     private final PhotoRecordRepository photoRecordRepository;
     private final CorrectiveServiceReportPromptBuilderService promptBuilderService;
     private final MachineRepository machineRepository;
+    private final VesselRepository vesselRepository;
     private final OpenAiReportGenerationService openAiReportGenerationService;
 
     public CorrectiveAiReportService(
@@ -27,12 +30,14 @@ public class CorrectiveAiReportService {
             PhotoRecordRepository photoRecordRepository,
             CorrectiveServiceReportPromptBuilderService promptBuilderService,
             MachineRepository machineRepository,
+            VesselRepository vesselRepository,
             OpenAiReportGenerationService openAiReportGenerationService
     ) {
         this.correctiveDraftRepository = correctiveDraftRepository;
         this.photoRecordRepository = photoRecordRepository;
         this.promptBuilderService = promptBuilderService;
         this.machineRepository = machineRepository;
+        this.vesselRepository = vesselRepository;
         this.openAiReportGenerationService = openAiReportGenerationService;
     }
 
@@ -50,8 +55,10 @@ public class CorrectiveAiReportService {
 
         MachineEntity machine = machineRepository.findById(draft.getMachineId())
                 .orElse(null);
+        VesselEntity vessel = vesselRepository.findById(draft.getVesselId())
+                .orElse(null);
 
-        String prompt = promptBuilderService.buildPrompt(draft, machine, photos);
+        String prompt = promptBuilderService.buildPrompt(draft, machine, vessel, photos);
 
         return openAiReportGenerationService.generateServiceReport(prompt);
     }

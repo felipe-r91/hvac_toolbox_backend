@@ -18,6 +18,7 @@ public class ReportQueryService {
     private final CfrDraftRepository cfrDraftRepository;
     private final DailyDraftRepository dailyDraftRepository;
     private final MachineRepository machineRepository;
+    private final VesselRepository vesselRepository;
 
     public ReportQueryService(
             PreventiveReportRepository preventiveReportRepository,
@@ -26,7 +27,8 @@ public class ReportQueryService {
             PhotoRecordRepository photoRecordRepository,
             CfrDraftRepository cfrDraftRepository,
             DailyDraftRepository dailyDraftRepository,
-            MachineRepository machineRepository
+            MachineRepository machineRepository,
+            VesselRepository vesselRepository
     ) {
         this.preventiveReportRepository = preventiveReportRepository;
         this.preventiveReportTaskRepository = preventiveReportTaskRepository;
@@ -35,6 +37,7 @@ public class ReportQueryService {
         this.cfrDraftRepository = cfrDraftRepository;
         this.dailyDraftRepository = dailyDraftRepository;
         this.machineRepository = machineRepository;
+        this.vesselRepository = vesselRepository;
     }
 
     public List<PreventiveReportSummaryResponse> getAllPreventiveReports() {
@@ -70,6 +73,7 @@ public class ReportQueryService {
                 .orElseThrow(() -> new ResourceNotFoundException("Preventive report not found: " + id));
 
         MachineEntity machine = getMachine(report.getMachineId());
+        VesselEntity vessel = getVessel(report.getVesselId());
 
         List<PreventiveReportTaskDetailResponse> tasks = preventiveReportTaskRepository
                 .findByReportIdOrderByCategoryAscTaskNameAsc(id)
@@ -81,12 +85,22 @@ public class ReportQueryService {
                 report.getId(),
                 report.getVesselId(),
                 report.getVesselName(),
+                prefer(report.getVesselType(), vessel != null ? vessel.getVesselType() : null),
+                prefer(report.getOwnerCustomer(), vessel != null ? vessel.getOwnerCustomer() : null),
+                prefer(report.getVesselContact(), vessel != null ? vessel.getVesselContact() : null),
                 report.getMachineId(),
                 report.getMachineTag(),
                 report.getMachineModel(),
+                prefer(report.getMachineSerialNumber(), machine != null ? machine.getSerialNumber() : null),
                 report.getMachineType(),
                 report.getMachineLocation(),
                 report.getMachineStarterType(),
+                prefer(report.getMachineRefrigerant(), machine != null ? machine.getRefrigerant() : null),
+                prefer(report.getMachineOilType(), machine != null ? machine.getOilType() : null),
+                prefer(report.getMachineControlSystem(), machine != null ? machine.getControlSystem() : null),
+                prefer(report.getMachineSoftwareVersion(), machine != null ? machine.getSoftwareVersion() : null),
+                prefer(report.getMachineCompressorType(), machine != null ? machine.getCompressorType() : null),
+                prefer(report.getMachineMfg(), machine != null ? machine.getMfg() : null),
                 machine != null ? machine.getMachinePhotoId() : null,
                 machine != null ? machine.getMachinePhotoPreviewUrl() : null,
                 report.getCompletedAt(),
@@ -110,6 +124,7 @@ public class ReportQueryService {
                 .orElseThrow(() -> new ResourceNotFoundException("Corrective draft not found: " + id));
 
         MachineEntity machine = getMachine(draft.getMachineId());
+        VesselEntity vessel = getVessel(draft.getVesselId());
 
         List<CorrectivePhotoDetailResponse> photos = photoRecordRepository
                 .findByOwnerTypeAndOwnerIdOrderByCreatedAtAsc(PhotoOwnerType.CORRECTIVE_DRAFT, id)
@@ -121,12 +136,22 @@ public class ReportQueryService {
                 draft.getId(),
                 draft.getVesselId(),
                 draft.getVesselName(),
+                prefer(draft.getVesselType(), vessel != null ? vessel.getVesselType() : null),
+                prefer(draft.getOwnerCustomer(), vessel != null ? vessel.getOwnerCustomer() : null),
+                prefer(draft.getVesselContact(), vessel != null ? vessel.getVesselContact() : null),
                 draft.getMachineId(),
                 draft.getMachineTag(),
                 draft.getMachineModel(),
+                prefer(draft.getMachineSerialNumber(), machine != null ? machine.getSerialNumber() : null),
                 draft.getMachineType(),
                 draft.getMachineStarterType(),
                 draft.getMachineLocation(),
+                prefer(draft.getMachineRefrigerant(), machine != null ? machine.getRefrigerant() : null),
+                prefer(draft.getMachineOilType(), machine != null ? machine.getOilType() : null),
+                prefer(draft.getMachineControlSystem(), machine != null ? machine.getControlSystem() : null),
+                prefer(draft.getMachineSoftwareVersion(), machine != null ? machine.getSoftwareVersion() : null),
+                prefer(draft.getMachineCompressorType(), machine != null ? machine.getCompressorType() : null),
+                prefer(draft.getMachineMfg(), machine != null ? machine.getMfg() : null),
                 machine != null ? machine.getMachinePhotoId() : null,
                 machine != null ? machine.getMachinePhotoPreviewUrl() : null,
                 draft.getCreatedAt(),
@@ -156,6 +181,7 @@ public class ReportQueryService {
                 .orElseThrow(() -> new ResourceNotFoundException("CFR draft not found: " + id));
 
         MachineEntity machine = getMachine(draft.getMachineId());
+        VesselEntity vessel = getVessel(draft.getVesselId());
 
         List<CorrectivePhotoDetailResponse> photos = photoRecordRepository
                 .findByOwnerTypeAndOwnerIdOrderByCreatedAtAsc(PhotoOwnerType.CFR_DRAFT, id)
@@ -167,13 +193,22 @@ public class ReportQueryService {
                 draft.getId(),
                 draft.getVesselId(),
                 draft.getVesselName(),
+                prefer(draft.getVesselType(), vessel != null ? vessel.getVesselType() : null),
+                prefer(draft.getOwnerCustomer(), vessel != null ? vessel.getOwnerCustomer() : null),
+                prefer(draft.getVesselContact(), vessel != null ? vessel.getVesselContact() : null),
                 draft.getMachineId(),
                 draft.getMachineTag(),
                 draft.getMachineModel(),
-                machine != null ? machine.getSerialNumber() : null,
+                prefer(draft.getMachineSerialNumber(), machine != null ? machine.getSerialNumber() : null),
                 draft.getMachineType(),
                 draft.getMachineStarterType(),
                 draft.getMachineLocation(),
+                prefer(draft.getMachineRefrigerant(), machine != null ? machine.getRefrigerant() : null),
+                prefer(draft.getMachineOilType(), machine != null ? machine.getOilType() : null),
+                prefer(draft.getMachineControlSystem(), machine != null ? machine.getControlSystem() : null),
+                prefer(draft.getMachineSoftwareVersion(), machine != null ? machine.getSoftwareVersion() : null),
+                prefer(draft.getMachineCompressorType(), machine != null ? machine.getCompressorType() : null),
+                prefer(draft.getMachineMfg(), machine != null ? machine.getMfg() : null),
                 machine != null ? machine.getMachinePhotoId() : null,
                 machine != null ? machine.getMachinePhotoPreviewUrl() : null,
                 draft.getCreatedAt(),
@@ -200,6 +235,7 @@ public class ReportQueryService {
                 .orElseThrow(() -> new ResourceNotFoundException("Daily draft not found: " + id));
 
         MachineEntity machine = getMachine(draft.getMachineId());
+        VesselEntity vessel = getVessel(draft.getVesselId());
 
         List<CorrectivePhotoDetailResponse> photos = photoRecordRepository
                 .findByOwnerTypeAndOwnerIdOrderByCreatedAtAsc(PhotoOwnerType.DAILY_DRAFT, id)
@@ -211,13 +247,22 @@ public class ReportQueryService {
                 draft.getId(),
                 draft.getVesselId(),
                 draft.getVesselName(),
+                prefer(draft.getVesselType(), vessel != null ? vessel.getVesselType() : null),
+                prefer(draft.getOwnerCustomer(), vessel != null ? vessel.getOwnerCustomer() : null),
+                prefer(draft.getVesselContact(), vessel != null ? vessel.getVesselContact() : null),
                 draft.getMachineId(),
                 draft.getMachineTag(),
                 draft.getMachineModel(),
-                machine != null ? machine.getSerialNumber() : null,
+                prefer(draft.getMachineSerialNumber(), machine != null ? machine.getSerialNumber() : null),
                 draft.getMachineType(),
                 draft.getMachineStarterType(),
                 draft.getMachineLocation(),
+                prefer(draft.getMachineRefrigerant(), machine != null ? machine.getRefrigerant() : null),
+                prefer(draft.getMachineOilType(), machine != null ? machine.getOilType() : null),
+                prefer(draft.getMachineControlSystem(), machine != null ? machine.getControlSystem() : null),
+                prefer(draft.getMachineSoftwareVersion(), machine != null ? machine.getSoftwareVersion() : null),
+                prefer(draft.getMachineCompressorType(), machine != null ? machine.getCompressorType() : null),
+                prefer(draft.getMachineMfg(), machine != null ? machine.getMfg() : null),
                 machine != null ? machine.getMachinePhotoId() : null,
                 machine != null ? machine.getMachinePhotoPreviewUrl() : null,
                 draft.getCreatedAt(),
@@ -321,7 +366,21 @@ public class ReportQueryService {
     }
 
     private MachineEntity getMachine(String machineId) {
+        if (machineId == null || machineId.isBlank()) {
+            return null;
+        }
         return machineRepository.findById(machineId).orElse(null);
+    }
+
+    private VesselEntity getVessel(String vesselId) {
+        if (vesselId == null || vesselId.isBlank()) {
+            return null;
+        }
+        return vesselRepository.findById(vesselId).orElse(null);
+    }
+
+    private String prefer(String primary, String fallback) {
+        return primary == null || primary.isBlank() ? fallback : primary;
     }
 
     private CorrectivePhotoDetailResponse mapCorrectivePhotoDetail(PhotoRecordEntity entity) {

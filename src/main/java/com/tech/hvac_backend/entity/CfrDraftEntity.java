@@ -22,6 +22,10 @@ public class CfrDraftEntity {
     @Column(nullable = false)
     private String vesselName;
 
+    private String vesselType;
+    private String ownerCustomer;
+    private String vesselContact;
+
     @Column(nullable = false)
     private String machineId;
 
@@ -31,6 +35,8 @@ public class CfrDraftEntity {
     @Column(nullable = false)
     private String machineModel;
 
+    private String machineSerialNumber;
+
     @Column(nullable = false)
     private String machineType;
 
@@ -39,6 +45,13 @@ public class CfrDraftEntity {
 
     @Column(nullable = false)
     private String machineLocation;
+
+    private String machineRefrigerant;
+    private String machineOilType;
+    private String machineControlSystem;
+    private String machineSoftwareVersion;
+    private String machineCompressorType;
+    private String machineMfg;
 
     @Column(nullable = false)
     private String createdAt;

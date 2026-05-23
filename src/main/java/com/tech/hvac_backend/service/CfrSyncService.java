@@ -23,12 +23,22 @@ public class CfrSyncService {
         entity.setId(request.getId());
         entity.setVesselId(request.getVesselId());
         entity.setVesselName(request.getVesselName());
+        entity.setVesselType(request.getVesselType());
+        entity.setOwnerCustomer(request.getOwnerCustomer());
+        entity.setVesselContact(request.getVesselContact());
         entity.setMachineId(request.getMachineId());
         entity.setMachineTag(request.getMachineTag());
         entity.setMachineModel(request.getMachineModel());
+        entity.setMachineSerialNumber(request.getMachineSerialNumber());
         entity.setMachineType(request.getMachineType());
         entity.setMachineStarterType(request.getMachineStarterType());
         entity.setMachineLocation(request.getMachineLocation());
+        entity.setMachineRefrigerant(request.getMachineRefrigerant());
+        entity.setMachineOilType(request.getMachineOilType());
+        entity.setMachineControlSystem(request.getMachineControlSystem());
+        entity.setMachineSoftwareVersion(request.getMachineSoftwareVersion());
+        entity.setMachineCompressorType(request.getMachineCompressorType());
+        entity.setMachineMfg(request.getMachineMfg());
         entity.setCreatedAt(request.getCreatedAt());
         entity.setMachineStatus(request.getMachineStatus());
         entity.setReportCategory(

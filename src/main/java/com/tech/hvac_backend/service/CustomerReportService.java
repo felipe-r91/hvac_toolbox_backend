@@ -52,11 +52,23 @@ public class CustomerReportService {
 
         entity.setVesselId(request.getVesselId());
         entity.setVesselName(request.getVesselName());
+        entity.setVesselType(request.getVesselType());
+        entity.setOwnerCustomer(request.getOwnerCustomer());
+        entity.setVesselContact(request.getVesselContact());
 
         entity.setMachineId(request.getMachineId());
         entity.setMachineTag(request.getMachineTag());
         entity.setMachineModel(request.getMachineModel());
+        entity.setMachineSerialNumber(request.getMachineSerialNumber());
         entity.setMachineType(request.getMachineType());
+        entity.setMachineStarterType(request.getMachineStarterType());
+        entity.setMachineLocation(request.getMachineLocation());
+        entity.setMachineRefrigerant(request.getMachineRefrigerant());
+        entity.setMachineOilType(request.getMachineOilType());
+        entity.setMachineControlSystem(request.getMachineControlSystem());
+        entity.setMachineSoftwareVersion(request.getMachineSoftwareVersion());
+        entity.setMachineCompressorType(request.getMachineCompressorType());
+        entity.setMachineMfg(request.getMachineMfg());
         entity.setMachineStatus(request.getMachineStatus());
 
         entity.setTitle(request.getTitle());
@@ -160,10 +172,22 @@ public class CustomerReportService {
                 .sourceReportType(entity.getSourceReportType())
                 .vesselId(entity.getVesselId())
                 .vesselName(entity.getVesselName())
+                .vesselType(entity.getVesselType())
+                .ownerCustomer(entity.getOwnerCustomer())
+                .vesselContact(entity.getVesselContact())
                 .machineId(entity.getMachineId())
                 .machineTag(entity.getMachineTag())
                 .machineModel(entity.getMachineModel())
+                .machineSerialNumber(entity.getMachineSerialNumber())
                 .machineType(entity.getMachineType())
+                .machineStarterType(entity.getMachineStarterType())
+                .machineLocation(entity.getMachineLocation())
+                .machineRefrigerant(entity.getMachineRefrigerant())
+                .machineOilType(entity.getMachineOilType())
+                .machineControlSystem(entity.getMachineControlSystem())
+                .machineSoftwareVersion(entity.getMachineSoftwareVersion())
+                .machineCompressorType(entity.getMachineCompressorType())
+                .machineMfg(entity.getMachineMfg())
                 .machineStatus(entity.getMachineStatus())
                 .title(entity.getTitle())
                 .reportDate(entity.getReportDate())

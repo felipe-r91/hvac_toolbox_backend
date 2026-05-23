@@ -12,6 +12,9 @@ public class VesselSyncDto {
     private String id;
     private String name;
     private String imoNumber;
+    private String vesselType;
+    private String ownerCustomer;
+    private String vesselContact;
     private String description;
     private List<MachineSyncDto> machines;
 

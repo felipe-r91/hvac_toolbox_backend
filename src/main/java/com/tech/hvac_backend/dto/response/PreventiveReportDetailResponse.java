@@ -10,12 +10,22 @@ public class PreventiveReportDetailResponse {
     private final String id;
     private final String vesselId;
     private final String vesselName;
+    private final String vesselType;
+    private final String ownerCustomer;
+    private final String vesselContact;
     private final String machineId;
     private final String machineTag;
     private final String machineModel;
+    private final String machineSerialNumber;
     private final String machineType;
     private final String machineLocation;
     private final String machineStarterType;
+    private final String machineRefrigerant;
+    private final String machineOilType;
+    private final String machineControlSystem;
+    private final String machineSoftwareVersion;
+    private final String machineCompressorType;
+    private final String machineMfg;
     private final String machinePhotoId;
     private final String machinePhotoPreviewUrl;
     private final String completedAt;
@@ -36,12 +46,24 @@ public class PreventiveReportDetailResponse {
             String id,
             String vesselId,
             String vesselName,
+            String vesselType,
+            String ownerCustomer,
+            String vesselContact,
             String machineId,
             String machineTag,
             String machineModel,
+            String machineSerialNumber,
             String machineType,
             String machineLocation,
-            String machineStarterType, String machinePhotoId, String machinePhotoPreviewUrl,
+            String machineStarterType,
+            String machineRefrigerant,
+            String machineOilType,
+            String machineControlSystem,
+            String machineSoftwareVersion,
+            String machineCompressorType,
+            String machineMfg,
+            String machinePhotoId,
+            String machinePhotoPreviewUrl,
             String completedAt,
             String overallStatus,
             String downtimeReason,
@@ -60,12 +82,22 @@ public class PreventiveReportDetailResponse {
         this.id = id;
         this.vesselId = vesselId;
         this.vesselName = vesselName;
+        this.vesselType = vesselType;
+        this.ownerCustomer = ownerCustomer;
+        this.vesselContact = vesselContact;
         this.machineId = machineId;
         this.machineTag = machineTag;
         this.machineModel = machineModel;
+        this.machineSerialNumber = machineSerialNumber;
         this.machineType = machineType;
         this.machineLocation = machineLocation;
         this.machineStarterType = machineStarterType;
+        this.machineRefrigerant = machineRefrigerant;
+        this.machineOilType = machineOilType;
+        this.machineControlSystem = machineControlSystem;
+        this.machineSoftwareVersion = machineSoftwareVersion;
+        this.machineCompressorType = machineCompressorType;
+        this.machineMfg = machineMfg;
         this.machinePhotoId = machinePhotoId;
         this.machinePhotoPreviewUrl = machinePhotoPreviewUrl;
         this.completedAt = completedAt;

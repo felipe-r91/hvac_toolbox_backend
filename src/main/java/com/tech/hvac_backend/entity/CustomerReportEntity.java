@@ -34,6 +34,18 @@ public class CustomerReportEntity {
     @Column(name = "vessel_name")
     private String vesselName;
 
+    @Setter
+    @Column(name = "vessel_type")
+    private String vesselType;
+
+    @Setter
+    @Column(name = "owner_customer")
+    private String ownerCustomer;
+
+    @Setter
+    @Column(name = "vessel_contact")
+    private String vesselContact;
+
     // Machine info
     @Setter
     @Column(name = "machine_id")
@@ -48,8 +60,44 @@ public class CustomerReportEntity {
     private String machineModel;
 
     @Setter
+    @Column(name = "machine_serial_number")
+    private String machineSerialNumber;
+
+    @Setter
     @Column(name = "machine_type")
     private String machineType;
+
+    @Setter
+    @Column(name = "machine_starter_type")
+    private String machineStarterType;
+
+    @Setter
+    @Column(name = "machine_location")
+    private String machineLocation;
+
+    @Setter
+    @Column(name = "machine_refrigerant")
+    private String machineRefrigerant;
+
+    @Setter
+    @Column(name = "machine_oil_type")
+    private String machineOilType;
+
+    @Setter
+    @Column(name = "machine_control_system")
+    private String machineControlSystem;
+
+    @Setter
+    @Column(name = "machine_software_version")
+    private String machineSoftwareVersion;
+
+    @Setter
+    @Column(name = "machine_compressor_type")
+    private String machineCompressorType;
+
+    @Setter
+    @Column(name = "machine_mfg")
+    private String machineMfg;
 
     @Setter
     @Column(name = "machine_status")

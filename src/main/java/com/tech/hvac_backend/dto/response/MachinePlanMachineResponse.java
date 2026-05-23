@@ -13,6 +13,12 @@ public class MachinePlanMachineResponse {
     private final String serialNumber;
     private final String type;
     private final String starterType;
+    private final String refrigerant;
+    private final String oilType;
+    private final String controlSystem;
+    private final String softwareVersion;
+    private final String compressorType;
+    private final String mfg;
     private final String machineTemplateVersionId;
     private final String starterTemplateVersionId;
 
@@ -25,6 +31,12 @@ public class MachinePlanMachineResponse {
             String serialNumber,
             String type,
             String starterType,
+            String refrigerant,
+            String oilType,
+            String controlSystem,
+            String softwareVersion,
+            String compressorType,
+            String mfg,
             String machineTemplateVersionId,
             String starterTemplateVersionId
     ) {
@@ -36,6 +48,12 @@ public class MachinePlanMachineResponse {
         this.serialNumber = serialNumber;
         this.type = type;
         this.starterType = starterType;
+        this.refrigerant = refrigerant;
+        this.oilType = oilType;
+        this.controlSystem = controlSystem;
+        this.softwareVersion = softwareVersion;
+        this.compressorType = compressorType;
+        this.mfg = mfg;
         this.machineTemplateVersionId = machineTemplateVersionId;
         this.starterTemplateVersionId = starterTemplateVersionId;
     }
