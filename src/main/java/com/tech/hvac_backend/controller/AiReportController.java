@@ -2,8 +2,10 @@ package com.tech.hvac_backend.controller;
 
 import com.tech.hvac_backend.dto.ai.AiCustomerReportResponse;
 import com.tech.hvac_backend.dto.ai.AiDailyReportResponse;
+import com.tech.hvac_backend.dto.ai.AiMachineMaintenanceReportResponse;
 import com.tech.hvac_backend.dto.ai.AiServiceReportResponse;
 import com.tech.hvac_backend.service.CfrAiReportService;
+import com.tech.hvac_backend.service.MachineMaintenanceAiReportService;
 import com.tech.hvac_backend.service.ServiceReportAiReportService;
 import com.tech.hvac_backend.service.DailyAiReportService;
 import org.springframework.http.ResponseEntity;
@@ -16,15 +18,18 @@ public class AiReportController {
     private final CfrAiReportService cfrAiReportService;
     private final ServiceReportAiReportService serviceReportAiReportService;
     private final DailyAiReportService dailyAiReportService;
+    private final MachineMaintenanceAiReportService machineMaintenanceAiReportService;
 
     public AiReportController(
             CfrAiReportService cfrAiReportService,
             ServiceReportAiReportService serviceReportAiReportService,
-            DailyAiReportService dailyAiReportService
+            DailyAiReportService dailyAiReportService,
+            MachineMaintenanceAiReportService machineMaintenanceAiReportService
     ) {
         this.cfrAiReportService = cfrAiReportService;
         this.serviceReportAiReportService = serviceReportAiReportService;
         this.dailyAiReportService = dailyAiReportService;
+        this.machineMaintenanceAiReportService = machineMaintenanceAiReportService;
     }
 
     @PostMapping("/cfr/{draftId}/generate")
@@ -46,5 +51,12 @@ public class AiReportController {
             @PathVariable String draftId
     ) {
         return ResponseEntity.ok(dailyAiReportService.generate(draftId));
+    }
+
+    @PostMapping("/machine-maintenance/{reportId}/generate")
+    public ResponseEntity<AiMachineMaintenanceReportResponse> generateMachineMaintenanceReport(
+            @PathVariable String reportId
+    ) {
+        return ResponseEntity.ok(machineMaintenanceAiReportService.generate(reportId));
     }
 }

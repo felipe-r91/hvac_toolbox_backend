@@ -4,6 +4,9 @@ import com.tech.hvac_backend.entity.CfrDraftEntity;
 import com.tech.hvac_backend.entity.ServiceReportDraftEntity;
 import com.tech.hvac_backend.entity.DailyDraftEntity;
 import com.tech.hvac_backend.entity.ManualKnowledgeChunkEntity;
+import com.tech.hvac_backend.entity.MachineEntity;
+import com.tech.hvac_backend.entity.PreventiveReportEntity;
+import com.tech.hvac_backend.entity.PreventiveReportTaskEntity;
 import com.tech.hvac_backend.repository.ManualKnowledgeChunkRepository;
 import org.springframework.stereotype.Service;
 
@@ -97,6 +100,48 @@ public class ManualKnowledgeService {
                 draft.getWorkConductedToday(),
                 null,
                 draft.getFurtherActions()
+        ));
+    }
+
+    public List<ManualKnowledgeChunkEntity> findRelevantChunks(
+            PreventiveReportEntity report,
+            MachineEntity machine,
+            List<PreventiveReportTaskEntity> tasks
+    ) {
+        String taskText = tasks == null ? "" : tasks.stream()
+                .map(task -> String.join(" ",
+                        clean(task.getCategory()),
+                        clean(task.getTaskName()),
+                        clean(task.getTool()),
+                        clean(task.getStatus()),
+                        clean(task.getNotes()),
+                        clean(task.getMeasuredValue()),
+                        clean(task.getUnit())
+                ))
+                .collect(Collectors.joining(" "));
+
+        return findRelevantChunks(new ManualSearchInput(
+                report.getMachineModel(),
+                report.getMachineType(),
+                report.getMachineStarterType(),
+                machine != null ? machine.getRefrigerant() : null,
+                machine != null ? machine.getOilType() : null,
+                machine != null ? machine.getControlSystem() : null,
+                machine != null ? machine.getSoftwareVersion() : null,
+                machine != null ? machine.getCompressorType() : null,
+                machine != null ? machine.getMfg() : null,
+                report.getFailureComponent(),
+                report.getFailureMode(),
+                report.getFailureCode(),
+                report.getFailureNotes(),
+                null,
+                report.getFaultCount() != null && report.getFaultCount() > 0 ? report.getFailureNotes() : null,
+                null,
+                null,
+                null,
+                taskText,
+                null,
+                report.getFailureNotes()
         ));
     }
 
