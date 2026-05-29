@@ -84,7 +84,7 @@ public class MachineSummaryService {
                 .findFirst()
                 .map(report -> new LatestRecord(
                         report.getCompletedAt(),
-                        "health_check",
+                        resolvePreventiveCategory(report),
                         normalizePreventiveStatus(report.getOverallStatus())
                 ));
 
@@ -164,6 +164,12 @@ public class MachineSummaryService {
             case "online", "down", "unknown" -> status.toLowerCase();
             default -> "unknown";
         };
+    }
+
+    private String resolvePreventiveCategory(PreventiveReportEntity report) {
+        return report.getReportCategory() == null || report.getReportCategory().isBlank()
+                ? "machine_maintenance"
+                : report.getReportCategory();
     }
 
     private String mapServiceReportStatus(String machineReturnedToService) {

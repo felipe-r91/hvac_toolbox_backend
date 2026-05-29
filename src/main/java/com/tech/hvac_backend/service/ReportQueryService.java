@@ -363,6 +363,7 @@ public class ReportQueryService {
                 entity.getNotes(),
                 entity.getMeasuredValue(),
                 entity.getUnit(),
+                entity.getPhotoIds(),
                 entity.getCompletedAt()
         );
     }

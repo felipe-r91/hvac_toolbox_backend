@@ -2,20 +2,23 @@ package com.tech.hvac_backend.dto.response;
 
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 public class PreventiveReportTaskDetailResponse {
 
-    private String id;
-    private String taskTemplateId;
-    private String category;
-    private String taskName;
-    private String tool;
-    private Boolean checked;
-    private String status;
-    private String notes;
-    private String measuredValue;
-    private String unit;
-    private String completedAt;
+    private final String id;
+    private final String taskTemplateId;
+    private final String category;
+    private final String taskName;
+    private final String tool;
+    private final Boolean checked;
+    private final String status;
+    private final String notes;
+    private final String measuredValue;
+    private final String unit;
+    private final List<String> photoIds;
+    private final String completedAt;
 
     public PreventiveReportTaskDetailResponse(
             String id,
@@ -28,6 +31,7 @@ public class PreventiveReportTaskDetailResponse {
             String notes,
             String measuredValue,
             String unit,
+            List<String> photoIds,
             String completedAt
     ) {
         this.id = id;
@@ -40,6 +44,7 @@ public class PreventiveReportTaskDetailResponse {
         this.notes = notes;
         this.measuredValue = measuredValue;
         this.unit = unit;
+        this.photoIds = photoIds;
         this.completedAt = completedAt;
     }
 

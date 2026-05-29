@@ -78,16 +78,18 @@ public class MachineReportsQueryService {
     private MachineTimelineItemResponse mapPreventive(PreventiveReportEntity report) {
         String summary = report.getFailureNotes();
         if (summary == null || summary.isBlank()) {
-            summary = "Health check completed.";
+            summary = "Machine maintenance completed.";
         }
+
+        String reportCategory = resolvePreventiveCategory(report);
 
         return new MachineTimelineItemResponse(
                 report.getId(),
                 "preventive",
-                "health_check",
+                reportCategory,
                 report.getCompletedAt(),
                 normalizeMachineStatus(report.getOverallStatus()),
-                "Health Check",
+                resolvePreventiveTitle(reportCategory),
                 summary,
                 report.getFailureComponent(),
                 report.getFailureMode(),
@@ -175,6 +177,16 @@ public class MachineReportsQueryService {
             case "online", "down", "unknown" -> status.toLowerCase();
             default -> "unknown";
         };
+    }
+
+    private String resolvePreventiveCategory(PreventiveReportEntity report) {
+        return report.getReportCategory() == null || report.getReportCategory().isBlank()
+                ? "machine_maintenance"
+                : report.getReportCategory();
+    }
+
+    private String resolvePreventiveTitle(String reportCategory) {
+        return "health_check".equalsIgnoreCase(reportCategory) ? "Health Check" : "Machine Maintenance";
     }
 
     private String mapServiceReportStatus(String machineReturnedToService) {

@@ -13,37 +13,24 @@ public class PreventiveSyncRequest {
     private String id;
     private String vesselId;
     private String vesselName;
-    private String vesselImo;
-    private String vesselType;
-    private String ownerCustomer;
-    private String vesselContact;
     private String machineId;
     private String machineTag;
-    private String machineModel;
     private String machineSerialNumber;
+    private String machineModel;
     private String machineType;
     private String machineLocation;
     private String machineStarterType;
-    private String machineRefrigerant;
-    private String machineOilType;
-    private String machineControlSystem;
-    private String machineSoftwareVersion;
-    private String machineCompressorType;
-    private String machineMfg;
     private String completedAt;
-    private String overallStatus;
+    private String reportCategory;
     private String downtimeReason;
     private String failureComponent;
     private String failureMode;
     private String failureCode;
     private String failureNotes;
-    private String linkedServiceReportDraftId;
     private Integer faultCount;
     private Integer skippedCount;
-    private List<PreventiveTaskDto> tasks;
-    private List<String> machinePhotoIds;
     private Boolean synced;
-    private String reportCategory;
+    private List<PreventiveTaskDto> tasks;
 
     public PreventiveSyncRequest() {
     }

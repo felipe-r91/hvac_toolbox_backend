@@ -23,7 +23,7 @@ public class CustomerReportEntity {
 
     @Setter
     @Column(name = "source_report_type", nullable = false)
-    private String sourceReportType; // cfr, service_report, health_check, daily
+    private String sourceReportType; // cfr, service_report, machine_maintenance, health_check, daily
 
     // Vessel info
     @Setter

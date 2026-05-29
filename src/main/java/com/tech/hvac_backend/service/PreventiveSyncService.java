@@ -79,10 +79,6 @@ public class PreventiveSyncService {
         entity.setId(request.getId());
         entity.setVesselId(request.getVesselId());
         entity.setVesselName(request.getVesselName());
-        entity.setVesselImo(request.getVesselImo());
-        entity.setVesselType(request.getVesselType());
-        entity.setOwnerCustomer(request.getOwnerCustomer());
-        entity.setVesselContact(request.getVesselContact());
         entity.setMachineId(request.getMachineId());
         entity.setMachineTag(request.getMachineTag());
         entity.setMachineModel(request.getMachineModel());
@@ -90,25 +86,16 @@ public class PreventiveSyncService {
         entity.setMachineType(request.getMachineType());
         entity.setMachineLocation(request.getMachineLocation());
         entity.setMachineStarterType(request.getMachineStarterType());
-        entity.setMachineRefrigerant(request.getMachineRefrigerant());
-        entity.setMachineOilType(request.getMachineOilType());
-        entity.setMachineControlSystem(request.getMachineControlSystem());
-        entity.setMachineSoftwareVersion(request.getMachineSoftwareVersion());
-        entity.setMachineCompressorType(request.getMachineCompressorType());
-        entity.setMachineMfg(request.getMachineMfg());
         entity.setCompletedAt(request.getCompletedAt());
-        entity.setOverallStatus(request.getOverallStatus());
+        entity.setOverallStatus(resolveOverallStatus(request));
         entity.setDowntimeReason(request.getDowntimeReason());
         entity.setFailureComponent(request.getFailureComponent());
         entity.setFailureMode(request.getFailureMode());
         entity.setFailureCode(request.getFailureCode());
-        entity.setLinkedServiceReportDraftId(request.getLinkedServiceReportDraftId());
         entity.setFailureNotes(request.getFailureNotes());
         entity.setFaultCount(defaultInt(request.getFaultCount()));
         entity.setSkippedCount(defaultInt(request.getSkippedCount()));
-        entity.setReportCategory(
-                request.getReportCategory() != null ? request.getReportCategory() : "health_check"
-        );
+        entity.setReportCategory(isBlank(request.getReportCategory()) ? "machine_maintenance" : request.getReportCategory());
         entity.setSynced(Boolean.TRUE);
         return entity;
     }
@@ -126,8 +113,20 @@ public class PreventiveSyncService {
         entity.setNotes(dto.getNotes());
         entity.setMeasuredValue(dto.getMeasuredValue());
         entity.setUnit(dto.getUnit());
+        entity.setPhotoIds(dto.getPhotoIds());
         entity.setCompletedAt(dto.getCompletedAt());
         return entity;
+    }
+
+    private String resolveOverallStatus(PreventiveSyncRequest request) {
+        if (defaultInt(request.getFaultCount()) > 0) {
+            return "down";
+        }
+
+        boolean hasFaultTask = request.getTasks().stream()
+                .anyMatch(task -> "fault".equalsIgnoreCase(task.getStatus()));
+
+        return hasFaultTask ? "down" : "online";
     }
 
     private Integer defaultInt(Integer value) {

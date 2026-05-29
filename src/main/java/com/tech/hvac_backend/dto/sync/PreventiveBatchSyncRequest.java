@@ -1,7 +1,12 @@
 package com.tech.hvac_backend.dto.sync;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
+@Setter
+@Getter
 public class PreventiveBatchSyncRequest {
 
     private List<PreventiveSyncRequest> reports;
@@ -9,11 +14,4 @@ public class PreventiveBatchSyncRequest {
     public PreventiveBatchSyncRequest() {
     }
 
-    public List<PreventiveSyncRequest> getReports() {
-        return reports;
-    }
-
-    public void setReports(List<PreventiveSyncRequest> reports) {
-        this.reports = reports;
-    }
 }
