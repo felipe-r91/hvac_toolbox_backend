@@ -1,11 +1,11 @@
 package com.tech.hvac_backend.service;
 
-import com.tech.hvac_backend.dto.sync.PreventiveSyncRequest;
 import com.tech.hvac_backend.dto.PreventiveTaskDto;
-import com.tech.hvac_backend.entity.PreventiveReportEntity;
-import com.tech.hvac_backend.entity.PreventiveReportTaskEntity;
-import com.tech.hvac_backend.repository.PreventiveReportRepository;
-import com.tech.hvac_backend.repository.PreventiveReportTaskRepository;
+import com.tech.hvac_backend.dto.sync.HealthCheckSyncRequest;
+import com.tech.hvac_backend.entity.HealthCheckReportEntity;
+import com.tech.hvac_backend.entity.HealthCheckReportTaskEntity;
+import com.tech.hvac_backend.repository.HealthCheckReportRepository;
+import com.tech.hvac_backend.repository.HealthCheckReportTaskRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,41 +14,43 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class PreventiveSyncService {
+public class HealthCheckSyncService {
 
-    private final PreventiveReportRepository preventiveReportRepository;
-    private final PreventiveReportTaskRepository preventiveReportTaskRepository;
+    public static final String REPORT_CATEGORY = "health_check";
 
-    public PreventiveSyncService(
-            PreventiveReportRepository preventiveReportRepository,
-            PreventiveReportTaskRepository preventiveReportTaskRepository
+    private final HealthCheckReportRepository healthCheckReportRepository;
+    private final HealthCheckReportTaskRepository healthCheckReportTaskRepository;
+
+    public HealthCheckSyncService(
+            HealthCheckReportRepository healthCheckReportRepository,
+            HealthCheckReportTaskRepository healthCheckReportTaskRepository
     ) {
-        this.preventiveReportRepository = preventiveReportRepository;
-        this.preventiveReportTaskRepository = preventiveReportTaskRepository;
+        this.healthCheckReportRepository = healthCheckReportRepository;
+        this.healthCheckReportTaskRepository = healthCheckReportTaskRepository;
     }
 
     @Transactional
-    public boolean syncPreventiveReport(PreventiveSyncRequest request) {
+    public boolean syncHealthCheckReport(HealthCheckSyncRequest request) {
         validateRequest(request);
 
-        if (preventiveReportRepository.existsById(request.getId())) {
+        if (healthCheckReportRepository.existsById(request.getId())) {
             return false;
         }
 
-        PreventiveReportEntity reportEntity = mapReport(request);
-        preventiveReportRepository.save(reportEntity);
+        HealthCheckReportEntity reportEntity = mapReport(request);
+        healthCheckReportRepository.save(reportEntity);
 
-        List<PreventiveReportTaskEntity> taskEntities = new ArrayList<>();
+        List<HealthCheckReportTaskEntity> taskEntities = new ArrayList<>();
         for (PreventiveTaskDto taskDto : request.getTasks()) {
             taskEntities.add(mapTask(request.getId(), taskDto));
         }
 
-        preventiveReportTaskRepository.saveAll(taskEntities);
+        healthCheckReportTaskRepository.saveAll(taskEntities);
 
         return true;
     }
 
-    private void validateRequest(PreventiveSyncRequest request) {
+    private void validateRequest(HealthCheckSyncRequest request) {
         if (request == null) {
             throw new IllegalArgumentException("Request body cannot be null.");
         }
@@ -72,14 +74,10 @@ public class PreventiveSyncService {
         if (request.getTasks() == null || request.getTasks().isEmpty()) {
             throw new IllegalArgumentException("At least one task is required.");
         }
-
-        if ("health_check".equalsIgnoreCase(request.getReportCategory())) {
-            throw new IllegalArgumentException("Use /api/sync/health-check for health check reports.");
-        }
     }
 
-    private PreventiveReportEntity mapReport(PreventiveSyncRequest request) {
-        PreventiveReportEntity entity = new PreventiveReportEntity();
+    private HealthCheckReportEntity mapReport(HealthCheckSyncRequest request) {
+        HealthCheckReportEntity entity = new HealthCheckReportEntity();
         entity.setId(request.getId());
         entity.setVesselId(request.getVesselId());
         entity.setVesselName(request.getVesselName());
@@ -99,13 +97,12 @@ public class PreventiveSyncService {
         entity.setFailureNotes(request.getFailureNotes());
         entity.setFaultCount(defaultInt(request.getFaultCount()));
         entity.setSkippedCount(defaultInt(request.getSkippedCount()));
-        entity.setReportCategory(isBlank(request.getReportCategory()) ? "machine_maintenance" : request.getReportCategory());
         entity.setSynced(Boolean.TRUE);
         return entity;
     }
 
-    private PreventiveReportTaskEntity mapTask(String reportId, PreventiveTaskDto dto) {
-        PreventiveReportTaskEntity entity = new PreventiveReportTaskEntity();
+    private HealthCheckReportTaskEntity mapTask(String reportId, PreventiveTaskDto dto) {
+        HealthCheckReportTaskEntity entity = new HealthCheckReportTaskEntity();
         entity.setId(UUID.randomUUID().toString());
         entity.setReportId(reportId);
         entity.setTaskTemplateId(dto.getId());
@@ -122,7 +119,7 @@ public class PreventiveSyncService {
         return entity;
     }
 
-    private String resolveOverallStatus(PreventiveSyncRequest request) {
+    private String resolveOverallStatus(HealthCheckSyncRequest request) {
         if (defaultInt(request.getFaultCount()) > 0) {
             return "down";
         }

@@ -13,6 +13,8 @@ public class ReportQueryService {
 
     private final PreventiveReportRepository preventiveReportRepository;
     private final PreventiveReportTaskRepository preventiveReportTaskRepository;
+    private final HealthCheckReportRepository healthCheckReportRepository;
+    private final HealthCheckReportTaskRepository healthCheckReportTaskRepository;
     private final ServiceReportDraftRepository serviceReportDraftRepository;
     private final PhotoRecordRepository photoRecordRepository;
     private final CfrDraftRepository cfrDraftRepository;
@@ -23,6 +25,8 @@ public class ReportQueryService {
     public ReportQueryService(
             PreventiveReportRepository preventiveReportRepository,
             PreventiveReportTaskRepository preventiveReportTaskRepository,
+            HealthCheckReportRepository healthCheckReportRepository,
+            HealthCheckReportTaskRepository healthCheckReportTaskRepository,
             ServiceReportDraftRepository serviceReportDraftRepository,
             PhotoRecordRepository photoRecordRepository,
             CfrDraftRepository cfrDraftRepository,
@@ -32,6 +36,8 @@ public class ReportQueryService {
     ) {
         this.preventiveReportRepository = preventiveReportRepository;
         this.preventiveReportTaskRepository = preventiveReportTaskRepository;
+        this.healthCheckReportRepository = healthCheckReportRepository;
+        this.healthCheckReportTaskRepository = healthCheckReportTaskRepository;
         this.serviceReportDraftRepository = serviceReportDraftRepository;
         this.photoRecordRepository = photoRecordRepository;
         this.cfrDraftRepository = cfrDraftRepository;
@@ -43,7 +49,15 @@ public class ReportQueryService {
     public List<PreventiveReportSummaryResponse> getAllPreventiveReports() {
         return preventiveReportRepository.findAllByOrderByCompletedAtDesc()
                 .stream()
+                .filter(this::isMachineMaintenance)
                 .map(this::mapPreventiveSummary)
+                .toList();
+    }
+
+    public List<PreventiveReportSummaryResponse> getAllHealthCheckReports() {
+        return healthCheckReportRepository.findAllByOrderByCompletedAtDesc()
+                .stream()
+                .map(this::mapHealthCheckSummary)
                 .toList();
     }
 
@@ -117,6 +131,58 @@ public class ReportQueryService {
                 report.getSynced(),
                 tasks,
                 report.getReportCategory()
+        );
+    }
+
+    public PreventiveReportDetailResponse getHealthCheckReportById(String id) {
+        HealthCheckReportEntity report = healthCheckReportRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Health check report not found: " + id));
+
+        MachineEntity machine = getMachine(report.getMachineId());
+        VesselEntity vessel = getVessel(report.getVesselId());
+
+        List<PreventiveReportTaskDetailResponse> tasks = healthCheckReportTaskRepository
+                .findByReportIdOrderByCategoryAscTaskNameAsc(id)
+                .stream()
+                .map(this::mapHealthCheckTaskDetail)
+                .toList();
+
+        return new PreventiveReportDetailResponse(
+                report.getId(),
+                report.getVesselId(),
+                report.getVesselName(),
+                resolveVesselImo(report.getVesselImo(), vessel),
+                prefer(report.getVesselType(), vessel != null ? vessel.getVesselType() : null),
+                prefer(report.getOwnerCustomer(), vessel != null ? vessel.getOwnerCustomer() : null),
+                prefer(report.getVesselContact(), vessel != null ? vessel.getVesselContact() : null),
+                report.getMachineId(),
+                report.getMachineTag(),
+                report.getMachineModel(),
+                prefer(report.getMachineSerialNumber(), machine != null ? machine.getSerialNumber() : null),
+                report.getMachineType(),
+                report.getMachineLocation(),
+                report.getMachineStarterType(),
+                prefer(report.getMachineRefrigerant(), machine != null ? machine.getRefrigerant() : null),
+                prefer(report.getMachineOilType(), machine != null ? machine.getOilType() : null),
+                prefer(report.getMachineControlSystem(), machine != null ? machine.getControlSystem() : null),
+                prefer(report.getMachineSoftwareVersion(), machine != null ? machine.getSoftwareVersion() : null),
+                prefer(report.getMachineCompressorType(), machine != null ? machine.getCompressorType() : null),
+                prefer(report.getMachineMfg(), machine != null ? machine.getMfg() : null),
+                machine != null ? machine.getMachinePhotoId() : null,
+                machine != null ? machine.getMachinePhotoPreviewUrl() : null,
+                report.getCompletedAt(),
+                report.getOverallStatus(),
+                report.getDowntimeReason(),
+                report.getFailureComponent(),
+                report.getFailureMode(),
+                report.getFailureCode(),
+                report.getFailureNotes(),
+                null,
+                report.getFaultCount(),
+                report.getSkippedCount(),
+                report.getSynced(),
+                tasks,
+                HealthCheckSyncService.REPORT_CATEGORY
         );
     }
 
@@ -291,6 +357,23 @@ public class ReportQueryService {
         );
     }
 
+    private PreventiveReportSummaryResponse mapHealthCheckSummary(HealthCheckReportEntity entity) {
+        VesselEntity vessel = getVessel(entity.getVesselId());
+
+        return new PreventiveReportSummaryResponse(
+                entity.getId(),
+                entity.getVesselName(),
+                resolveVesselImo(entity.getVesselImo(), vessel),
+                entity.getMachineTag(),
+                entity.getMachineModel(),
+                entity.getMachineLocation(),
+                entity.getCompletedAt(),
+                entity.getOverallStatus(),
+                entity.getFaultCount(),
+                entity.getSkippedCount()
+        );
+    }
+
     private ServiceReportDraftSummaryResponse mapServiceReportSummary(ServiceReportDraftEntity entity) {
         VesselEntity vessel = getVessel(entity.getVesselId());
 
@@ -366,6 +449,29 @@ public class ReportQueryService {
                 entity.getPhotoIds(),
                 entity.getCompletedAt()
         );
+    }
+
+    private PreventiveReportTaskDetailResponse mapHealthCheckTaskDetail(HealthCheckReportTaskEntity entity) {
+        return new PreventiveReportTaskDetailResponse(
+                entity.getId(),
+                entity.getTaskTemplateId(),
+                entity.getCategory(),
+                entity.getTaskName(),
+                entity.getTool(),
+                entity.getChecked(),
+                entity.getStatus(),
+                entity.getNotes(),
+                entity.getMeasuredValue(),
+                entity.getUnit(),
+                entity.getPhotoIds(),
+                entity.getCompletedAt()
+        );
+    }
+
+    private boolean isMachineMaintenance(PreventiveReportEntity report) {
+        return report.getReportCategory() == null
+                || report.getReportCategory().isBlank()
+                || !"health_check".equalsIgnoreCase(report.getReportCategory());
     }
 
     private MachineEntity getMachine(String machineId) {

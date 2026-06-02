@@ -26,6 +26,15 @@ public class MachineReportsController {
         );
     }
 
+    @GetMapping("/{machineId}/health-check")
+    public ResponseEntity<List<MachineTimelineItemResponse>> getHealthCheckReports(
+            @PathVariable String machineId
+    ) {
+        return ResponseEntity.ok(
+                machineReportsQueryService.getHealthCheckReportsByMachineId(machineId)
+        );
+    }
+
     @GetMapping("/{machineId}/service-report")
     public ResponseEntity<List<MachineTimelineItemResponse>> getServiceReports(
             @PathVariable String machineId

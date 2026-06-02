@@ -113,12 +113,17 @@ public class PhotoController {
             throw new IllegalArgumentException("For MACHINE_PROFILE photos, ownerId must match machineId.");
         }
 
-        if (ownerType == PhotoOwnerType.PREVENTIVE_TASK && (taskId == null || taskId.isBlank())) {
-            throw new IllegalArgumentException("taskId is required for PREVENTIVE_TASK photos.");
+        if (isTaskPhoto(ownerType) && (taskId == null || taskId.isBlank())) {
+            throw new IllegalArgumentException("taskId is required for task photos.");
         }
 
-        if (ownerType != PhotoOwnerType.PREVENTIVE_TASK && taskId != null && !taskId.isBlank()) {
-            throw new IllegalArgumentException("taskId must only be sent for PREVENTIVE_TASK photos.");
+        if (!isTaskPhoto(ownerType) && taskId != null && !taskId.isBlank()) {
+            throw new IllegalArgumentException("taskId must only be sent for task photos.");
         }
+    }
+
+    private boolean isTaskPhoto(PhotoOwnerType ownerType) {
+        return ownerType == PhotoOwnerType.PREVENTIVE_TASK
+                || ownerType == PhotoOwnerType.HEALTH_CHECK_TASK;
     }
 }

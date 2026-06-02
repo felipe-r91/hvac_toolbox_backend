@@ -2,6 +2,8 @@ package com.tech.hvac_backend.controller;
 
 import com.tech.hvac_backend.dto.BatchSyncItemResponse;
 import com.tech.hvac_backend.dto.sync.BatchSyncResponse;
+import com.tech.hvac_backend.dto.sync.HealthCheckBatchSyncRequest;
+import com.tech.hvac_backend.dto.sync.HealthCheckSyncRequest;
 import com.tech.hvac_backend.dto.sync.PreventiveBatchSyncRequest;
 import com.tech.hvac_backend.dto.sync.PreventiveSyncRequest;
 import com.tech.hvac_backend.dto.sync.DailyBatchSyncRequest;
@@ -9,6 +11,7 @@ import com.tech.hvac_backend.dto.sync.DailySyncRequest;
 import com.tech.hvac_backend.dto.sync.ServiceReportBatchSyncRequest;
 import com.tech.hvac_backend.dto.sync.ServiceReportSyncRequest;
 import com.tech.hvac_backend.dto.SyncResponse;
+import com.tech.hvac_backend.service.HealthCheckSyncService;
 import com.tech.hvac_backend.service.PreventiveSyncService;
 import com.tech.hvac_backend.service.ServiceReportSyncService;
 import com.tech.hvac_backend.service.DailySyncService;
@@ -24,15 +27,18 @@ import java.util.List;
 public class SyncController {
 
     private final PreventiveSyncService preventiveSyncService;
+    private final HealthCheckSyncService healthCheckSyncService;
     private final ServiceReportSyncService serviceReportSyncService;
     private final DailySyncService dailySyncService;
 
     public SyncController(
             PreventiveSyncService preventiveSyncService,
+            HealthCheckSyncService healthCheckSyncService,
             ServiceReportSyncService serviceReportSyncService,
             DailySyncService dailySyncService
     ) {
         this.preventiveSyncService = preventiveSyncService;
+        this.healthCheckSyncService = healthCheckSyncService;
         this.serviceReportSyncService = serviceReportSyncService;
         this.dailySyncService = dailySyncService;
     }
@@ -104,6 +110,97 @@ public class SyncController {
                             report.getId(),
                             "already_synced",
                             "Preventive report was already synced previously."
+                    ));
+                }
+            } catch (Exception ex) {
+                failed++;
+                items.add(new BatchSyncItemResponse(
+                        report != null ? report.getId() : null,
+                        "failed",
+                        ex.getMessage()
+                ));
+            }
+        }
+
+        BatchSyncResponse response = new BatchSyncResponse(
+                "completed",
+                request.getReports().size(),
+                created,
+                alreadySynced,
+                failed,
+                items
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/health-check")
+    public ResponseEntity<SyncResponse> syncHealthCheck(
+            @RequestBody HealthCheckSyncRequest request
+    ) {
+        boolean created = healthCheckSyncService.syncHealthCheckReport(request);
+
+        if (!created) {
+            SyncResponse response = new SyncResponse(
+                    "already_synced",
+                    request.getId(),
+                    "Health check report was already synced previously."
+            );
+
+            return ResponseEntity.ok(response);
+        }
+
+        SyncResponse response = new SyncResponse(
+                "success",
+                request.getId(),
+                "Health check report synced successfully."
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+    @PostMapping("/health-check/batch")
+    public ResponseEntity<BatchSyncResponse> syncHealthCheckBatch(
+            @RequestBody HealthCheckBatchSyncRequest request
+    ) {
+        if (request == null || request.getReports() == null || request.getReports().isEmpty()) {
+            BatchSyncResponse response = new BatchSyncResponse(
+                    "invalid_request",
+                    0,
+                    0,
+                    0,
+                    0,
+                    List.of()
+            );
+
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        List<BatchSyncItemResponse> items = new ArrayList<>();
+
+        int created = 0;
+        int alreadySynced = 0;
+        int failed = 0;
+
+        for (HealthCheckSyncRequest report : request.getReports()) {
+            try {
+                boolean inserted = healthCheckSyncService.syncHealthCheckReport(report);
+
+                if (inserted) {
+                    created++;
+                    items.add(new BatchSyncItemResponse(
+                            report.getId(),
+                            "success",
+                            "Health check report synced successfully."
+                    ));
+                } else {
+                    alreadySynced++;
+                    items.add(new BatchSyncItemResponse(
+                            report.getId(),
+                            "already_synced",
+                            "Health check report was already synced previously."
                     ));
                 }
             } catch (Exception ex) {

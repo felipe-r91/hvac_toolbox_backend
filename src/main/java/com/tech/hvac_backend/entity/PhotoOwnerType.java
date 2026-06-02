@@ -5,6 +5,7 @@ public enum PhotoOwnerType {
     SERVICE_REPORT_DRAFT,
     PREVENTIVE_MACHINE,
     PREVENTIVE_TASK,
+    HEALTH_CHECK_TASK,
     CFR_DRAFT,
     DAILY_DRAFT
 }

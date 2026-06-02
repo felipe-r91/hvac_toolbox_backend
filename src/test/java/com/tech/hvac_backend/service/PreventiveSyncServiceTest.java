@@ -14,6 +14,7 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class PreventiveSyncServiceTest {
@@ -70,6 +71,17 @@ class PreventiveSyncServiceTest {
         assertThat(savedTask.getTaskTemplateId()).isEqualTo("task_1");
         assertThat(savedTask.getStatus()).isEqualTo("fault");
         assertThat(savedTask.getPhotoIds()).containsExactly("photo_1", "photo_2");
+    }
+
+    @Test
+    void syncPreventiveRejectsHealthCheckPayloads() {
+        PreventiveSyncRequest request = baseRequest();
+        request.setReportCategory("health_check");
+        request.setTasks(List.of(okTask()));
+
+        assertThatThrownBy(() -> service.syncPreventiveReport(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Use /api/sync/health-check for health check reports.");
     }
 
     private PreventiveSyncRequest baseRequest() {

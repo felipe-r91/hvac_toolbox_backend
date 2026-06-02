@@ -3,10 +3,12 @@ package com.tech.hvac_backend.service;
 import com.tech.hvac_backend.dto.response.MachineTimelineItemResponse;
 import com.tech.hvac_backend.entity.CfrDraftEntity;
 import com.tech.hvac_backend.entity.DailyDraftEntity;
+import com.tech.hvac_backend.entity.HealthCheckReportEntity;
 import com.tech.hvac_backend.entity.PreventiveReportEntity;
 import com.tech.hvac_backend.entity.ServiceReportDraftEntity;
 import com.tech.hvac_backend.repository.CfrDraftRepository;
 import com.tech.hvac_backend.repository.DailyDraftRepository;
+import com.tech.hvac_backend.repository.HealthCheckReportRepository;
 import com.tech.hvac_backend.repository.PreventiveReportRepository;
 import com.tech.hvac_backend.repository.ServiceReportDraftRepository;
 import org.springframework.stereotype.Service;
@@ -19,17 +21,20 @@ import java.util.stream.Stream;
 public class MachineReportsQueryService {
 
     private final PreventiveReportRepository preventiveReportRepository;
+    private final HealthCheckReportRepository healthCheckReportRepository;
     private final ServiceReportDraftRepository serviceReportDraftRepository;
     private final CfrDraftRepository cfrDraftRepository;
     private final DailyDraftRepository dailyDraftRepository;
 
     public MachineReportsQueryService(
             PreventiveReportRepository preventiveReportRepository,
+            HealthCheckReportRepository healthCheckReportRepository,
             ServiceReportDraftRepository serviceReportDraftRepository,
             CfrDraftRepository cfrDraftRepository,
             DailyDraftRepository dailyDraftRepository
     ) {
         this.preventiveReportRepository = preventiveReportRepository;
+        this.healthCheckReportRepository = healthCheckReportRepository;
         this.serviceReportDraftRepository = serviceReportDraftRepository;
         this.cfrDraftRepository = cfrDraftRepository;
         this.dailyDraftRepository = dailyDraftRepository;
@@ -38,7 +43,15 @@ public class MachineReportsQueryService {
     public List<MachineTimelineItemResponse> getPreventiveReportsByMachineId(String machineId) {
         return preventiveReportRepository.findByMachineIdOrderByCompletedAtDesc(machineId)
                 .stream()
+                .filter(this::isMachineMaintenance)
                 .map(this::mapPreventive)
+                .toList();
+    }
+
+    public List<MachineTimelineItemResponse> getHealthCheckReportsByMachineId(String machineId) {
+        return healthCheckReportRepository.findByMachineIdOrderByCompletedAtDesc(machineId)
+                .stream()
+                .map(this::mapHealthCheck)
                 .toList();
     }
 
@@ -65,11 +78,12 @@ public class MachineReportsQueryService {
 
     public List<MachineTimelineItemResponse> getTimelineByMachineId(String machineId) {
         List<MachineTimelineItemResponse> preventive = getPreventiveReportsByMachineId(machineId);
+        List<MachineTimelineItemResponse> healthChecks = getHealthCheckReportsByMachineId(machineId);
         List<MachineTimelineItemResponse> serviceReports = getServiceReportsByMachineId(machineId);
         List<MachineTimelineItemResponse> cfr = getCfrReportsByMachineId(machineId);
         List<MachineTimelineItemResponse> daily = getDailyReportsByMachineId(machineId);
 
-        return Stream.of(preventive, serviceReports, cfr, daily)
+        return Stream.of(preventive, healthChecks, serviceReports, cfr, daily)
                 .flatMap(List::stream)
                 .sorted(Comparator.comparing(MachineTimelineItemResponse::getDate).reversed())
                 .toList();
@@ -119,6 +133,28 @@ public class MachineReportsQueryService {
                 draft.getFailureComponent(),
                 draft.getFailureMode(),
                 draft.getFailureCode(),
+                null,
+                null
+        );
+    }
+
+    private MachineTimelineItemResponse mapHealthCheck(HealthCheckReportEntity report) {
+        String summary = report.getFailureNotes();
+        if (summary == null || summary.isBlank()) {
+            summary = "Health check completed.";
+        }
+
+        return new MachineTimelineItemResponse(
+                report.getId(),
+                "health_check",
+                HealthCheckSyncService.REPORT_CATEGORY,
+                report.getCompletedAt(),
+                normalizeMachineStatus(report.getOverallStatus()),
+                "Health Check",
+                summary,
+                report.getFailureComponent(),
+                report.getFailureMode(),
+                report.getFailureCode(),
                 null,
                 null
         );
@@ -187,6 +223,12 @@ public class MachineReportsQueryService {
 
     private String resolvePreventiveTitle(String reportCategory) {
         return "health_check".equalsIgnoreCase(reportCategory) ? "Health Check" : "Machine Maintenance";
+    }
+
+    private boolean isMachineMaintenance(PreventiveReportEntity report) {
+        return report.getReportCategory() == null
+                || report.getReportCategory().isBlank()
+                || !"health_check".equalsIgnoreCase(report.getReportCategory());
     }
 
     private String mapServiceReportStatus(String machineReturnedToService) {

@@ -22,6 +22,11 @@ public class ReportController {
         return ResponseEntity.ok(reportQueryService.getAllPreventiveReports());
     }
 
+    @GetMapping("/health-check")
+    public ResponseEntity<List<PreventiveReportSummaryResponse>> getHealthCheckReports() {
+        return ResponseEntity.ok(reportQueryService.getAllHealthCheckReports());
+    }
+
     @GetMapping("/service-report")
     public ResponseEntity<List<ServiceReportDraftSummaryResponse>> getServiceReportDrafts() {
         return ResponseEntity.ok(reportQueryService.getAllServiceReportDrafts());
@@ -40,6 +45,11 @@ public class ReportController {
     @GetMapping("/preventive/{id}")
     public ResponseEntity<PreventiveReportDetailResponse> getPreventiveReportById(@PathVariable String id) {
         return ResponseEntity.ok(reportQueryService.getPreventiveReportById(id));
+    }
+
+    @GetMapping("/health-check/{id}")
+    public ResponseEntity<PreventiveReportDetailResponse> getHealthCheckReportById(@PathVariable String id) {
+        return ResponseEntity.ok(reportQueryService.getHealthCheckReportById(id));
     }
 
     @GetMapping("/service-report/{id}")
