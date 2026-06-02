@@ -10,8 +10,8 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
-@Table(name = "health_check_tasks")
-public class HealthCheckTaskEntity {
+@Table(name = "health_check_template_tasks")
+public class HealthCheckTemplateTaskEntity {
 
     @Id
     private String id;
@@ -19,33 +19,33 @@ public class HealthCheckTaskEntity {
     @Column(nullable = false, length = 36)
     private String templateVersionId;
 
+    @Column(nullable = false, length = 80)
+    private String taskCode;
+
     @Column(nullable = false, length = 60)
     private String category;
 
     @Column(nullable = false, length = 500)
     private String taskName;
 
-    @Column(length = 30)
-    private String status;
-
     @Column(length = 255)
-    private String measuredValue;
-
-    @Column(length = 30)
-    private String unit;
-
-    @Column(length = 4000)
-    private String notes;
+    private String tool;
 
     @Column(nullable = false)
     private Integer sortOrder;
+
+    @Column(nullable = false)
+    private Boolean isRequired = true;
+
+    @Column(nullable = false)
+    private Boolean measurable = false;
+
+    @Column(length = 30)
+    private String defaultUnit;
 
     @Column(nullable = false)
     private Boolean photoRequiredOnFault = true;
 
     @Column(nullable = false)
     private Boolean photoRequiredOnAttention = true;
-
-    public HealthCheckTaskEntity() {
-    }
 }

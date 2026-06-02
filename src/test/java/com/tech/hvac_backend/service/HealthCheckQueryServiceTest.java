@@ -2,13 +2,13 @@ package com.tech.hvac_backend.service;
 
 import com.tech.hvac_backend.dto.response.MachineHealthCheckResponse;
 import com.tech.hvac_backend.dto.response.MaintenancePlanTaskResponse;
-import com.tech.hvac_backend.entity.HealthCheckTaskEntity;
 import com.tech.hvac_backend.entity.HealthCheckTemplateEntity;
+import com.tech.hvac_backend.entity.HealthCheckTemplateTaskEntity;
 import com.tech.hvac_backend.entity.HealthCheckTemplateVersionEntity;
 import com.tech.hvac_backend.entity.MachineEntity;
 import com.tech.hvac_backend.exception.ResourceNotFoundException;
-import com.tech.hvac_backend.repository.HealthCheckTaskRepository;
 import com.tech.hvac_backend.repository.HealthCheckTemplateRepository;
+import com.tech.hvac_backend.repository.HealthCheckTemplateTaskRepository;
 import com.tech.hvac_backend.repository.HealthCheckTemplateVersionRepository;
 import com.tech.hvac_backend.repository.MachineRepository;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ class HealthCheckQueryServiceTest {
             new HealthCheckTemplateRepositoryStub();
     private final HealthCheckTemplateVersionRepositoryStub versionRepositoryStub =
             new HealthCheckTemplateVersionRepositoryStub();
-    private final HealthCheckTaskRepositoryStub taskRepositoryStub = new HealthCheckTaskRepositoryStub();
+    private final HealthCheckTemplateTaskRepositoryStub taskRepositoryStub = new HealthCheckTemplateTaskRepositoryStub();
     private final HealthCheckQueryService service = new HealthCheckQueryService(
             machineRepositoryStub.createProxy(),
             templateRepositoryStub.createProxy(),
@@ -43,8 +43,8 @@ class HealthCheckQueryServiceTest {
         templateRepositoryStub.template = template(true);
         versionRepositoryStub.publishedVersion = version("health_check_template_version_2", 2);
         taskRepositoryStub.tasks = List.of(
-                task("hc_1", "health_check_template_version_2", "Compressor", "Check electrical current", "Ok", "87", "Amps", null, 1),
-                task("hc_2", "health_check_template_version_2", "Evaporator", "Leaving Chilled Water Temperature", "Fault", "100", "F", "Bad sensor", 2)
+                task("hc_1", "health_check_template_version_2", "HC-COMP-001", "Compressor", "Check electrical current", "Clamp meter", true, true, "Amps", 1),
+                task("hc_2", "health_check_template_version_2", "HC-EVAP-001", "Evaporator", "Leaving Chilled Water Temperature", null, true, true, "F", 2)
         );
 
         MachineHealthCheckResponse response = service.getHealthCheck("machine_1");
@@ -57,12 +57,14 @@ class HealthCheckQueryServiceTest {
         assertThat(response.getTasks()).hasSize(2);
 
         MaintenancePlanTaskResponse firstTask = response.getTasks().getFirst();
-        assertThat(firstTask.getId()).isEqualTo("hc_1");
+        assertThat(firstTask.getId()).isEqualTo("HC-COMP-001");
         assertThat(firstTask.getCategory()).isEqualTo("Compressor");
         assertThat(firstTask.getTask()).isEqualTo("Check electrical current");
+        assertThat(firstTask.getTool()).isEqualTo("Clamp meter");
         assertThat(firstTask.getChecked()).isFalse();
-        assertThat(firstTask.getStatus()).isEqualTo("Ok");
-        assertThat(firstTask.getMeasuredValue()).isEqualTo("87");
+        assertThat(firstTask.getStatus()).isEqualTo("pending");
+        assertThat(firstTask.getNotes()).isEmpty();
+        assertThat(firstTask.getMeasuredValue()).isEmpty();
         assertThat(firstTask.getUnit()).isEqualTo("Amps");
         assertThat(firstTask.getRequired()).isTrue();
         assertThat(firstTask.getMeasurable()).isTrue();
@@ -76,7 +78,7 @@ class HealthCheckQueryServiceTest {
         templateRepositoryStub.template = template(true);
         versionRepositoryStub.publishedVersion = version("health_check_template_version_1", 1);
         taskRepositoryStub.tasks = List.of(
-                task("hc_3", "health_check_template_version_1", "Starter", "Check Fans", null, "null", "null", "null", 3)
+                task("hc_3", "health_check_template_version_1", "HC-START-001", "Starter", "Check Fans", null, true, false, null, 3)
         );
 
         MaintenancePlanTaskResponse task = service.getHealthCheck("machine_1").getTasks().getFirst();
@@ -84,7 +86,8 @@ class HealthCheckQueryServiceTest {
         assertThat(task.getStatus()).isEqualTo("pending");
         assertThat(task.getNotes()).isEmpty();
         assertThat(task.getMeasuredValue()).isEmpty();
-        assertThat(task.getUnit()).isEmpty();
+        assertThat(task.getUnit()).isNull();
+        assertThat(task.getRequired()).isTrue();
         assertThat(task.getMeasurable()).isFalse();
     }
 
@@ -93,7 +96,7 @@ class HealthCheckQueryServiceTest {
         machineRepositoryStub.machine = machine();
         templateRepositoryStub.template = template(true);
         versionRepositoryStub.publishedVersion = version("health_check_template_version_1", 1);
-        HealthCheckTaskEntity sourceTask = task("hc_4", "health_check_template_version_1", "Control System", "Check Parameters", "Ok", null, null, null, 4);
+        HealthCheckTemplateTaskEntity sourceTask = task("hc_4", "health_check_template_version_1", "HC-CTRL-001", "Control System", "Check Parameters", null, true, false, null, 4);
         sourceTask.setPhotoRequiredOnFault(false);
         sourceTask.setPhotoRequiredOnAttention(false);
         taskRepositoryStub.tasks = List.of(sourceTask);
@@ -110,7 +113,7 @@ class HealthCheckQueryServiceTest {
         templateRepositoryStub.template = template(false);
         versionRepositoryStub.publishedVersion = version("health_check_template_version_1", 1);
         taskRepositoryStub.tasks = List.of(
-                task("hc_5", "health_check_template_version_1", "Compressor", "Check oil pressure", "Ok", "5", "bar", null, 5)
+                task("hc_5", "health_check_template_version_1", "HC-COMP-004", "Compressor", "Check oil pressure", null, true, true, "bar", 5)
         );
 
         MachineHealthCheckResponse response = service.getHealthCheck("machine_1");
@@ -170,27 +173,29 @@ class HealthCheckQueryServiceTest {
         return version;
     }
 
-    private HealthCheckTaskEntity task(
+    private HealthCheckTemplateTaskEntity task(
             String id,
             String templateVersionId,
+            String taskCode,
             String category,
             String taskName,
-            String status,
-            String measuredValue,
-            String unit,
-            String notes,
+            String tool,
+            Boolean isRequired,
+            Boolean measurable,
+            String defaultUnit,
             Integer sortOrder
     ) {
-        HealthCheckTaskEntity task = new HealthCheckTaskEntity();
+        HealthCheckTemplateTaskEntity task = new HealthCheckTemplateTaskEntity();
         task.setId(id);
         task.setTemplateVersionId(templateVersionId);
+        task.setTaskCode(taskCode);
         task.setCategory(category);
         task.setTaskName(taskName);
-        task.setStatus(status);
-        task.setMeasuredValue(measuredValue);
-        task.setUnit(unit);
-        task.setNotes(notes);
+        task.setTool(tool);
         task.setSortOrder(sortOrder);
+        task.setIsRequired(isRequired);
+        task.setMeasurable(measurable);
+        task.setDefaultUnit(defaultUnit);
         task.setPhotoRequiredOnFault(true);
         task.setPhotoRequiredOnAttention(true);
         return task;
@@ -265,14 +270,14 @@ class HealthCheckQueryServiceTest {
         }
     }
 
-    private static class HealthCheckTaskRepositoryStub implements InvocationHandler {
-        private List<HealthCheckTaskEntity> tasks = List.of();
+    private static class HealthCheckTemplateTaskRepositoryStub implements InvocationHandler {
+        private List<HealthCheckTemplateTaskEntity> tasks = List.of();
         private String requestedTemplateVersionId;
 
-        private HealthCheckTaskRepository createProxy() {
-            return (HealthCheckTaskRepository) Proxy.newProxyInstance(
-                    HealthCheckTaskRepository.class.getClassLoader(),
-                    new Class<?>[]{HealthCheckTaskRepository.class},
+        private HealthCheckTemplateTaskRepository createProxy() {
+            return (HealthCheckTemplateTaskRepository) Proxy.newProxyInstance(
+                    HealthCheckTemplateTaskRepository.class.getClassLoader(),
+                    new Class<?>[]{HealthCheckTemplateTaskRepository.class},
                     this
             );
         }
@@ -286,7 +291,7 @@ class HealthCheckQueryServiceTest {
                             .filter(task -> requestedTemplateVersionId.equals(task.getTemplateVersionId()))
                             .toList();
                 }
-                case "toString" -> "HealthCheckTaskRepositoryStub";
+                case "toString" -> "HealthCheckTemplateTaskRepositoryStub";
                 default -> defaultValue(method.getReturnType());
             };
         }

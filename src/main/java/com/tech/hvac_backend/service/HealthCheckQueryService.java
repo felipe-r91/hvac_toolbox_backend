@@ -3,13 +3,13 @@ package com.tech.hvac_backend.service;
 import com.tech.hvac_backend.dto.response.MachineHealthCheckResponse;
 import com.tech.hvac_backend.dto.response.MachinePlanMachineResponse;
 import com.tech.hvac_backend.dto.response.MaintenancePlanTaskResponse;
-import com.tech.hvac_backend.entity.HealthCheckTaskEntity;
 import com.tech.hvac_backend.entity.HealthCheckTemplateEntity;
+import com.tech.hvac_backend.entity.HealthCheckTemplateTaskEntity;
 import com.tech.hvac_backend.entity.HealthCheckTemplateVersionEntity;
 import com.tech.hvac_backend.entity.MachineEntity;
 import com.tech.hvac_backend.exception.ResourceNotFoundException;
-import com.tech.hvac_backend.repository.HealthCheckTaskRepository;
 import com.tech.hvac_backend.repository.HealthCheckTemplateRepository;
+import com.tech.hvac_backend.repository.HealthCheckTemplateTaskRepository;
 import com.tech.hvac_backend.repository.HealthCheckTemplateVersionRepository;
 import com.tech.hvac_backend.repository.MachineRepository;
 import org.springframework.stereotype.Service;
@@ -24,18 +24,18 @@ public class HealthCheckQueryService {
     private final MachineRepository machineRepository;
     private final HealthCheckTemplateRepository healthCheckTemplateRepository;
     private final HealthCheckTemplateVersionRepository healthCheckTemplateVersionRepository;
-    private final HealthCheckTaskRepository healthCheckTaskRepository;
+    private final HealthCheckTemplateTaskRepository healthCheckTemplateTaskRepository;
 
     public HealthCheckQueryService(
             MachineRepository machineRepository,
             HealthCheckTemplateRepository healthCheckTemplateRepository,
             HealthCheckTemplateVersionRepository healthCheckTemplateVersionRepository,
-            HealthCheckTaskRepository healthCheckTaskRepository
+            HealthCheckTemplateTaskRepository healthCheckTemplateTaskRepository
     ) {
         this.machineRepository = machineRepository;
         this.healthCheckTemplateRepository = healthCheckTemplateRepository;
         this.healthCheckTemplateVersionRepository = healthCheckTemplateVersionRepository;
-        this.healthCheckTaskRepository = healthCheckTaskRepository;
+        this.healthCheckTemplateTaskRepository = healthCheckTemplateTaskRepository;
     }
 
     public MachineHealthCheckResponse getHealthCheck(String machineId) {
@@ -72,12 +72,12 @@ public class HealthCheckQueryService {
                 .orElse(null);
     }
 
-    private List<HealthCheckTaskEntity> getPublishedHealthCheckTasks(HealthCheckTemplateVersionEntity templateVersion) {
+    private List<HealthCheckTemplateTaskEntity> getPublishedHealthCheckTasks(HealthCheckTemplateVersionEntity templateVersion) {
         if (templateVersion == null) {
             return List.of();
         }
 
-        return healthCheckTaskRepository.findByTemplateVersionIdOrderBySortOrderAsc(templateVersion.getId());
+        return healthCheckTemplateTaskRepository.findByTemplateVersionIdOrderBySortOrderAsc(templateVersion.getId());
     }
 
     private MachinePlanMachineResponse mapMachine(MachineEntity machine) {
@@ -101,33 +101,25 @@ public class HealthCheckQueryService {
         );
     }
 
-    private MaintenancePlanTaskResponse mapTask(HealthCheckTaskEntity entity) {
+    private MaintenancePlanTaskResponse mapTask(HealthCheckTemplateTaskEntity entity) {
         return new MaintenancePlanTaskResponse(
-                entity.getId(),
+                entity.getTaskCode(),
                 entity.getCategory(),
                 entity.getTaskName(),
-                null,
+                entity.getTool(),
                 false,
-                defaultString(entity.getStatus(), "pending"),
-                defaultString(entity.getNotes(), ""),
-                defaultString(entity.getMeasuredValue(), ""),
-                defaultString(entity.getUnit(), ""),
-                true,
-                hasText(entity.getMeasuredValue()) || hasText(entity.getUnit()),
+                "pending",
+                "",
+                "",
+                entity.getDefaultUnit(),
+                entity.getIsRequired(),
+                entity.getMeasurable(),
                 defaultBoolean(entity.getPhotoRequiredOnFault()),
                 defaultBoolean(entity.getPhotoRequiredOnAttention())
         );
     }
 
-    private String defaultString(String value, String defaultValue) {
-        return hasText(value) ? value : defaultValue;
-    }
-
     private Boolean defaultBoolean(Boolean value) {
         return value == null || value;
-    }
-
-    private boolean hasText(String value) {
-        return value != null && !value.isBlank() && !"null".equalsIgnoreCase(value.trim());
     }
 }
