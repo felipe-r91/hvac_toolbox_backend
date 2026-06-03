@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface HealthCheckTemplateRepository extends JpaRepository<HealthCheckTemplateEntity, String> {
     Optional<HealthCheckTemplateEntity> findByCode(String code);
+
+    boolean existsByCode(String code);
 }

@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface MaintenanceTemplateRepository extends JpaRepository<MaintenanceTemplateEntity, String> {
     Optional<MaintenanceTemplateEntity> findByCode(String code);
+
+    boolean existsByCode(String code);
 }
