@@ -6,6 +6,7 @@ import com.openai.models.responses.ResponseCreateParams;
 import com.openai.models.responses.ResponseOutputText;
 import com.tech.hvac_backend.dto.ai.AiCustomerReportResponse;
 import com.tech.hvac_backend.dto.ai.AiDailyReportResponse;
+import com.tech.hvac_backend.dto.ai.AiHealthCheckReportResponse;
 import com.tech.hvac_backend.dto.ai.AiMachineMaintenanceReportResponse;
 import com.tech.hvac_backend.dto.ai.AiServiceReportResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +43,10 @@ public class OpenAiReportGenerationService {
 
     public AiMachineMaintenanceReportResponse generateMachineMaintenanceReport(String prompt) {
         return generateReport(prompt, AiMachineMaintenanceReportResponse.class);
+    }
+
+    public AiHealthCheckReportResponse generateHealthCheckReport(String prompt) {
+        return generateReport(prompt, AiHealthCheckReportResponse.class);
     }
 
     private <T> T generateReport(String prompt, Class<T> responseType) {
