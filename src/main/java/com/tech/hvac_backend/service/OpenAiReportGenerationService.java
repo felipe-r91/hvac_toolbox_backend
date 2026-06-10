@@ -9,12 +9,13 @@ import com.tech.hvac_backend.dto.ai.AiDailyReportResponse;
 import com.tech.hvac_backend.dto.ai.AiHealthCheckReportResponse;
 import com.tech.hvac_backend.dto.ai.AiMachineMaintenanceReportResponse;
 import com.tech.hvac_backend.dto.ai.AiServiceReportResponse;
+import com.tech.hvac_backend.dto.ai.AiServiceReportFromDailyReportsResult;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
 @Service
-public class OpenAiReportGenerationService {
+public class OpenAiReportGenerationService implements ServiceReportFromDailyReportsAiGenerator {
 
     private final OpenAIClient client;
     private final String model;
@@ -35,6 +36,11 @@ public class OpenAiReportGenerationService {
 
     public AiServiceReportResponse generateServiceReport(String prompt) {
         return generateReport(prompt, AiServiceReportResponse.class);
+    }
+
+    @Override
+    public AiServiceReportFromDailyReportsResult generateServiceReportFromDailyReports(String prompt) {
+        return generateReport(prompt, AiServiceReportFromDailyReportsResult.class);
     }
 
     public AiDailyReportResponse generateDailyReport(String prompt) {
