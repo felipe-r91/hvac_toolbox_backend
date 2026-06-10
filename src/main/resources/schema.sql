@@ -1,0 +1,2 @@
+ALTER TABLE IF EXISTS photo_records
+    ALTER COLUMN machine_id DROP NOT NULL;

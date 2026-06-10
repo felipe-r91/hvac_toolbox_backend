@@ -25,8 +25,9 @@ public class PhotoRecordEntity {
     @Column(nullable = false)
     private String ownerId;
 
-    @Column(nullable = false)
     private String machineId;
+
+    private String partId;
 
     private String taskId;
 
