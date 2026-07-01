@@ -4,8 +4,11 @@ import com.tech.hvac_backend.dto.PreventiveTaskDto;
 import com.tech.hvac_backend.dto.sync.HealthCheckSyncRequest;
 import com.tech.hvac_backend.entity.HealthCheckReportEntity;
 import com.tech.hvac_backend.entity.HealthCheckReportTaskEntity;
+import com.tech.hvac_backend.entity.PhotoOwnerType;
+import com.tech.hvac_backend.entity.PhotoRecordEntity;
 import com.tech.hvac_backend.repository.HealthCheckReportRepository;
 import com.tech.hvac_backend.repository.HealthCheckReportTaskRepository;
+import com.tech.hvac_backend.repository.PhotoRecordRepository;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationHandler;
@@ -22,9 +25,12 @@ class HealthCheckSyncServiceTest {
             new HealthCheckReportRepositoryStub();
     private final HealthCheckReportTaskRepositoryStub taskRepositoryStub =
             new HealthCheckReportTaskRepositoryStub();
+    private final PhotoRecordRepositoryStub photoRepositoryStub =
+            new PhotoRecordRepositoryStub();
     private final HealthCheckSyncService service = new HealthCheckSyncService(
             reportRepositoryStub.createProxy(),
-            taskRepositoryStub.createProxy()
+            taskRepositoryStub.createProxy(),
+            photoRepositoryStub.createProxy()
     );
 
     @Test
@@ -39,9 +45,16 @@ class HealthCheckSyncServiceTest {
         task.setNotes("Oil pressure below expected range.");
         task.setMeasuredValue("2");
         task.setUnit("bar");
-        task.setPhotoIds(List.of("photo_1"));
+        task.setPhotoIds(List.of("local_photo_1"));
         task.setCompletedAt("2026-06-02T14:20:00.000Z");
         request.setTasks(List.of(task));
+
+        PhotoRecordEntity uploadedPhoto = new PhotoRecordEntity();
+        uploadedPhoto.setId("photo_record_1");
+        uploadedPhoto.setOwnerType(PhotoOwnerType.HEALTH_CHECK_TASK);
+        uploadedPhoto.setOwnerId("health_check_123");
+        uploadedPhoto.setTaskId("comp_oil_pressure");
+        photoRepositoryStub.savedPhotos = List.of(uploadedPhoto);
 
         boolean created = service.syncHealthCheckReport(request);
 
@@ -56,7 +69,7 @@ class HealthCheckSyncServiceTest {
         assertThat(savedTask.getReportId()).isEqualTo("health_check_123");
         assertThat(savedTask.getTaskTemplateId()).isEqualTo("comp_oil_pressure");
         assertThat(savedTask.getStatus()).isEqualTo("fault");
-        assertThat(savedTask.getPhotoIds()).containsExactly("photo_1");
+        assertThat(savedTask.getPhotoIds()).containsExactly("photo_record_1");
     }
 
     private HealthCheckSyncRequest baseRequest() {
@@ -128,6 +141,42 @@ class HealthCheckSyncServiceTest {
                     yield savedTasks;
                 }
                 case "toString" -> "HealthCheckReportTaskRepositoryStub";
+                default -> defaultValue(method.getReturnType());
+            };
+        }
+    }
+
+    private static class PhotoRecordRepositoryStub implements InvocationHandler {
+        private List<PhotoRecordEntity> savedPhotos = new ArrayList<>();
+
+        private PhotoRecordRepository createProxy() {
+            return (PhotoRecordRepository) Proxy.newProxyInstance(
+                    PhotoRecordRepository.class.getClassLoader(),
+                    new Class<?>[]{PhotoRecordRepository.class},
+                    this
+            );
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) {
+            return switch (method.getName()) {
+                case "findAllById" -> {
+                    Iterable<?> ids = (Iterable<?>) args[0];
+                    List<String> requestedIds = new ArrayList<>();
+                    for (Object id : ids) {
+                        requestedIds.add((String) id);
+                    }
+                    yield savedPhotos.stream()
+                            .filter(photo -> requestedIds.contains(photo.getId()))
+                            .toList();
+                }
+                case "findByOwnerTypeAndOwnerIdAndTaskIdOrderByCreatedAtAsc" ->
+                        savedPhotos.stream()
+                                .filter(photo -> photo.getOwnerType() == args[0])
+                                .filter(photo -> photo.getOwnerId().equals(args[1]))
+                                .filter(photo -> photo.getTaskId().equals(args[2]))
+                                .toList();
+                case "toString" -> "PhotoRecordRepositoryStub";
                 default -> defaultValue(method.getReturnType());
             };
         }

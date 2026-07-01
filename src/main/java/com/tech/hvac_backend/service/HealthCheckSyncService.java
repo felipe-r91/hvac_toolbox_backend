@@ -4,12 +4,16 @@ import com.tech.hvac_backend.dto.PreventiveTaskDto;
 import com.tech.hvac_backend.dto.sync.HealthCheckSyncRequest;
 import com.tech.hvac_backend.entity.HealthCheckReportEntity;
 import com.tech.hvac_backend.entity.HealthCheckReportTaskEntity;
+import com.tech.hvac_backend.entity.PhotoOwnerType;
+import com.tech.hvac_backend.entity.PhotoRecordEntity;
 import com.tech.hvac_backend.repository.HealthCheckReportRepository;
 import com.tech.hvac_backend.repository.HealthCheckReportTaskRepository;
+import com.tech.hvac_backend.repository.PhotoRecordRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,13 +24,16 @@ public class HealthCheckSyncService {
 
     private final HealthCheckReportRepository healthCheckReportRepository;
     private final HealthCheckReportTaskRepository healthCheckReportTaskRepository;
+    private final PhotoRecordRepository photoRecordRepository;
 
     public HealthCheckSyncService(
             HealthCheckReportRepository healthCheckReportRepository,
-            HealthCheckReportTaskRepository healthCheckReportTaskRepository
+            HealthCheckReportTaskRepository healthCheckReportTaskRepository,
+            PhotoRecordRepository photoRecordRepository
     ) {
         this.healthCheckReportRepository = healthCheckReportRepository;
         this.healthCheckReportTaskRepository = healthCheckReportTaskRepository;
+        this.photoRecordRepository = photoRecordRepository;
     }
 
     @Transactional
@@ -114,9 +121,33 @@ public class HealthCheckSyncService {
         entity.setNotes(dto.getNotes());
         entity.setMeasuredValue(dto.getMeasuredValue());
         entity.setUnit(dto.getUnit());
-        entity.setPhotoIds(dto.getPhotoIds());
+        entity.setPhotoIds(resolveTaskPhotoIds(reportId, dto));
         entity.setCompletedAt(dto.getCompletedAt());
         return entity;
+    }
+
+    private List<String> resolveTaskPhotoIds(String reportId, PreventiveTaskDto dto) {
+        LinkedHashSet<String> photoIds = new LinkedHashSet<>();
+
+        if (dto.getPhotoIds() != null && !dto.getPhotoIds().isEmpty()) {
+            photoRecordRepository.findAllById(dto.getPhotoIds())
+                    .stream()
+                    .map(PhotoRecordEntity::getId)
+                    .forEach(photoIds::add);
+        }
+
+        if (!isBlank(dto.getId())) {
+            photoRecordRepository.findByOwnerTypeAndOwnerIdAndTaskIdOrderByCreatedAtAsc(
+                            PhotoOwnerType.HEALTH_CHECK_TASK,
+                            reportId,
+                            dto.getId()
+                    )
+                    .stream()
+                    .map(PhotoRecordEntity::getId)
+                    .forEach(photoIds::add);
+        }
+
+        return new ArrayList<>(photoIds);
     }
 
     private String resolveOverallStatus(HealthCheckSyncRequest request) {
