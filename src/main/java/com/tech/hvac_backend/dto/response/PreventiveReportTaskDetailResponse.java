@@ -18,6 +18,7 @@ public class PreventiveReportTaskDetailResponse {
     private final String measuredValue;
     private final String unit;
     private final List<String> photoIds;
+    private final List<PhotoDetailResponse> photos;
     private final String completedAt;
 
     public PreventiveReportTaskDetailResponse(
@@ -32,6 +33,7 @@ public class PreventiveReportTaskDetailResponse {
             String measuredValue,
             String unit,
             List<String> photoIds,
+            List<PhotoDetailResponse> photos,
             String completedAt
     ) {
         this.id = id;
@@ -45,6 +47,7 @@ public class PreventiveReportTaskDetailResponse {
         this.measuredValue = measuredValue;
         this.unit = unit;
         this.photoIds = photoIds;
+        this.photos = photos;
         this.completedAt = completedAt;
     }
 

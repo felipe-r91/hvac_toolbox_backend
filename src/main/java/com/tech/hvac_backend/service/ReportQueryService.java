@@ -7,6 +7,10 @@ import com.tech.hvac_backend.repository.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class ReportQueryService {
@@ -447,6 +451,7 @@ public class ReportQueryService {
                 entity.getMeasuredValue(),
                 entity.getUnit(),
                 entity.getPhotoIds(),
+                mapTaskPhotos(entity.getPhotoIds()),
                 entity.getCompletedAt()
         );
     }
@@ -464,6 +469,7 @@ public class ReportQueryService {
                 entity.getMeasuredValue(),
                 entity.getUnit(),
                 entity.getPhotoIds(),
+                mapTaskPhotos(entity.getPhotoIds()),
                 entity.getCompletedAt()
         );
     }
@@ -504,5 +510,21 @@ public class ReportQueryService {
                 entity.getCreatedAt(),
                 "/api/photos/" + entity.getId()
         );
+    }
+
+    private List<PhotoDetailResponse> mapTaskPhotos(List<String> photoIds) {
+        if (photoIds == null || photoIds.isEmpty()) {
+            return List.of();
+        }
+
+        Map<String, PhotoRecordEntity> photosById = photoRecordRepository.findAllById(photoIds)
+                .stream()
+                .collect(Collectors.toMap(PhotoRecordEntity::getId, Function.identity()));
+
+        return photoIds.stream()
+                .map(photosById::get)
+                .filter(Objects::nonNull)
+                .map(this::mapPhotoDetail)
+                .toList();
     }
 }
