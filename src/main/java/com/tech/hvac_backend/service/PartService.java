@@ -34,7 +34,8 @@ public class PartService {
     @Transactional
     public PartResponse createPart(PartRequest request) {
         String jciPartNumber = request.getJciPartNumber().trim();
-        if (partRepository.existsByJciPartNumberIgnoreCase(jciPartNumber)) {
+        if (shouldEnforceUniquePartNumber(jciPartNumber)
+                && partRepository.existsByJciPartNumberIgnoreCase(jciPartNumber)) {
             throw new IllegalArgumentException("Part already exists: " + jciPartNumber);
         }
 
@@ -48,7 +49,8 @@ public class PartService {
     public PartResponse updatePart(String id, PartRequest request) {
         PartEntity part = findPart(id);
         String jciPartNumber = request.getJciPartNumber().trim();
-        if (partRepository.existsByJciPartNumberIgnoreCaseAndIdNot(jciPartNumber, id)) {
+        if (shouldEnforceUniquePartNumber(jciPartNumber)
+                && partRepository.existsByJciPartNumberIgnoreCaseAndIdNot(jciPartNumber, id)) {
             throw new IllegalArgumentException("Part already exists: " + jciPartNumber);
         }
 
@@ -92,5 +94,9 @@ public class PartService {
                 part.getPartPhotoId(),
                 part.getPartPhotoPreviewUrl()
         );
+    }
+
+    private boolean shouldEnforceUniquePartNumber(String jciPartNumber) {
+        return !"unknown".equalsIgnoreCase(jciPartNumber);
     }
 }

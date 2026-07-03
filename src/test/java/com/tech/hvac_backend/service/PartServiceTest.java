@@ -47,6 +47,18 @@ class PartServiceTest {
     }
 
     @Test
+    void createPartAllowsDuplicateUnknownJciPartNumber() {
+        PartRequest request = request();
+        request.setJciPartNumber(" Unknown ");
+        repositoryStub.duplicatePartNumber = true;
+
+        PartResponse response = service.createPart(request);
+
+        assertThat(response.getJciPartNumber()).isEqualTo("Unknown");
+        assertThat(repositoryStub.savedPart).isNotNull();
+    }
+
+    @Test
     void deletePartRequiresAnExistingPart() {
         PartEntity part = new PartEntity();
         part.setId("part_1");

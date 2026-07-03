@@ -20,7 +20,7 @@ public class PartEntity {
     @Id
     private String id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String jciPartNumber;
 
     @Column(nullable = false)
